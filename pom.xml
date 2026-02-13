@@ -19,6 +19,10 @@
     <name>spring_boot_4_master</name>
     <description>spring_boot_4_master</description>
 
+    <modules>
+        <module>accounts</module>
+    </modules>
+
     <properties>
         <java.version>25</java.version>
         <maven.compiler.source>25</maven.compiler.source>
