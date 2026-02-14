@@ -7,7 +7,7 @@ import org.springframework.modulith.Modulithic;
 @SpringBootApplication
 @Modulithic(
         sharedModules = {
-                "config"
+                "common"
         },
         useFullyQualifiedModuleNames = false
 )

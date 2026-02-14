@@ -4,5 +4,15 @@
       "name": "project.basedir",
       "type": "java.lang.String",
       "description": "Base directory of the project, useful in referecing/loading resource (location of docker compose, dotEnv properties) to context."
-  }
-] }
+    },
+    {
+      "name": "api.basePath.accounts",
+      "type": "java.lang.String",
+      "description": "Base path for the 'accounts' api."
+    },
+    {
+      "name": "api.basePath.customers",
+      "type": "java.lang.String",
+      "description": "Base path for the 'customers' controller."
+    }
+  ] }

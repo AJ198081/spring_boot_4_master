@@ -1,5 +1,6 @@
 package dev.aj.accounts;
 
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.springframework.modulith.core.ApplicationModules;
@@ -10,17 +11,25 @@ import org.springframework.test.context.ActiveProfiles;
 @ApplicationModuleTest(mode = ApplicationModuleTest.BootstrapMode.DIRECT_DEPENDENCIES)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @ActiveProfiles("test")
-public class ApplicationModuleTests {
+public class ArchitecturalTests {
+
+    private ApplicationModules accountsModules;
+
+    @BeforeAll
+    void beforeAll() {
+        accountsModules = ApplicationModules.of(AccountsApplication.class);
+    }
 
     @Test
     void verifyApplicationModules() {
-        ApplicationModules.of(AccountsApplication.class).verify();
+
+        accountsModules.verify();
     }
 
     @Test
     void writeApplicationDocumentation() {
 
-        new Documenter(ApplicationModules.of(AccountsApplication.class))
+        new Documenter(accountsModules)
                 .writeModulesAsPlantUml()
                 .writeIndividualModulesAsPlantUml();
     }

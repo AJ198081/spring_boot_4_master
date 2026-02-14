@@ -18,3 +18,8 @@ info:
 
 project:
   basedir: @project.basedir@
+
+api:
+  basePath:
+    accounts: ${ACCOUNTS_API_PATH}
+    customers: ${CUSTOMERS_API_PATH}
