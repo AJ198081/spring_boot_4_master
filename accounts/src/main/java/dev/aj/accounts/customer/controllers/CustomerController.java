@@ -3,11 +3,14 @@ package dev.aj.accounts.customer.controllers;
 import dev.aj.accounts.common.domain.dtos.CustomerRequest;
 import dev.aj.accounts.common.domain.dtos.CustomerResponse;
 import dev.aj.accounts.common.exceptions.CustomerAlreadyExistsException;
+import dev.aj.accounts.common.exceptions.CustomerNotFoundException;
 import dev.aj.accounts.customer.services.CustomerService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -39,8 +42,20 @@ public class CustomerController {
     }
 
     @GetMapping("/{customerId}")
-    public ResponseEntity<CustomerResponse> getCustomer(@PathVariable UUID customerId){
+    public ResponseEntity<CustomerResponse> getCustomer(@PathVariable UUID customerId) throws CustomerNotFoundException {
         return ResponseEntity.ok(customerService.getCustomer(customerId));
+    }
+
+    @DeleteMapping("/{customerId}")
+    public ResponseEntity<HttpStatus> deleteCustomer(@PathVariable UUID customerId){
+        customerService.deleteCustomer(customerId);
+        return ResponseEntity.noContent().build();
+    }
+
+    @PatchMapping("/{customerId}")
+    public ResponseEntity<HttpStatus> updateCustomer(@PathVariable UUID customerId, @RequestBody CustomerRequest customerRequest) throws CustomerNotFoundException {
+        customerService.updateCustomer(customerId, customerRequest);
+        return ResponseEntity.noContent().build();
     }
 
 

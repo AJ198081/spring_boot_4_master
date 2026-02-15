@@ -38,7 +38,7 @@ public class Address {
     private Long id;
     
     @Enumerated(EnumType.STRING)
-    @Column(name = "address_type", columnDefinition = "VARCHAR(10)", nullable = false)
+    @Column(name = "address_type", columnDefinition = "VARCHAR(20)", nullable = false)
     @Builder.Default
     private AddressType addressType = AddressType.RESIDENTIAL;
 

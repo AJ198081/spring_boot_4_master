@@ -3,6 +3,7 @@ package dev.aj.accounts.customer.controllers;
 import dev.aj.accounts.common.domain.dtos.AddressRequest;
 import dev.aj.accounts.common.domain.dtos.CustomerRequest;
 import dev.aj.accounts.common.domain.dtos.CustomerResponse;
+import dev.aj.accounts.common.domain.entities.enums.AddressType;
 import dev.aj.accounts.setup.TestConfig;
 import dev.aj.accounts.setup.TestDataFactory;
 import dev.aj.accounts.setup.helpers.HelperMethods;
@@ -35,6 +36,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class CustomerControllerTest {
 
+    public static final String UPDATED_FIRST_NAME = "Updated First Name";
     @Autowired
     private TestConfig testConfig;
 
@@ -141,6 +143,75 @@ class CustomerControllerTest {
             assertThat(e.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
         }
 
+    }
+
+    @Test
+    void deleteCustomerSuccessfully() {
+        CustomerRequest newCustomerRequest = testDataFactory.generateCustomerRequest();
+        ResponseEntity<Void> customerRegistrationResponse = this.registerNewCustomer(newCustomerRequest);
+        UUID registeredCustomerId = extractUuidFromResponseEntity(customerRegistrationResponse);
+
+        ResponseEntity<HttpStatus> deleteResponse = this.deleteCustomer(registeredCustomerId);
+
+        assertThat(deleteResponse.getStatusCode()).isEqualTo(HttpStatus.NO_CONTENT);
+
+        try {
+            getCustomerByCustomerId(registeredCustomerId);
+        } catch (HttpClientErrorException e) {
+            assertThat(e.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
+        }
+    }
+
+    @Test
+    void deleteNonExistingCustomerReturnsNotFound() {
+        ResponseEntity<HttpStatus> deleteResponse = deleteCustomer(UUID.randomUUID());
+
+        assertThat(deleteResponse.getStatusCode()).isEqualTo(HttpStatus.NO_CONTENT);
+    }
+
+    @Test
+    void updateCustomerSuccessfully() {
+         CustomerRequest newCustomerRequest = testDataFactory.generateCustomerRequest();
+        AddressRequest addressRequest = testDataFactory.generateAnAddressRequest();
+        newCustomerRequest.setAddresses(Set.of(addressRequest));
+        
+        ResponseEntity<Void> customerRegistrationResponse = this.registerNewCustomer(newCustomerRequest);
+        
+        UUID registeredCustomerId = extractUuidFromResponseEntity(customerRegistrationResponse);
+
+        newCustomerRequest.setFirstName(UPDATED_FIRST_NAME);
+        AddressRequest updatedResidentialAddress = new AddressRequest("101 Street", null, "Ambala", "Haryana", "131201", "India", AddressType.RESIDENTIAL);
+        newCustomerRequest.setAddresses(Set.of(updatedResidentialAddress));
+
+        ResponseEntity<HttpStatus> customerUpdateResponse = this.patchCustomer(registeredCustomerId, newCustomerRequest);
+
+        assertThat(customerUpdateResponse.getStatusCode()).isEqualTo(HttpStatus.NO_CONTENT);
+
+        CustomerResponse updatedCustomerResponse = getCustomerByCustomerId(registeredCustomerId).getBody();
+
+        assert updatedCustomerResponse != null;
+
+        assertThat(updatedCustomerResponse.firstName()).isEqualTo(UPDATED_FIRST_NAME);
+        assertThat(updatedCustomerResponse.addresses().stream()
+                .filter(address -> address.addressType() == AddressType.RESIDENTIAL).findFirst().orElse(null))
+                .isNotNull()
+                .usingRecursiveComparison()
+                .isEqualTo(updatedResidentialAddress);
+    }
+
+    private ResponseEntity<HttpStatus> patchCustomer(UUID registeredCustomerId, CustomerRequest newCustomerRequest) {
+        return customerRestClient.patch()
+                .uri("/{customerId}", registeredCustomerId)
+                .body(newCustomerRequest)
+                .retrieve()
+                .toEntity(HttpStatus.class);
+    }
+
+    private ResponseEntity<HttpStatus> deleteCustomer(UUID customerId) {
+        return customerRestClient.delete()
+                .uri("/{customerId}", customerId)
+                .retrieve()
+                .toEntity(HttpStatus.class);
     }
 
     private ResponseEntity<Void> registerNewCustomer(CustomerRequest customerRequest) {
