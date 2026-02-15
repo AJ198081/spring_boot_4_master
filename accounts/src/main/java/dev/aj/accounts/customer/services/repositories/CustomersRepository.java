@@ -11,4 +11,5 @@ import java.util.UUID;
 @Repository
 public interface CustomersRepository extends JpaRepository<Customer, Long> {
     Optional<Customer> findCustomerByCustomerId(UUID customerId);
+    boolean existsCustomerByEmail(String email);
 }

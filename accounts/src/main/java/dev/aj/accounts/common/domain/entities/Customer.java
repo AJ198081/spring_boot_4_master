@@ -1,5 +1,6 @@
 package dev.aj.accounts.common.domain.entities;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Embedded;
 import jakarta.persistence.Entity;
@@ -55,7 +56,7 @@ public class Customer {
     private String phoneNumber;
 
     @Builder.Default
-    @OneToMany(mappedBy = "customer")
+    @OneToMany(mappedBy = "customer", orphanRemoval = true, cascade = CascadeType.ALL)
     private Set<Address> addresses = new HashSet<>();
 
     @Embedded

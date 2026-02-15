@@ -38,32 +38,37 @@ public class Address {
     private Long id;
     
     @Enumerated(EnumType.STRING)
-    @Column(name = "address_type", columnDefinition = "VARCHAR(10) not null default 'RESIDENTIAL'", nullable = false)
+    @Column(name = "address_type", columnDefinition = "VARCHAR(10)", nullable = false)
     @Builder.Default
     private AddressType addressType = AddressType.RESIDENTIAL;
 
-    @Column(name = "address_line_1", columnDefinition = "VARCHAR(300) not null", nullable = false)
+    @Column(name = "address_line_1", columnDefinition = "VARCHAR(300)", nullable = false)
     private String addressLine1;
     
     @Column(name = "address_line_2", columnDefinition = "VARCHAR(300)")
     private String addressLine2;
-    
-    @Column(name = "city", columnDefinition = "VARCHAR(100) not null", nullable = false)
+
+    @Column(name = "city", columnDefinition = "VARCHAR(100)", nullable = false)
     private String city;
-    
-    @Column(name = "state", columnDefinition = "VARCHAR(100) not null", nullable = false)
+
+    @Column(name = "state", columnDefinition = "VARCHAR(50)", nullable = false)
     private String state;
-    
-    @Column(name = "post_code", columnDefinition = "VARCHAR(10) not null", nullable = false)
+
+    @Column(name = "post_code", columnDefinition = "VARCHAR(10)", nullable = false)
     private String postCode;
-    
-    @Column(name = "country", columnDefinition = "VARCHAR(100) not null", nullable = false)
+
+    @Column(name = "country", columnDefinition = "VARCHAR(100)", nullable = false)
     private String country;
-    
-    @ManyToOne(optional = true, fetch = FetchType.EAGER)
-    @JoinColumn(name = "customer_id", nullable = true)
+
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "customer_id", nullable = false)
     private Customer customer;
 
     @Builder.Default
     private MetaData metaData = new MetaData();
+
+    public void setCustomer(Customer customer) {
+        this.customer = customer;
+        customer.getAddresses().add(this);
+    }
 }

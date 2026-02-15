@@ -1,6 +1,7 @@
 package dev.aj.accounts.common.exceptions;
 
-public class CustomerAlreadyExistsException extends RuntimeException {
+@SuppressWarnings("unused")
+public class CustomerAlreadyExistsException extends Throwable {
 
     public CustomerAlreadyExistsException(String message) {
         super(message);

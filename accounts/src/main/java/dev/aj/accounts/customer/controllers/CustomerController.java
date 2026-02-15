@@ -2,6 +2,7 @@ package dev.aj.accounts.customer.controllers;
 
 import dev.aj.accounts.common.domain.dtos.CustomerRequest;
 import dev.aj.accounts.common.domain.dtos.CustomerResponse;
+import dev.aj.accounts.common.exceptions.CustomerAlreadyExistsException;
 import dev.aj.accounts.customer.services.CustomerService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -12,7 +13,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.util.UriComponentsBuilder;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import java.net.URI;
 import java.util.UUID;
@@ -25,15 +26,16 @@ public class CustomerController {
     private final CustomerService customerService;
 
     @PostMapping("/")
-    public ResponseEntity<HttpStatus> createCustomer(@RequestBody CustomerRequest customerRequest){
+    public ResponseEntity<HttpStatus> createCustomer(@RequestBody CustomerRequest customerRequest) throws CustomerAlreadyExistsException {
 
         CustomerResponse customerCreated = customerService.createCustomer(customerRequest);
 
-        return ResponseEntity.created(
-                UriComponentsBuilder.fromUri(URI.create("/{customerId}"))
-                        .buildAndExpand(customerCreated.customerId())
-                        .toUri()
-        ).build();
+        URI customerLocation = ServletUriComponentsBuilder.fromCurrentRequestUri()
+                .pathSegment("{customerId}")
+                .buildAndExpand(customerCreated.customerId())
+                .toUri();
+
+        return ResponseEntity.created(customerLocation).build();
     }
 
     @GetMapping("/{customerId}")

@@ -5,3 +5,8 @@ spring:
       skip:
         in-tests: false
       lifecycle-management: start_only
+
+
+  jpa:
+    hibernate:
+      ddl-auto: update

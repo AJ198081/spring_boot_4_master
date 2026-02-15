@@ -9,7 +9,7 @@ public record AddressRequest(
         String addressLine2,
         String city,
         String state,
-        String zipCode,
+        String postCode,
         String country,
         AddressType addressType
 ) {

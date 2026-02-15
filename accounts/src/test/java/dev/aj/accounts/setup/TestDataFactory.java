@@ -4,6 +4,7 @@ import dev.aj.accounts.common.domain.dtos.AccountRequest;
 import dev.aj.accounts.common.domain.dtos.AddressRequest;
 import dev.aj.accounts.common.domain.dtos.CustomerRequest;
 import dev.aj.accounts.common.domain.entities.enums.AccountType;
+import dev.aj.accounts.common.domain.entities.enums.AddressType;
 import dev.aj.accounts.setup.helpers.HelperMethods;
 import lombok.RequiredArgsConstructor;
 import net.datafaker.Faker;
@@ -14,6 +15,7 @@ import java.util.stream.Stream;
 
 @TestConfiguration(proxyBeanMethods = false)
 @RequiredArgsConstructor
+@SuppressWarnings({"unused", "unaccessed"})
 public class TestDataFactory {
 
     private final Faker faker;
@@ -31,14 +33,22 @@ public class TestDataFactory {
                 .build());
     }
 
+    public CustomerRequest generateCustomerRequest() {
+        return generateCustomerRequests()
+                .findFirst()
+                .orElseThrow();
+    }
+
 
 //   Addresses
     public Stream<AddressRequest> generateAddresses() {
         return Stream.generate(() -> AddressRequest.builder()
+                .addressType(helperMethods.getRandomEnumValue(AddressType.class))
                 .addressLine1(faker.address().streetAddress())
                 .city(faker.address().city())
                 .state(faker.address().state())
-                .zipCode(faker.address().zipCode())
+                .postCode(faker.address().zipCode())
+                .country(faker.address().country())
                 .build());
     }
 
@@ -55,4 +65,9 @@ public class TestDataFactory {
                 .build());
     }
 
+    public AddressRequest generateAnAddressRequest() {
+        return generateAddresses()
+                .findFirst()
+                .orElseThrow();
+    }
 }

@@ -1,4 +1,4 @@
-package dev.aj.accounts;
+package dev.aj.accounts.setup;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;

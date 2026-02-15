@@ -4,6 +4,7 @@ import dev.aj.accounts.common.domain.dtos.CustomerRequest;
 import dev.aj.accounts.common.domain.dtos.CustomerResponse;
 import dev.aj.accounts.common.domain.dtos.mappers.CustomerMapper;
 import dev.aj.accounts.common.domain.entities.Customer;
+import dev.aj.accounts.common.exceptions.CustomerAlreadyExistsException;
 import dev.aj.accounts.common.exceptions.CustomerNotFoundException;
 import dev.aj.accounts.customer.services.CustomerService;
 import dev.aj.accounts.customer.services.repositories.CustomersRepository;
@@ -19,8 +20,16 @@ public class CustomerServiceImpl implements CustomerService {
     private final CustomerMapper customerMapper;
 
     @Override
-    public CustomerResponse createCustomer(CustomerRequest customerData) {
+    public CustomerResponse createCustomer(CustomerRequest customerData) throws CustomerAlreadyExistsException {
+
+        if (customersRepository.existsCustomerByEmail(customerData.getEmail())) {
+            throw new CustomerAlreadyExistsException("Customer with email %s already exist.".formatted(customerData.getEmail()));
+        }
+
         Customer newCustomer = customerMapper.toEntity(customerData);
+
+        newCustomer.getAddresses().forEach(address -> address.setCustomer(newCustomer));
+
         return customerMapper.toResponse(
                 customersRepository.save(newCustomer)
         );
