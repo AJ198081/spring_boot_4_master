@@ -8,6 +8,4 @@ public record AccountRequest (
         String accountNumber,
         String accountName,
         String accountType
-) {
-
-}
+) { }

@@ -20,4 +20,9 @@ public class CustomerExceptionHandlers {
         return ProblemDetail.forStatusAndDetail(HttpStatus.NOT_FOUND, exception.getMessage());
     }
 
+    @ExceptionHandler(Exception.class)
+    public ProblemDetail handleGenericException(Exception exception) {
+        return ProblemDetail.forStatusAndDetail(HttpStatus.INTERNAL_SERVER_ERROR, "An unexpected error occurred, contact your administrator. %s".formatted(exception.getMessage()));
+    }
+
 }

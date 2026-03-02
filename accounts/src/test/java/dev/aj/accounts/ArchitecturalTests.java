@@ -22,7 +22,6 @@ public class ArchitecturalTests {
 
     @Test
     void verifyApplicationModules() {
-
         accountsModules.verify();
     }
 

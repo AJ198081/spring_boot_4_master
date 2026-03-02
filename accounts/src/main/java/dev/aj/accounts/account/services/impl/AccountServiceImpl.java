@@ -9,12 +9,15 @@ import dev.aj.accounts.common.domain.entities.Account;
 import dev.aj.accounts.common.exceptions.AccountAlreadyExistsException;
 import dev.aj.accounts.common.exceptions.AccountNotFoundException;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.jspecify.annotations.NonNull;
 import org.springframework.stereotype.Service;
 
 import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class AccountServiceImpl implements AccountService {
 
     private final AccountsRepository accountsRepository;
@@ -41,5 +44,24 @@ public class AccountServiceImpl implements AccountService {
         return accountsRepository.findByAccountId(accountId)
                 .map(accountMapper::toResponse)
                 .orElseThrow(() -> new AccountNotFoundException("Account id %s doesn't exist.".formatted(accountId)));
+    }
+
+    @Override
+    public void updateAccount(@NonNull UUID accountId, AccountRequest updateRequest) throws AccountNotFoundException {
+        accountsRepository.findByAccountId(accountId)
+                .map(account -> accountMapper.updateAccountFromAccountRequest(account, updateRequest))
+                .map(accountsRepository::save)
+                .orElseThrow(() -> new AccountNotFoundException("Account id %s doesn't exist.".formatted(accountId)));
+    }
+
+    @Override
+    public void replaceAccount(@NonNull UUID accountId, AccountRequest replacement) throws AccountNotFoundException {
+        Account modifiedAccount = accountsRepository.findByAccountId(accountId)
+                .map(account -> {
+                    accountMapper.mutateAccountDetailsFromAccountRequest(account, replacement);
+                    return accountsRepository.save(account);
+                })
+                .orElseThrow(() -> new AccountNotFoundException("Account id %s doesn't exist.".formatted(accountId)));
+        log.info("Account ID: {} replaced with {}", accountId, modifiedAccount);
     }
 }

@@ -36,7 +36,8 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class CustomerControllerTest {
 
-    public static final String UPDATED_FIRST_NAME = "Updated First Name";
+    private static final String UPDATED_FIRST_NAME = "Updated First Name";
+
     @Autowired
     private TestConfig testConfig;
 
@@ -103,7 +104,7 @@ class CustomerControllerTest {
         CustomerResponse customerResponse = getCustomerByCustomerId(customerId).getBody();
 
         assert customerResponse != null;
-        assertThat(customerResponse.addresses().stream().findFirst().orElse(null))
+        assertThat(customerResponse.addresses().stream().findFirst().orElseThrow())
                 .isNotNull()
                 .usingRecursiveComparison()
                 .isEqualTo(addressRequest);
@@ -191,12 +192,12 @@ class CustomerControllerTest {
 
         assert updatedCustomerResponse != null;
 
-        assertThat(updatedCustomerResponse.firstName()).isEqualTo(UPDATED_FIRST_NAME);
         assertThat(updatedCustomerResponse.addresses().stream()
-                .filter(address -> address.addressType() == AddressType.RESIDENTIAL).findFirst().orElse(null))
+                        .filter(address -> address.addressType() == AddressType.RESIDENTIAL).findFirst().orElseThrow())
                 .isNotNull()
                 .usingRecursiveComparison()
                 .isEqualTo(updatedResidentialAddress);
+        assertThat(updatedCustomerResponse.firstName()).isEqualTo(UPDATED_FIRST_NAME);
     }
 
     private ResponseEntity<HttpStatus> patchCustomer(UUID registeredCustomerId, CustomerRequest newCustomerRequest) {

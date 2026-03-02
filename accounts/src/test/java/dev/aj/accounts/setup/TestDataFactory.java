@@ -70,4 +70,10 @@ public class TestDataFactory {
                 .findFirst()
                 .orElseThrow();
     }
+
+    public AccountRequest generateAnAccount() {
+        return generateAccounts()
+                .findFirst()
+                .orElseThrow();
+    }
 }
