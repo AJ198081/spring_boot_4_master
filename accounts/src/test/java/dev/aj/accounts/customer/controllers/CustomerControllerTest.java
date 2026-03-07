@@ -9,6 +9,7 @@ import dev.aj.accounts.setup.TestDataFactory;
 import dev.aj.accounts.setup.helpers.HelperMethods;
 import org.jspecify.annotations.NonNull;
 import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
@@ -156,11 +157,7 @@ class CustomerControllerTest {
 
         assertThat(deleteResponse.getStatusCode()).isEqualTo(HttpStatus.NO_CONTENT);
 
-        try {
-            getCustomerByCustomerId(registeredCustomerId);
-        } catch (HttpClientErrorException e) {
-            assertThat(e.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
-        }
+        Assertions.assertThrows(HttpClientErrorException.class, () -> getCustomerByCustomerId(registeredCustomerId));
     }
 
     @Test

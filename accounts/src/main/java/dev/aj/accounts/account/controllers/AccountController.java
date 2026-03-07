@@ -3,8 +3,6 @@ package dev.aj.accounts.account.controllers;
 import dev.aj.accounts.account.services.AccountService;
 import dev.aj.accounts.common.domain.dtos.AccountRequest;
 import dev.aj.accounts.common.domain.dtos.AccountResponse;
-import dev.aj.accounts.common.exceptions.AccountAlreadyExistsException;
-import dev.aj.accounts.common.exceptions.AccountNotFoundException;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.jspecify.annotations.NonNull;
@@ -37,7 +35,7 @@ public class AccountController {
     private final AccountService accountService;
 
     @PostMapping("/")
-    public ResponseEntity<HttpStatus> createAccount(@Valid @RequestBody AccountRequest creationRequest) throws AccountAlreadyExistsException {
+    public ResponseEntity<HttpStatus> createAccount(@Valid @RequestBody AccountRequest creationRequest) {
 
         AccountResponse response = accountService.createAccount(creationRequest);
 
@@ -49,18 +47,18 @@ public class AccountController {
     }
 
     @GetMapping("/{accountId}")
-    public ResponseEntity<AccountResponse> getAccount(@NonNull @PathVariable UUID accountId) throws AccountNotFoundException {
+    public ResponseEntity<AccountResponse> getAccount(@NonNull @PathVariable UUID accountId) {
         return ResponseEntity.ok(accountService.getAccountById(accountId));
     }
 
     @PutMapping("/{accountId}")
-    public ResponseEntity<HttpStatus> replaceAccount(@NonNull @PathVariable UUID accountId, @Valid @RequestBody AccountRequest replacement) throws AccountNotFoundException {
+    public ResponseEntity<HttpStatus> replaceAccount(@NonNull @PathVariable UUID accountId, @Valid @RequestBody AccountRequest replacement) {
         accountService.replaceAccount(accountId, replacement);
         return ResponseEntity.noContent().build();
     }
 
     @PatchMapping("/{accountId}")
-    public ResponseEntity<HttpStatus> updateAccount(@NonNull @PathVariable UUID accountId, @Valid @RequestBody AccountRequest updateRequest) throws AccountNotFoundException {
+    public ResponseEntity<HttpStatus> updateAccount(@NonNull @PathVariable UUID accountId, @Valid @RequestBody AccountRequest updateRequest) {
         accountService.updateAccount(accountId, updateRequest);
         return ResponseEntity.noContent().build();
     }

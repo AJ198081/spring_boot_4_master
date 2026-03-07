@@ -24,7 +24,7 @@ public class CustomerServiceImpl implements CustomerService {
     private final AddressMapper addressMapper;
 
     @Override
-    public CustomerResponse createCustomer(CustomerRequest customerData) throws CustomerAlreadyExistsException {
+    public CustomerResponse createCustomer(CustomerRequest customerData) {
 
         if (customersRepository.existsCustomerByEmail(customerData.getEmail())) {
             throw new CustomerAlreadyExistsException("Customer with email %s already exist.".formatted(customerData.getEmail()));
@@ -44,7 +44,7 @@ public class CustomerServiceImpl implements CustomerService {
     }
 
     @Override
-    public CustomerResponse getCustomer(UUID customerId) throws CustomerNotFoundException {
+    public CustomerResponse getCustomer(UUID customerId) {
         return customersRepository.findCustomerByCustomerId(customerId)
                 .map(customerMapper::toResponse)
                 .orElseThrow(() -> new CustomerNotFoundException("Customer Id %s doesn't exist.".formatted(customerId)));
@@ -52,12 +52,11 @@ public class CustomerServiceImpl implements CustomerService {
 
     @Override
     public void deleteCustomer(UUID customerId) {
-
         customersRepository.deleteCustomerByCustomerId(customerId);
     }
 
     @Override
-    public void updateCustomer(UUID customerId, CustomerRequest updateCustomerRequest) throws CustomerNotFoundException {
+    public void updateCustomer(UUID customerId, CustomerRequest updateCustomerRequest) {
 
         customersRepository.findCustomerByCustomerId(customerId)
                 .map(customer -> {

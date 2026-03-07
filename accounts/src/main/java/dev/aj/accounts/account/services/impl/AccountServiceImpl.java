@@ -24,7 +24,7 @@ public class AccountServiceImpl implements AccountService {
     private final AccountMapper accountMapper;
 
     @Override
-    public AccountResponse createAccount(AccountRequest request) throws AccountAlreadyExistsException {
+    public AccountResponse createAccount(AccountRequest request) {
 
         if (accountsRepository.existsAccountByBsbAndAccountNumber(request.bsb(), request.accountNumber())) {
             throw new AccountAlreadyExistsException("Account with BSB %s and account number %s already exist."
@@ -40,14 +40,14 @@ public class AccountServiceImpl implements AccountService {
     }
 
     @Override
-    public AccountResponse getAccountById(UUID accountId) throws AccountNotFoundException {
+    public AccountResponse getAccountById(UUID accountId) {
         return accountsRepository.findByAccountId(accountId)
                 .map(accountMapper::toResponse)
                 .orElseThrow(() -> new AccountNotFoundException("Account id %s doesn't exist.".formatted(accountId)));
     }
 
     @Override
-    public void updateAccount(@NonNull UUID accountId, AccountRequest updateRequest) throws AccountNotFoundException {
+    public void updateAccount(@NonNull UUID accountId, AccountRequest updateRequest) {
         accountsRepository.findByAccountId(accountId)
                 .map(account -> accountMapper.updateAccountFromAccountRequest(account, updateRequest))
                 .map(accountsRepository::save)
@@ -55,7 +55,7 @@ public class AccountServiceImpl implements AccountService {
     }
 
     @Override
-    public void replaceAccount(@NonNull UUID accountId, AccountRequest replacement) throws AccountNotFoundException {
+    public void replaceAccount(@NonNull UUID accountId, AccountRequest replacement) {
         Account modifiedAccount = accountsRepository.findByAccountId(accountId)
                 .map(account -> {
                     accountMapper.mutateAccountDetailsFromAccountRequest(account, replacement);

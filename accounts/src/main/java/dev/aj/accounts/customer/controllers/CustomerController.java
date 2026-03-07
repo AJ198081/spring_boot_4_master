@@ -2,8 +2,6 @@ package dev.aj.accounts.customer.controllers;
 
 import dev.aj.accounts.common.domain.dtos.CustomerRequest;
 import dev.aj.accounts.common.domain.dtos.CustomerResponse;
-import dev.aj.accounts.common.exceptions.CustomerAlreadyExistsException;
-import dev.aj.accounts.common.exceptions.CustomerNotFoundException;
 import dev.aj.accounts.customer.services.CustomerService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -29,7 +27,7 @@ public class CustomerController {
     private final CustomerService customerService;
 
     @PostMapping("/")
-    public ResponseEntity<HttpStatus> createCustomer(@RequestBody CustomerRequest customerRequest) throws CustomerAlreadyExistsException {
+    public ResponseEntity<HttpStatus> createCustomer(@RequestBody CustomerRequest customerRequest) {
 
         CustomerResponse customerCreated = customerService.createCustomer(customerRequest);
 
@@ -42,7 +40,7 @@ public class CustomerController {
     }
 
     @GetMapping("/{customerId}")
-    public ResponseEntity<CustomerResponse> getCustomer(@PathVariable UUID customerId) throws CustomerNotFoundException {
+    public ResponseEntity<CustomerResponse> getCustomer(@PathVariable UUID customerId) {
         return ResponseEntity.ok(customerService.getCustomer(customerId));
     }
 
@@ -53,7 +51,7 @@ public class CustomerController {
     }
 
     @PatchMapping("/{customerId}")
-    public ResponseEntity<HttpStatus> updateCustomer(@PathVariable UUID customerId, @RequestBody CustomerRequest customerRequest) throws CustomerNotFoundException {
+    public ResponseEntity<HttpStatus> updateCustomer(@PathVariable UUID customerId, @RequestBody CustomerRequest customerRequest) {
         customerService.updateCustomer(customerId, customerRequest);
         return ResponseEntity.noContent().build();
     }
