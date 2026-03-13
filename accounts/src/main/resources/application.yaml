@@ -23,3 +23,42 @@ api:
   basePath:
     accounts: ${ACCOUNTS_API_PATH}
     customers: ${CUSTOMERS_API_PATH}
+
+
+springdoc:
+  api-docs:
+    version: OPENAPI_3_1
+  swagger-ui:
+    path: /swagger-ui.html
+    enabled: true
+    display-request-duration: true
+    groups-order: ASC
+    operationsSorter: method
+    disable-swagger-default-url: true
+    use-root-path: true
+  show-actuator: true
+  cache:
+    disabled: true
+  group-configs:
+    - group: Accounts
+      packagesToScan: dev.aj.accounts.account
+    - group: Customers
+      packagesToScan: dev.aj.accounts.customer
+  open-api:
+    components:
+      schemas:
+        AccountType:
+          description: Description of an account
+          properties:
+            id:
+              description: Description
+            title:
+              description: Property title
+
+management:
+  endpoints:
+    web:
+      base-path: /rest/actuator
+      exposure:
+        include: health, openapi, swagger-ui
+        exclude: shutdown
