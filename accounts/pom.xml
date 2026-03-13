@@ -13,7 +13,6 @@
     <name>accounts</name>
     <description>accounts microservice</description>
     <properties>
-        <springdoc.version>2.8.13</springdoc.version>
     </properties>
 
     <dependencies>
