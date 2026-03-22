@@ -15,7 +15,9 @@ public interface AccountMapper {
     @Mapping(target = "metaData", ignore = true)
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "customer", ignore = true)
-    @Mapping(target = "accountId", ignore = true)
+    @Mapping(target = "accountId", expression = "java(java.util.UUID.randomUUID())")
+    @Mapping(target = "bsb", expression = "java(purgeDashesAndSpaces(accountRequest.bsb()))")
+    @Mapping(target = "accountNumber", expression = "java(purgeDashesAndSpaces(accountRequest.accountNumber()))")
     Account toEntity(AccountRequest accountRequest);
 
     AccountResponse toResponse(Account account);
@@ -27,16 +29,16 @@ public interface AccountMapper {
         }
 
         if (accountRequest.bsb() != null) {
-            account.setBsb(accountRequest.bsb());
+            account.setBsb(purgeDashesAndSpaces(accountRequest.bsb()));
         }
         if (accountRequest.accountNumber() != null) {
-            account.setAccountNumber(accountRequest.accountNumber());
+            account.setAccountNumber(purgeDashesAndSpaces(accountRequest.accountNumber()));
         }
         if (accountRequest.accountName() != null) {
             account.setAccountName(accountRequest.accountName());
         }
-        if (accountRequest.accountType() != null) {
-            account.setAccountType(AccountType.valueOf(accountRequest.accountType()));
+        if (accountRequest.type() != null) {
+            account.setType(AccountType.valueOf(accountRequest.type()));
         }
 
         return account;
@@ -46,6 +48,10 @@ public interface AccountMapper {
         account.setBsb(replacement.bsb());
         account.setAccountNumber(replacement.accountNumber());
         account.setAccountName(replacement.accountName());
-        account.setAccountType(AccountType.valueOf(replacement.accountType()));
+        account.setType(AccountType.valueOf(replacement.type()));
+    }
+
+    default String purgeDashesAndSpaces(String input) {
+        return input.replaceAll("-", "").replaceAll("\\s", "");
     }
 }

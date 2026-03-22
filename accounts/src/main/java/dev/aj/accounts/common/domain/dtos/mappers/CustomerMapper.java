@@ -16,6 +16,7 @@ public interface CustomerMapper {
     @Mapping(target = "customerId", expression = "java(java.util.UUID.randomUUID())")
     @Mapping(target = "accounts", ignore = true)
     @Mapping(target = "metaData", ignore = true)
+    @Mapping(target = "phoneNumber", expression = "java(MapperHelpers.purgeDashesAndSpaces(customerRequest.getPhoneNumber()))")
     Customer toEntity(CustomerRequest customerRequest);
 
     CustomerResponse toResponse(Customer customer);
@@ -39,7 +40,7 @@ public interface CustomerMapper {
         }
 
         if (updateCustomerRequest.getPhoneNumber() != null) {
-            customer.setPhoneNumber(updateCustomerRequest.getPhoneNumber());
+            customer.setPhoneNumber(MapperHelpers.purgeDashesAndSpaces(updateCustomerRequest.getPhoneNumber()));
         }
     }
 }

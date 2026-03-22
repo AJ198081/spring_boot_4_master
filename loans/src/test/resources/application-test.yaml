@@ -1,0 +1,5 @@
+spring:
+  docker:
+    compose:
+      file:  C:\Users\amarj\IdeaProjects\spring_boot_4_master\accounts\compose.yaml
+      lifecycle-management: start_only

@@ -8,10 +8,10 @@
         <version>0.0.1-SNAPSHOT</version>
     </parent>
 
-    <artifactId>accounts</artifactId>
+    <artifactId>loans</artifactId>
 
-    <name>accounts</name>
-    <description>accounts microservice</description>
+    <name>loans</name>
+    <description>Microservice to deal with loans</description>
 
     <dependencies>
         <dependency>
@@ -35,12 +35,6 @@
             <groupId>org.springdoc</groupId>
             <artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
             <version>${springdoc.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>com.github.therapi</groupId>
-            <artifactId>therapi-runtime-javadoc-scribe</artifactId>
-            <version>0.15.0</version>
-            <scope>compile</scope>
         </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>

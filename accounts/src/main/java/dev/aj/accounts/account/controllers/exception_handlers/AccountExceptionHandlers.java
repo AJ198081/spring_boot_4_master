@@ -2,6 +2,7 @@ package dev.aj.accounts.account.controllers.exception_handlers;
 
 import dev.aj.accounts.common.exceptions.AccountAlreadyExistsException;
 import dev.aj.accounts.common.exceptions.AccountNotFoundException;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ProblemDetail;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -13,6 +14,7 @@ import java.util.Objects;
 import java.util.stream.Collectors;
 
 @RestControllerAdvice(basePackages = "dev.aj.accounts.account.controllers")
+@Slf4j
 public class AccountExceptionHandlers {
 
     @ExceptionHandler(AccountAlreadyExistsException.class)
@@ -51,6 +53,7 @@ public class AccountExceptionHandlers {
 
     @ExceptionHandler(Exception.class)
     public ProblemDetail handleGenericException(Exception exception) {
+        log.error("Generic exception caught: {} - {}", exception.getClass().getName(), exception.getMessage(), exception);
         return ProblemDetail.forStatusAndDetail(HttpStatus.INTERNAL_SERVER_ERROR, "An unexpected error occurred, contact your administrator. %s".formatted(exception.getMessage()));
     }
 

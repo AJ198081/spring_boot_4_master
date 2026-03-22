@@ -61,7 +61,8 @@ public class TestDataFactory {
                                         .concat(faker.number().digits(4))
                 )
                 .accountNumber(faker.number().digits(10))
-                .accountType(String.valueOf(helperMethods.getRandomEnumValue(AccountType.class)))
+                .accountName(faker.name().fullName())
+                .type(String.valueOf(helperMethods.getRandomEnumValue(AccountType.class)))
                 .build());
     }
 
