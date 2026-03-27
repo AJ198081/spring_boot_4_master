@@ -23,6 +23,7 @@
         <module>accounts</module>
         <module>loans</module>
         <module>design_patterns</module>
+        <module>open_telemetry</module>
     </modules>
 
     <properties>
@@ -102,6 +103,11 @@
             <groupId>org.springframework.modulith</groupId>
             <artifactId>spring-modulith-starter-test</artifactId>
             <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-docker-compose</artifactId>
+            <scope>runtime</scope>
         </dependency>
     </dependencies>
 
