@@ -3,6 +3,7 @@ package dev.aj.accounts.account.controllers;
 import dev.aj.accounts.account.services.AccountService;
 import dev.aj.accounts.common.domain.dtos.AccountRequest;
 import dev.aj.accounts.common.domain.dtos.AccountResponse;
+import dev.aj.accounts.common.exceptions.AccountNotFoundException;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -11,11 +12,13 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.jspecify.annotations.NonNull;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ProblemDetail;
 import org.springframework.http.ResponseEntity;
+import org.springframework.resilience.annotation.Retryable;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -38,6 +41,7 @@ import java.util.UUID;
 @RequiredArgsConstructor
 @Validated
 @Tag(name = "Account API", description = "CRUD operations for Accounts entity")
+@Slf4j
 public class AccountController {
 
     private final AccountService accountService;
@@ -72,6 +76,7 @@ public class AccountController {
                 .build();
     }
 
+    @Retryable(excludes = {AccountNotFoundException.class}, maxRetries = 4, delay = 2000L, multiplier = 2)
     @GetMapping("/{accountId}")
     public ResponseEntity<AccountResponse> getAccount(@NonNull @PathVariable UUID accountId) {
         return ResponseEntity.ok(accountService.getAccountById(accountId));
@@ -90,6 +95,5 @@ public class AccountController {
         accountService.updateAccount(accountId, updateRequest);
         return ResponseEntity.noContent().build();
     }
-
 
 }

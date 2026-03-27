@@ -30,15 +30,13 @@ public class CustomSortStrategy implements SortStrategy {
                 case RATING -> Comparator.comparing(Course::getRating);
             };
 
-            if (currentComparator != null) {
-                if (customSort.getSortOrder() == SortOrder.DESC) {
-                    currentComparator = currentComparator.reversed();
-                }
-                if (comparator == null) {
-                    comparator = currentComparator;
-                } else {
-                    comparator = comparator.thenComparing(currentComparator);
-                }
+            if (customSort.getSortOrder() == SortOrder.DESC) {
+                currentComparator = currentComparator.reversed();
+            }
+            if (comparator == null) {
+                comparator = currentComparator;
+            } else {
+                comparator = comparator.thenComparing(currentComparator);
             }
         }
 
