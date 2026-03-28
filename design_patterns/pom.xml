@@ -12,5 +12,11 @@
 
     <name>design_patterns</name>
     <description>practice design patterns</description>
+    <dependencies>
+        <dependency>
+            <groupId>org.hibernate.orm</groupId>
+            <artifactId>hibernate-core</artifactId>
+        </dependency>
+    </dependencies>
 
 </project>

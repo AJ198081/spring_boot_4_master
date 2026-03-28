@@ -19,24 +19,31 @@ class CourseSorterTest {
 
     public static final String JAVA = "Java";
     public static final String PYTHON = "Python";
+    public static final String GO = "Go";
 
     private static List<Course> courses;
 
     @BeforeAll
     static void beforeAll() {
+        Course go = Course.builder()
+                .name(GO)
+                .studentCount(30)
+                .rating(4.7)
+                .build();
+        
         Course java = Course.builder()
                 .name(JAVA)
-                .studentCount(100)
-                .rating(4.9)
+                .studentCount(80)
+                .rating(4.8)
                 .build();
 
         Course python = Course.builder()
                 .name(PYTHON)
                 .studentCount(50)
-                .rating(4.8)
+                .rating(4.9)
                 .build();
 
-        courses = Arrays.asList(java, python);
+        courses = Arrays.asList(java, python, go);
     }
 
     @Nested
@@ -48,18 +55,18 @@ class CourseSorterTest {
         void sortCoursesByNameAscending() {
             courseSorter.sort(courses, SortOrder.ASC);
 
-            assertEquals(2, courses.size());
+            assertEquals(3, courses.size());
 
-            assertEquals(JAVA, courses.getFirst().getName());
+            assertEquals(GO, courses.getFirst().getName());
             assertEquals(PYTHON, courses.getLast().getName());
         }
 
         @Test
         void sortCoursesByNameDescending() {
             courseSorter.sort(courses, SortOrder.DESC);
-            assertEquals(2, courses.size());
+            assertEquals(3, courses.size());
             assertEquals(PYTHON, courses.getFirst().getName());
-            assertEquals(JAVA, courses.getLast().getName());
+            assertEquals(GO, courses.getLast().getName());
         }
     }
 
@@ -71,18 +78,18 @@ class CourseSorterTest {
         void sortCoursesByRatingAscending() {
             courseSorter.sort(courses, SortOrder.ASC);
 
-            assertEquals(2, courses.size());
-            assertEquals(PYTHON, courses.getFirst().getName());
-            assertEquals(JAVA, courses.getLast().getName());
+            assertEquals(3, courses.size());
+            assertEquals(GO, courses.getFirst().getName());
+            assertEquals(PYTHON, courses.getLast().getName());
         }
 
         @Test
         void sortCoursesByRatingDescending() {
             courseSorter.sort(courses, SortOrder.DESC);
 
-            assertEquals(2, courses.size());
-            assertEquals(JAVA, courses.getFirst().getName());
-            assertEquals(PYTHON, courses.getLast().getName());
+            assertEquals(3, courses.size());
+            assertEquals(PYTHON, courses.getFirst().getName());
+            assertEquals(GO, courses.getLast().getName());
         }
     }
 
@@ -95,8 +102,8 @@ class CourseSorterTest {
         void testSortCoursesByStudentCountAscending() {
             courseSorter.sort(courses, SortOrder.ASC);
 
-            assertEquals(2, courses.size());
-            assertEquals(PYTHON, courses.getFirst().getName());
+            assertEquals(3, courses.size());
+            assertEquals(GO, courses.getFirst().getName());
             assertEquals(JAVA, courses.getLast().getName());
         }
 
@@ -104,9 +111,9 @@ class CourseSorterTest {
         void testSortCoursesByStudentCountDescending() {
             courseSorter.sort(courses, SortOrder.DESC);
 
-            assertEquals(2, courses.size());
+            assertEquals(3, courses.size());
             assertEquals(JAVA, courses.getFirst().getName());
-            assertEquals(PYTHON, courses.getLast().getName());
+            assertEquals(GO, courses.getLast().getName());
         }
     }
 
@@ -124,11 +131,10 @@ class CourseSorterTest {
 
             courseSorter.customSort(courses, customSorts);
 
-            assertEquals(2, courses.size());
-            assertEquals(JAVA, courses.getFirst().getName());
+            assertEquals(3, courses.size());
+            assertEquals(GO, courses.getFirst().getName());
             assertEquals(PYTHON, courses.getLast().getName());
 
-            // Test Descending
             customSorts = List.of(
                     CustomSort.builder().courseFieldName(CourseField.STUDENT_COUNT).sortOrder(SortOrder.DESC).build(),
                     CustomSort.builder().courseFieldName(CourseField.RATING).sortOrder(SortOrder.DESC).build()
@@ -136,7 +142,7 @@ class CourseSorterTest {
 
             courseSorter.customSort(courses, customSorts);
             assertEquals(JAVA, courses.getFirst().getName());
-            assertEquals(PYTHON, courses.getLast().getName());
+            assertEquals(GO, courses.getLast().getName());
         }
     }
 

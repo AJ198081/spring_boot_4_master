@@ -40,11 +40,10 @@ public class CustomSortStrategy implements SortStrategy {
             }
         }
 
-        if (comparator != null) {
-            courses.sort(comparator);
-        } else {
+        if (comparator == null) {
             log.error("No valid custom sort criteria provided");
         }
 
+        courses.sort(comparator);
     }
 }
