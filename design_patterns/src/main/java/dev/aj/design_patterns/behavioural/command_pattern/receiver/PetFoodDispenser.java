@@ -34,6 +34,7 @@ public class PetFoodDispenser implements HomeGadget {
             return false;
         }
         System.out.printf("Turning on %s %s%n", location, this.getClass().getSimpleName());
+        this.isOn = true;
         return true;
     }
 

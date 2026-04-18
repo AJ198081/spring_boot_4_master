@@ -15,9 +15,11 @@ public final class GadgetCommandHandler extends AbstractSmartHomeCommand {
     @Override
     public void execute(Command command) {
         System.out.printf("%s %s is currently on: %s%n", homeGadget.getLocation(), homeGadget.getClass().getSimpleName(), homeGadget.isOn());
+        System.out.printf("Running command %s, %n", command.toString());
         if (homeGadget.runCommand(command)) {
             this.COMMANDS.push(command);
             System.out.printf("%s %s is now on: %s%n", homeGadget.getLocation(), homeGadget.getClass().getSimpleName(), homeGadget.isOn());
         }
+        System.out.printf("................................................................................%n%n");
     }
 }

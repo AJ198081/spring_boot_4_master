@@ -1,11 +1,13 @@
 package dev.aj.design_patterns.behavioural.command_pattern;
 
 import dev.aj.design_patterns.behavioural.command_pattern.commands.AbstractSmartHomeCommand;
-import dev.aj.design_patterns.behavioural.command_pattern.commands.Command;
 import dev.aj.design_patterns.behavioural.command_pattern.commands.impl.GadgetCommandHandler;
 import dev.aj.design_patterns.behavioural.command_pattern.receiver.Heater;
 import dev.aj.design_patterns.behavioural.command_pattern.receiver.Light;
 import dev.aj.design_patterns.behavioural.command_pattern.receiver.PetFoodDispenser;
+
+import static dev.aj.design_patterns.behavioural.command_pattern.commands.Command.OFF;
+import static dev.aj.design_patterns.behavioural.command_pattern.commands.Command.PAUSE;
 
 public class CommandApplication {
 
@@ -19,8 +21,13 @@ public class CommandApplication {
                 .isPaused(false)
                 .build();
 
-        AbstractSmartHomeCommand command1 = new GadgetCommandHandler(garagePetFoodDispenser);
-        command1.execute(Command.OFF);
+        AbstractSmartHomeCommand command = new GadgetCommandHandler(garagePetFoodDispenser);
+        command.execute(OFF);
+        command.execute(PAUSE);
+        command.undo();
+        command.redo();
+        command.execute(PAUSE);
+        command.execute(OFF);
     }
 
 }

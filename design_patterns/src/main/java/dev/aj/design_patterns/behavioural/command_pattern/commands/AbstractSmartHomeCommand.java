@@ -7,7 +7,7 @@ public abstract class AbstractSmartHomeCommand implements SmartHomeCommand {
     protected final Deque<Command> COMMANDS = new ArrayDeque<>();
     protected final Deque<Command> COMMAND_HISTORY = new ArrayDeque<>();
 
-   protected void undo() {
+   public void undo() {
         if (COMMANDS.isEmpty()) {
             System.out.println("No commands to undo");
             return;
@@ -18,7 +18,7 @@ public abstract class AbstractSmartHomeCommand implements SmartHomeCommand {
         COMMAND_HISTORY.push(lastCommand);
     }
 
-    protected void redo() {
+    public void redo() {
 
         if (COMMAND_HISTORY.isEmpty()) {
             System.out.println("No commands to redo");
