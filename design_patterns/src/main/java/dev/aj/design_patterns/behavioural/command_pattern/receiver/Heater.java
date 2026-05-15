@@ -47,6 +47,4 @@ public class Heater implements HomeGadget {
         System.out.printf("%s %s is already off%n", this.location, this.getClass().getSimpleName());
         return false;
     }
-
-
 }
