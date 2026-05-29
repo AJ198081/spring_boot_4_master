@@ -61,7 +61,6 @@ public class MainConcurrency {
         } finally {
             log.info("Application completed");
         }
-
     }
 
     private static void runASingleLongRunningTask() {
