@@ -1,0 +1,17 @@
+type Query{
+    greetings: String
+    custom_greetings(name: String!): String
+    random_integer: [Int!]
+#    Fetch all customers
+    all_customers: [Customer]!
+    customer_by_id(id: ID!): Customer
+}
+
+
+type Customer{
+    id: ID
+    firstName: String
+    lastName: String
+    email: String
+    age: Int
+}

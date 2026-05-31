@@ -6,4 +6,4 @@ services:
       - 'POSTGRES_USER=graphql_user'
       - 'POSTGRES_PASSWORD=secret'
     ports:
-      - '54321:5432'
+      - '15432:5432'
