@@ -6,6 +6,9 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Getter
 @Setter
 @NoArgsConstructor
@@ -18,5 +21,9 @@ public class Customer {
     private String lastName;
     private String email;
     private Integer age;
+    private List<Order> orders;
 
+    public Customer toNewCustomer() {
+        return new Customer(this.getId(), this.getFirstName(), this.getLastName(), this.getEmail(), this.getAge(), new ArrayList<>());
+    }
 }

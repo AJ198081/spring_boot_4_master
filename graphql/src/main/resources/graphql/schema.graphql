@@ -5,13 +5,35 @@ type Query{
 #    Fetch all customers
     all_customers: [Customer]!
     customer_by_id(id: ID!): Customer
+    customer_name_contains(name_pattern: String!): [Customer]!
+    customer_of_age_range(age_range: AgeRange!): [Customer]!
 }
 
 
-type Customer{
+type Customer {
     id: ID
     firstName: String
     lastName: String
     email: String
     age: Int
+    orders(limit: Int!): [Order]!
+}
+
+type Order {
+    id: ID
+    orderItems: [OrderItem]!
+    orderStatus: String
+    orderTimestamp: String
+}
+
+type OrderItem {
+    productBrand: String
+    productName: String
+    productPrice: Float
+    quantity: Int
+}
+
+input AgeRange {
+    minAge: Int!
+    maxAge: Int!
 }
