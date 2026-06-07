@@ -1,7 +1,6 @@
 package dev.aj.data_oriented_programming.practice.sealed_interfaces;
 
 import dev.aj.data_oriented_programming.practice.sealed_interfaces.Payment.*;
-import dev.aj.data_oriented_programming.practice.sealed_interfaces.PaymentProcessor.*;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
 
@@ -31,10 +30,10 @@ class PaymentTest {
 
     @Test
     void paymentDOP() {
-        Payment creditCard = new Payment.CreditCard(new CardDetails("2389234789928374", "AJ B", "11/29", "234"), BigDecimal.TWO);
-        Payment debitCard = new Payment.DebitCard(new CardDetails("2398742398749832", "AJ C", "01/32", "548"), BigDecimal.TWO);
-        Payment cash = new Payment.Cash(BigDecimal.TWO);
-        Payment payPal = new Payment.PayPal(new PayPalDetails(UUID.randomUUID().toString(), "abg@gmail.com", "AJ", "B"), BigDecimal.TWO);
+        Payment creditCard = new CreditCardPayment(new CardDetails("2389234789928374", "AJ B", "11/29", "234"), BigDecimal.TWO);
+        Payment debitCard = new DebitCardPayment(new CardDetails("2398742398749832", "AJ C", "01/32", "548"), BigDecimal.TWO);
+        Payment cash = new CashPayment(BigDecimal.TWO);
+        Payment payPal = new PayPalPayment(new PayPalDetails(new PayPalIdentifier(UUID.randomUUID()), new Email("abg_200@gmail.com"), "AJ", "B"), BigDecimal.TWO);
 
         Stream.of(creditCard, debitCard, cash, payPal)
                 .map(this::paymentProcessor)
@@ -45,14 +44,14 @@ class PaymentTest {
     public BigDecimal paymentProcessor(Payment payment) {
         log.info("Processing payment for {}", payment);
         return switch (payment) {
-            case Payment.CreditCard (_, BigDecimal amount) -> {
+            case CreditCardPayment(_, BigDecimal amount) -> {
                 double riskMultiplier = 1.1;
                 log.info("Need to charge {} percentage points to compensate for the scam risks with CCs", riskMultiplier);
                 yield amount.multiply(BigDecimal.valueOf(riskMultiplier));
             }
-            case Payment.DebitCard d -> d.amount().multiply(BigDecimal.valueOf(1.05));
-            case Payment.Cash c ->  c.amount();
-            case Payment.PayPal p -> p.amount();
+            case DebitCardPayment d -> d.amount().multiply(BigDecimal.valueOf(1.05));
+            case CashPayment c ->  c.amount();
+            case PayPalPayment p -> p.amount();
         };
     }
 }
