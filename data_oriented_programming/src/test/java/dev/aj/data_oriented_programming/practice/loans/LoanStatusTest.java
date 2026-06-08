@@ -5,11 +5,8 @@ import tools.jackson.databind.json.JsonMapper;
 
 class LoanStatusTest {
 
-
-
     @Test
     void testSerialization() {
-
         JsonMapper jsonMapper = new JsonMapper();
 
         LoanStatus.Submitted submittedLoanStatus = new LoanStatus.Submitted(new Loan.PersonalLoan(new LoanApplication(new Applicant("AJ B", 750, 75_000), new LoanTerm(15_000, DaysDuration.DAYS_THIRTY))));
@@ -21,7 +18,6 @@ class LoanStatusTest {
         LoanStatus deserializedLoanStatus = jsonMapper.readValue(json, LoanStatus.class);
 
         System.out.println(deserializedLoanStatus);
-
     }
 
     @Test
@@ -37,6 +33,16 @@ class LoanStatusTest {
 
         String json = jsonMapper.writeValueAsString(submittedLoanStatus);
         System.out.println(json);
+
+        LoanStatus deserializedLoanStatus = jsonMapper.readValue(json, LoanStatus.class);
+        System.out.println(deserializedLoanStatus);
+    }
+
+    @Test
+    void testDeserialization() {
+        JsonMapper jsonMapper = new JsonMapper();
+
+        String json = "{\"@type\":\"LoanStatus$Submitted\",\"loan\":{\"@type\":\"PersonalLoan\",\"application\":{\"applicant\":{\"name\":\"AJ B\",\"creditScore\":750,\"income\":75000},\"loanTerm\":{\"amount\":15000,\"days\":\"DAYS_THIRTY\"}}}}";
 
         LoanStatus deserializedLoanStatus = jsonMapper.readValue(json, LoanStatus.class);
         System.out.println(deserializedLoanStatus);
