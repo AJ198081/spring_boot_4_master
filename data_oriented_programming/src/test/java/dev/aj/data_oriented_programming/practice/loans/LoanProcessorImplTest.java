@@ -35,13 +35,13 @@ class LoanProcessorImplTest {
     }
 
     private static LoanStatus processUntilApprovedOrRejected(@NonNull LoanStatus newLoan) {
-        log.info("Processing loan: {}", newLoan);
+        log.info("Processing loan,\n Status: {} \n", newLoan);
 
         while (!(newLoan instanceof LoanStatus.Approved || newLoan instanceof LoanStatus.Rejected)) {
             newLoan = new LoanProcessorImpl().processLoan(newLoan);
         }
 
-        log.info("Loan processed: {}", newLoan);
+        log.info("Loan processed,\n Status: {}", newLoan);
 
         return newLoan;
     }

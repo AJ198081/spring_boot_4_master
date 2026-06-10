@@ -4,7 +4,7 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import lombok.extern.slf4j.Slf4j;
 
 //@JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.PROPERTY, property = "type")
-@JsonTypeInfo(use = JsonTypeInfo.Id.NAME)
+@JsonTypeInfo(use = JsonTypeInfo.Id.SIMPLE_NAME, property = "status", include = JsonTypeInfo.As.EXTERNAL_PROPERTY)
 /*@JsonSubTypes(value = {
         @JsonSubTypes.Type(value = LoanStatus.Submitted.class, name = "Submitted"),
         @JsonSubTypes.Type(value = LoanStatus.UnderReview.class, name = "UnderReview"),
