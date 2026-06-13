@@ -1,4 +1,4 @@
-package dev.aj.order_service.model;
+package dev.aj.order_service.model.product;
 
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 

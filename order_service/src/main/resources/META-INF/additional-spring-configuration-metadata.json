@@ -1,0 +1,34 @@
+{
+  "properties": [
+    {
+      "name": "external.services.url.billing",
+      "type": "java.lang.String",
+      "description": "BaseUrl for billing service.",
+      "required": "true"
+    },
+    {
+      "name": "external.services.url.customer",
+      "type": "java.lang.String",
+      "description": "BaseUrl for customer service.",
+      "required": "true"
+    },
+    {
+      "name": "external.services.url.payment",
+      "type": "java.lang.String",
+      "description": "BaseUrl for payment service.",
+      "required": "true"
+    },
+    {
+      "name": "external.services.url.product",
+      "type": "java.lang.String",
+      "description": "BaseUrl for product service.",
+      "required": "true"
+
+    },
+    {
+      "name": "external.services.url.shipping",
+      "type": "java.lang.String",
+      "description": "BaseUrl for shipping service.",
+      "required": "true"
+    }
+  ] }
