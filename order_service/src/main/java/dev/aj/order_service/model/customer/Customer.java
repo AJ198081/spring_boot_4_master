@@ -7,6 +7,10 @@ import java.util.UUID;
 
 public sealed interface Customer {
 
+    UUID id();
+    String name();
+    Address address();
+
     record RetailCustomer(UUID id, String name, Address address) implements Customer {
     }
 

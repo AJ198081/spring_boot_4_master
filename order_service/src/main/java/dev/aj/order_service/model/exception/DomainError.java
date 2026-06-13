@@ -12,7 +12,11 @@ public sealed interface DomainError extends ApplicationError {
 
     record EntityNotFound(Entity entity, String id) implements DomainError { }
     record EntityAlreadyExists(Entity entity, String id) implements DomainError { }
-    record ProductDiscontinued(UUID productId) implements DomainError { }
+    record ProductDiscontinued(String productId) implements DomainError {
+        public static ApplicationError of(String productID) {
+            return new ProductDiscontinued(productID);
+        }
+    }
     record PaymentFailed(UUID orderId, UUID customerId, NonNegativeAmount amount, String reason) implements DomainError { }
     record MissingArgument(String argumentName) implements DomainError { }
 

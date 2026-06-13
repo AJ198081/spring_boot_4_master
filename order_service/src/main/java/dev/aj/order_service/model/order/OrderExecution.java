@@ -4,7 +4,7 @@ import org.jspecify.annotations.NonNull;
 
 import java.util.UUID;
 
-public record OrderExecution(UUID orderId, UUID customerId, UUID productId, int quantity) {
+public record OrderExecution(UUID orderId, UUID customerId, String productId, int quantity) {
 
     public static OrderExecution create(@NonNull OrderRequest orderRequest) {
         return new OrderExecution(

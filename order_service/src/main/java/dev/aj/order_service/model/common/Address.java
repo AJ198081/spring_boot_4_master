@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
 
 @JsonTypeInfo(use = JsonTypeInfo.Id.SIMPLE_NAME, property = "status", include = JsonTypeInfo.As.EXTERNAL_PROPERTY)
 public sealed interface Address {
-    record Residential(String street, String city, String state, String postcode) implements Address { }
-    record Commercial(String street, String city, String state, String postcode) implements Address { }
+    Country country();
+    record Residential(String street, String city, String state, String postcode, Country country) implements Address { }
+    record Commercial(String street, String city, String state, String postcode, Country country) implements Address { }
 }

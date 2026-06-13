@@ -2,6 +2,7 @@ package dev.aj.order_service.model.product;
 
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
+import dev.aj.order_service.model.common.NonNegativeAmount;
 
 import java.util.List;
 
@@ -12,11 +13,20 @@ import java.util.List;
 })
 public sealed interface Product {
 
-    record Single(String productId, String name, double price) implements Product {
+    String productId();
+    String name();
+    NonNegativeAmount price();
+
+    record Single(String productId, String name, NonNegativeAmount price) implements Product {
     }
 
-    record Bundle(String productId, String name, double originalPrice, double discountedPrice,
+    record Bundle(String productId, String name, NonNegativeAmount originalPrice, NonNegativeAmount discountedPrice,
                   List<Single> items) implements Product {
+
+        @Override
+        public NonNegativeAmount price() {
+            return this.originalPrice;
+        }
     }
 
 }

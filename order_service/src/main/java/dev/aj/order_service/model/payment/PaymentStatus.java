@@ -4,6 +4,8 @@ import java.util.UUID;
 
 public sealed interface PaymentStatus {
 
+    PaymentRequest paymentRequest();
+
     record Pending(PaymentRequest paymentRequest) implements PaymentStatus {
     }
     record Completed(PaymentRequest paymentRequest, UUID transactionId) implements PaymentStatus {
