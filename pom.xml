@@ -21,11 +21,17 @@
 
     <modules>
         <module>accounts</module>
-        <module>loans</module>
-        <module>design_patterns</module>
-        <module>open_telemetry</module>
-        <module>graphql</module>
+        <module>billing_service</module>
+        <module>customer_service</module>
         <module>data_oriented_programming</module>
+        <module>design_patterns</module>
+        <module>graphql</module>
+        <module>loans</module>
+        <module>open_telemetry</module>
+        <module>order_service</module>
+        <module>payment_service</module>
+        <module>product_service</module>
+        <module>shipping_service</module>
     </modules>
 
     <properties>
