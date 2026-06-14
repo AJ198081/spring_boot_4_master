@@ -9,12 +9,15 @@ import org.springframework.web.client.RestClient;
 
 @Configuration
 @ConfigurationProperties(prefix = "external.services.url")
+@SuppressWarnings("unused")
 public class ExternalServicesConfig {
     private String billing;
     private String customer;
     private String payment;
     private String product;
     private String shipping;
+
+    private final LoggingInterceptor loggingInterceptor = new LoggingInterceptor();
 
     @Bean
     public RestClient billingClient() {
@@ -46,6 +49,7 @@ public class ExternalServicesConfig {
         return RestClient.builder()
                 .baseUrl(endpointUrl)
                 .defaultHeaders(httpHeaders -> httpHeaders.addAll(createDefaultHeaders()))
+                .requestInterceptor(loggingInterceptor)
                 .build();
     }
 

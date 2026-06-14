@@ -12,6 +12,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.jspecify.annotations.NullMarked;
 import org.springframework.stereotype.Service;
 
+import java.util.UUID;
+
 @Service
 @RequiredArgsConstructor
 @Slf4j
@@ -35,5 +37,12 @@ public class ShippingServiceImpl implements ShippingService {
                                                 orderItem.quantity()))
                                 .toList()
                 ));
+    }
+
+    @Override
+    public boolean canOrderBeCancelled(UUID orderId) {
+        log.info("Checking if order {} can be cancelled", orderId);
+
+        return shippingClient.checkIfOrderCanBeCancelled(orderId);
     }
 }

@@ -9,6 +9,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClient;
 
+import java.util.UUID;
+
 @Service
 @RequiredArgsConstructor
 @Slf4j
@@ -24,6 +26,14 @@ public class ShippingClientImpl extends AbstractServiceClient implements Shippin
                 .retrieve()
                 .body(ShipmentResponse.class)
         );
+    }
+
+    @Override
+    public boolean checkIfOrderCanBeCancelled(UUID orderId) {
+        return Boolean.TRUE.equals(executeRequest(() -> shippingClient.get()
+                .uri("/shipping/status/{orderId}", orderId))
+                .retrieve()
+                .body(Boolean.class));
     }
 
     @Override

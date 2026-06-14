@@ -1,9 +1,9 @@
 package dev.aj.order_service.service;
 
-import dev.aj.order_service.model.order.Order;
 import dev.aj.order_service.model.order.OrderRequest;
+import dev.aj.order_service.orchestrator.OrderState;
 
 @SuppressWarnings("unused")
 public interface OrderValidatorService {
-    Order validate(OrderRequest orderRequest);
+    OrderState validate(OrderRequest orderRequest);
 }

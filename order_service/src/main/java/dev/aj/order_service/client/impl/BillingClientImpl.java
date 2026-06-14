@@ -22,6 +22,7 @@ public class BillingClientImpl extends AbstractServiceClient implements BillingC
         String requestUri = switch (invoiceRequest) {
             case InvoiceRequest.Paid _ -> "paid";
             case InvoiceRequest.Unpaid _ -> "unpaid";
+            case InvoiceRequest.Failed _ -> "failed";
         };
 
         log.info("Making a request to {}", invoiceRequest.getClass().getSimpleName().toLowerCase());

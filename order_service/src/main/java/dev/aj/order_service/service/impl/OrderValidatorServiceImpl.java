@@ -10,6 +10,7 @@ import dev.aj.order_service.model.order.OrderItem;
 import dev.aj.order_service.model.order.OrderRequest;
 import dev.aj.order_service.model.product.Product;
 import dev.aj.order_service.model.product.ProductStatus;
+import dev.aj.order_service.orchestrator.OrderState;
 import dev.aj.order_service.service.OrderValidatorService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -30,18 +31,18 @@ public class OrderValidatorServiceImpl implements OrderValidatorService {
     private final CustomerClient customerClient;
 
     @Override
-    public Order validate(OrderRequest orderRequest) {
+    public OrderState validate(OrderRequest orderRequest) {
 
         log.info("Validating order request {}", orderRequest);
 
         Product product = this.getProduct(orderRequest.productId());
         Customer customer = customerClient.getCustomer(orderRequest.customerId());
 
-        return new Order(
+        return new OrderState.Validated(new Order(
                 UUID.randomUUID(),
                 customer,
                 List.of(new OrderItem(product, orderRequest.quantity())),
-                LocalDate.now());
+                LocalDate.now()));
     }
 
     private Product getProduct(String productId) {
