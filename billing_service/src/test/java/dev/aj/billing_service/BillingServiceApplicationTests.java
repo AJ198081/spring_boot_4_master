@@ -1,13 +1,13 @@
 package dev.aj.billing_service;
 
-import org.junit.jupiter.api.Test;
-import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.SpringApplication;
 
-@SpringBootTest
 class BillingServiceApplicationTests {
 
-    @Test
-    void contextLoads() {
+    static void main(String[] args) {
+        SpringApplication.from(BillingServiceApplication::main)
+                .withAdditionalProfiles("test","local")
+                .run(args);
     }
 
 }

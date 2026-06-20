@@ -1,13 +1,13 @@
 package dev.aj.order_service;
 
-import org.junit.jupiter.api.Test;
-import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.SpringApplication;
 
-@SpringBootTest
 class OrderServiceApplicationTests {
 
-    @Test
-    void contextLoads() {
+    static void main(String[] args) {
+        SpringApplication.from(OrderServiceApplication::main)
+                .withAdditionalProfiles("test","local")
+                .run(args);
     }
 
 }

@@ -7,7 +7,6 @@ import dev.aj.order_service.model.exception.ApplicationException;
 import dev.aj.order_service.model.exception.DomainError;
 import dev.aj.order_service.model.order.Order;
 import dev.aj.order_service.model.order.OrderItem;
-import dev.aj.order_service.model.order.OrderRequest;
 import dev.aj.order_service.model.product.Product;
 import dev.aj.order_service.model.product.ProductStatus;
 import dev.aj.order_service.orchestrator.OrderState;
@@ -31,17 +30,17 @@ public class OrderValidatorServiceImpl implements OrderValidatorService {
     private final CustomerClient customerClient;
 
     @Override
-    public OrderState validate(OrderRequest orderRequest) {
+    public OrderState validate(OrderState.Placed placedOrder) {
 
-        log.info("Validating order request {}", orderRequest);
+        log.info("Validating order request {}", placedOrder);
 
-        Product product = this.getProduct(orderRequest.productId());
-        Customer customer = customerClient.getCustomer(orderRequest.customerId());
+        Product product = this.getProduct(placedOrder.order().items().stream().findFirst().orElseThrow().product().productId());
+        Customer customer = customerClient.getCustomer(placedOrder.order().customer().id());
 
         return new OrderState.Validated(new Order(
                 UUID.randomUUID(),
                 customer,
-                List.of(new OrderItem(product, orderRequest.quantity())),
+                List.of(new OrderItem(product, placedOrder.order().items().stream().findFirst().orElseThrow().quantity())),
                 LocalDate.now()));
     }
 

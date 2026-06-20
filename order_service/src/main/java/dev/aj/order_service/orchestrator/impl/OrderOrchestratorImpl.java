@@ -30,7 +30,7 @@ public class OrderOrchestratorImpl implements OrderOrchestrator {
     @Override
     public OrderState handle(OrderState.Placed placedOrder) {
 
-        return this.orderValidatorService.validate(placedOrder.orderRequest());
+        return this.orderValidatorService.validate(placedOrder);
     }
 
     @Override

@@ -46,6 +46,37 @@
         <springdoc.version>2.8.13</springdoc.version>
         <assertj.version>3.27.7</assertj.version>
         <tomcat.version>11.0.18</tomcat.version>
+
+        <!--        Service ports -->
+        <billing_service.port>8081</billing_service.port>
+        <customer_service.port>8082</customer_service.port>
+        <order_service.port>8083</order_service.port>
+        <payment_service.port>8084</payment_service.port>
+        <product_service.port>8085</product_service.port>
+        <shipping_service.port>8086</shipping_service.port>
+
+        <billing_service.uri>/api/v1/billings</billing_service.uri>
+        <customer_service.uri>/api/v1/customers</customer_service.uri>
+        <order_service.uri>/api/v1/orders</order_service.uri>
+        <payment_service.uri>/api/v1/payments</payment_service.uri>
+        <product_service.uri>/api/v1/products</product_service.uri>
+        <shipping_service.uri>/api/v1/shippings</shipping_service.uri>
+
+        <!--        Postgres ports-->
+        <billing_service.postgres.port>6581</billing_service.postgres.port>
+        <customer_service.postgres.port>6582</customer_service.postgres.port>
+        <order_service.postgres.port>6583</order_service.postgres.port>
+        <payment_service.postgres.port>6584</payment_service.postgres.port>
+        <product_service.postgres.port>6585</product_service.postgres.port>
+        <shipping_service.postgres.port>6586</shipping_service.postgres.port>
+
+        <!--        Postgres database names-->
+        <billing_service.postgres.name>billing_database</billing_service.postgres.name>
+        <customer_service.postgres.name>customer_database</customer_service.postgres.name>
+        <order.servic_.postgres.name>order_database</order.servic_.postgres.name>
+        <payment_service.postgres.name>payment_database</payment_service.postgres.name>
+        <product_service.postgres.name>product_database</product_service.postgres.name>
+        <shipping_service.postgres.name>shipping_database</shipping_service.postgres.name>
     </properties>
 
     <dependencyManagement>
@@ -99,7 +130,6 @@
             <groupId>net.datafaker</groupId>
             <artifactId>datafaker</artifactId>
             <version>${datafaker.version}</version>
-            <scope>compile</scope>
         </dependency>
 
         <dependency>
@@ -120,6 +150,24 @@
     </dependencies>
 
     <build>
+        <resources>
+            <resource>
+                <directory>${project.basedir}/src/main/resources</directory>
+                <filtering>true</filtering>
+                <includes>
+                    <include>*.yaml</include>
+                    <include>*.properties</include>
+                    <include>.env</include>
+                </includes>
+            </resource>
+            <resource>
+                <directory>${project.basedir}</directory>
+                <filtering>true</filtering>
+                <includes>
+                    <include>.env</include>
+                </includes>
+            </resource>
+        </resources>
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>

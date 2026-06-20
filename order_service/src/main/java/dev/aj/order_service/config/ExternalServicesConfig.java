@@ -1,6 +1,6 @@
 package dev.aj.order_service.config;
 
-import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpHeaders;
@@ -8,40 +8,34 @@ import org.springframework.http.MediaType;
 import org.springframework.web.client.RestClient;
 
 @Configuration
-@ConfigurationProperties(prefix = "external.services.url")
-@SuppressWarnings("unused")
+@EnableConfigurationProperties(value = ExternalServiceProperties.class)
 public class ExternalServicesConfig {
-    private String billing;
-    private String customer;
-    private String payment;
-    private String product;
-    private String shipping;
 
     private final LoggingInterceptor loggingInterceptor = new LoggingInterceptor();
 
     @Bean
-    public RestClient billingClient() {
-        return createRestClient(billing);
+    public RestClient billingClient(ExternalServiceProperties services) {
+        return createRestClient(services.billing());
     }
 
     @Bean
-    public RestClient customerClient() {
-        return createRestClient(customer);
+    public RestClient customerClient(ExternalServiceProperties services) {
+        return createRestClient(services.customer());
     }
 
     @Bean
-    public RestClient paymentClient() {
-        return createRestClient(payment);
+    public RestClient paymentClient(ExternalServiceProperties services) {
+        return createRestClient(services.payment());
     }
 
     @Bean
-    public RestClient productClient() {
-        return createRestClient(product);
+    public RestClient productClient(ExternalServiceProperties services) {
+        return createRestClient(services.product());
     }
 
     @Bean
-    public RestClient shippingClient() {
-        return createRestClient(shipping);
+    public RestClient shippingClient(ExternalServiceProperties services) {
+        return createRestClient(services.shipping());
     }
 
 

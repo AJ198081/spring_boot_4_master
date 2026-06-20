@@ -24,7 +24,7 @@ public class CustomerClientImpl extends AbstractServiceClient implements Custome
         }
 
         return executeRequest(() -> customerClient.get()
-                .uri("/customers/{customerId}", customerId)
+                .uri("/{customerId}", customerId)
                 .retrieve()
                 .body(Customer.class)
         );

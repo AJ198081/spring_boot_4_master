@@ -24,7 +24,7 @@ public class ProductClientImpl extends AbstractServiceClient implements ProductC
 
           return executeRequest(() ->
                     this.productClient.get()
-                            .uri("/products/{productId}", productId)
+                            .uri("/{productId}", productId)
                             .retrieve()
                             .body(ProductStatus.class));
         }

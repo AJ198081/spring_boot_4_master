@@ -3,7 +3,7 @@ package dev.aj.order_service.orchestrator;
 @SuppressWarnings("unused")
 public interface OrderOrchestrator {
 
-    default OrderState orechestrate(OrderState orderState) {
+    default OrderState orchestrate(OrderState orderState) {
         return switch (orderState) {
             case OrderState.Placed placed -> this.handle(placed);
             case OrderState.Validated validated -> this.handle(validated);

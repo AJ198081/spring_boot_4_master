@@ -1,0 +1,8 @@
+{
+  "properties": [
+    {
+      "name": "POSTGRES_PORT",
+      "type": "java.lang.String",
+      "description": "Port of the postgres database."
+    }
+  ] }
