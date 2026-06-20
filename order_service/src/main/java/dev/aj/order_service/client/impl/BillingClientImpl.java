@@ -28,7 +28,7 @@ public class BillingClientImpl extends AbstractServiceClient implements BillingC
         log.info("Making a request to {}", invoiceRequest.getClass().getSimpleName().toLowerCase());
 
         return executeRequest(() -> billingClient.post()
-                .uri("/billing/".concat(requestUri))
+                .uri("/")
                 .body(invoiceRequest)
                 .retrieve()
                 .body(Invoice.class));

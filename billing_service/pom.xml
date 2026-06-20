@@ -43,6 +43,11 @@
             <artifactId>spring-boot-starter-webmvc-test</artifactId>
             <scope>test</scope>
         </dependency>
+        <dependency>
+            <groupId>dev.aj</groupId>
+            <artifactId>order_service</artifactId>
+            <version>${project.version}</version>
+        </dependency>
 
     </dependencies>
 

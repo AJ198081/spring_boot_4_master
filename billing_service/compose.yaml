@@ -1,6 +1,7 @@
 services:
   postgres:
     image: 'postgres:latest'
+    container_name: 'billing_service_postgres'
     env_file:
       - './src/main/resources/application-local.properties'
     environment:

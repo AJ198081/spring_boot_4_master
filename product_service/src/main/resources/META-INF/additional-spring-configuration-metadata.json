@@ -4,10 +4,5 @@
       "name": "order_service.uri",
       "type": "java.lang.String",
       "description": "Description for order_service.uri."
-    },
-    {
-      "name": "product_service.uri",
-      "type": "java.lang.String",
-      "description": "Description for product_service.uri."
     }
   ] }

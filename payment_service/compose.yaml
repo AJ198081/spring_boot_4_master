@@ -6,6 +6,5 @@ services:
       - 'POSTGRES_DB=mydatabase'
       - 'POSTGRES_PASSWORD=secret'
       - 'POSTGRES_USER=myuser'
-      - 'POSTGRES_PORT=@payment.service.postgres.port@'
     ports:
       - '${POSTGRES_PORT}:5432'

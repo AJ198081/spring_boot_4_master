@@ -8,7 +8,6 @@ import org.springframework.http.client.ClientHttpRequestInterceptor;
 import org.springframework.http.client.ClientHttpResponse;
 
 import java.io.IOException;
-import java.util.Objects;
 
 @Slf4j
 @NullMarked
@@ -19,7 +18,8 @@ public class LoggingInterceptor implements ClientHttpRequestInterceptor {
 
         log.info("\nRequest: {}", request.getMethod() + " " + request.getURI());
         log.info("Headers: {}", request.getHeaders());
-        if (!Objects.isNull(new String(body))) {
+
+        if (body.length > 0) {
             log.info("Body: {}\n", new String(body));
         }
 

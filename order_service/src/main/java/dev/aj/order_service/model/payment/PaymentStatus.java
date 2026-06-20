@@ -1,7 +1,10 @@
 package dev.aj.order_service.model.payment;
 
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
+
 import java.util.UUID;
 
+@JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.PROPERTY, property = "status")
 public sealed interface PaymentStatus {
 
     PaymentRequest paymentRequest();

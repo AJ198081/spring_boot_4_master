@@ -9,7 +9,7 @@ import org.springframework.web.client.RestClient;
 
 @Configuration
 @EnableConfigurationProperties(value = ExternalServiceProperties.class)
-public class ExternalServicesConfig {
+public class ExternalServicesClients {
 
     private final LoggingInterceptor loggingInterceptor = new LoggingInterceptor();
 
