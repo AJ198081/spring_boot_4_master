@@ -10,25 +10,28 @@ import net.datafaker.Faker;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
+import java.util.concurrent.ConcurrentHashMap;
 
 @Service
 @RequiredArgsConstructor
 @Slf4j
 public class ProductServiceImpl implements ProductService {
 
+    private static final ConcurrentHashMap<String, ProductStatus> PRODUCTS = new ConcurrentHashMap<>();
+
     private final Faker faker;
 
     @Override
     public ProductStatus getProduct(String productId) {
 
-        log.info("Fetching product with id {}", productId);
+        log.info("Fetching a product with id {}", productId);
 
-        return new ProductStatus.Active(
+        return PRODUCTS.computeIfAbsent(productId, newProductId -> new ProductStatus.Active(
                 new Product.Single(
-                        productId,
+                        newProductId,
                         faker.commerce().productName(),
                         new NonNegativeAmount(BigDecimal.valueOf(faker.random().nextDouble(15, 300)))
                 )
-        );
+        ));
     }
 }

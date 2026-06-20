@@ -19,13 +19,13 @@ import java.util.concurrent.ConcurrentHashMap;
 @NullMarked
 public class PaymentServiceImpl implements PaymentService {
 
-    private final ConcurrentHashMap<PaymentRequest, PaymentStatus> processedPayments = new ConcurrentHashMap<>();
+    private final ConcurrentHashMap<PaymentRequest, PaymentStatus> PROCESSED_PAYMENTS = new ConcurrentHashMap<>();
 
     @Override
     @Transactional
     public PaymentStatus process(PaymentRequest paymentRequest) {
         log.info("Processing payment request {}", paymentRequest);
-        return processedPayments.computeIfAbsent(
+        return PROCESSED_PAYMENTS.computeIfAbsent(
                 paymentRequest,
                 newPaymentRequest -> new PaymentStatus.Completed(newPaymentRequest, UUID.randomUUID()));
     }

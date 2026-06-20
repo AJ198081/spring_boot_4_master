@@ -65,7 +65,7 @@ class OrderControllerTest {
     private Stream<OrderRequest> getStreamOfOrderRequests() {
         return Stream.generate(() -> new OrderRequest(
                 UUID.randomUUID(),
-                faker.commerce().productName(),
+                faker.idNumber().valid(),
                 faker.random().nextInt(Range.inclusive(1,10))
         ));
     }

@@ -16,22 +16,24 @@ import java.util.concurrent.ConcurrentHashMap;
 @Slf4j
 public class BillingServiceImpl implements BillingService {
 
-    private static final ConcurrentHashMap<InvoiceRequest, Invoice> invoices = new ConcurrentHashMap<>();
+    private static final ConcurrentHashMap<InvoiceRequest, Invoice> INVOICES = new ConcurrentHashMap<>();
 
     @Override
     public Invoice createInvoice(InvoiceRequest invoiceRequest) {
 
-        UUID invoiceId = UUID.randomUUID();
+        return INVOICES.computeIfAbsent(invoiceRequest, invoiceReq -> {
 
-        log.info("Creating invoice with id: {}", invoiceId);
+            UUID invoiceId = UUID.randomUUID();
+            log.info("Creating invoice with id: {}", invoiceId);
 
-        return invoices.computeIfAbsent(invoiceRequest, invoiceReq -> switch (invoiceReq) {
-            case InvoiceRequest.Paid paid ->
-                    new Invoice.Paid(invoiceId, paid.orderId(), paid.customerId(), paid.transactionId(), paid.priceSummary());
-            case InvoiceRequest.Unpaid unpaid ->
-                    new Invoice.Unpaid(unpaid.orderId(), unpaid.customerId(), null, unpaid.priceSummary(), LocalDate.now());
-            case InvoiceRequest.Failed failed ->
-                    new Invoice.Unpaid(failed.orderId(), failed.customerId(), null, failed.priceSummary(), LocalDate.now());
+            return switch (invoiceReq) {
+                case InvoiceRequest.Paid paid ->
+                        new Invoice.Paid(invoiceId, paid.orderId(), paid.customerId(), paid.transactionId(), paid.priceSummary());
+                case InvoiceRequest.Unpaid unpaid ->
+                        new Invoice.Unpaid(unpaid.orderId(), unpaid.customerId(), null, unpaid.priceSummary(), LocalDate.now());
+                case InvoiceRequest.Failed failed ->
+                        new Invoice.Unpaid(failed.orderId(), failed.customerId(), null, failed.priceSummary(), LocalDate.now());
+            };
         });
     }
 }
