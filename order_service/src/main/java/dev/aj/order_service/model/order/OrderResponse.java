@@ -17,14 +17,14 @@ public record OrderResponse(UUID orderId, OrderStatus status, InvoiceStatus invo
     }
 
     public enum InvoiceStatus {
-        Due, Paid
+        Due, Paid, CANCELLED
     }
 
-}
+    public enum OrderStatus {
+        PENDING,
+        SHIPPED,
+        COMPLETED,
+        CANCELLED,
+    }
 
-enum OrderStatus {
-    PENDING,
-    SHIPPED,
-    COMPLETED,
-    CANCELLED,
 }

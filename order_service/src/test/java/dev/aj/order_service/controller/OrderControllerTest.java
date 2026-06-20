@@ -17,6 +17,8 @@ import org.springframework.web.client.RestClient;
 import java.util.UUID;
 import java.util.stream.Stream;
 
+import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
+
 @SpringBootTest
 @ActiveProfiles(value = {"test", "local"})
 class OrderControllerTest {
@@ -54,6 +56,9 @@ class OrderControllerTest {
                 .retrieve()
                 .body(OrderResponse.class);
         System.out.println(placedOrderResponse);
+
+        assertThat(placedOrderResponse)
+                .isNotNull();
 
     }
 

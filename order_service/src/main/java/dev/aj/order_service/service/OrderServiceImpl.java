@@ -2,11 +2,13 @@ package dev.aj.order_service.service;
 
 import dev.aj.order_service.client.CustomerClient;
 import dev.aj.order_service.client.ProductClient;
+import dev.aj.order_service.model.invoice.Invoice;
 import dev.aj.order_service.model.order.Order;
 import dev.aj.order_service.model.order.OrderItem;
 import dev.aj.order_service.model.order.OrderRequest;
 import dev.aj.order_service.model.order.OrderResponse;
 import dev.aj.order_service.model.product.ProductStatus;
+import dev.aj.order_service.model.shipping.ShipmentItem;
 import dev.aj.order_service.orchestrator.OrderOrchestrator;
 import dev.aj.order_service.orchestrator.OrderState;
 import lombok.RequiredArgsConstructor;
@@ -48,7 +50,38 @@ public class OrderServiceImpl implements OrderService {
             orderState = orderOrchestrator.orchestrate(orderState);
         }
 
-        return new OrderResponse(orderState.order().orderId(), null, null);
+        return switch (orderState) {
+            case OrderState.Completed completed -> new OrderResponse(
+                    completed.order().orderId(),
+                    OrderResponse.OrderStatus.COMPLETED,
+                    invoiceStatus(completed.invoice()),
+                    shipmentItems(completed.order().items())
+            );
+            case OrderState.Cancelled cancelled -> new OrderResponse(
+                    cancelled.order().orderId(),
+                    OrderResponse.OrderStatus.CANCELLED,
+                    OrderResponse.InvoiceStatus.CANCELLED,
+                    null
+            );
+            case OrderState.Failed failed -> new OrderResponse(
+                    failed.order().orderId(),
+                    invoiceStatus(failed.invoice()),
+                    null);
+            default -> throw new IllegalStateException("Unexpected value: " + orderState);
+        };
+    }
+
+    private List<ShipmentItem> shipmentItems(List<OrderItem> items) {
+        return items.stream()
+                .map(item -> new ShipmentItem(item.product().productId(), item.product().name(), item.quantity()))
+                .toList();
+    }
+
+    private OrderResponse.InvoiceStatus invoiceStatus(Invoice invoice) {
+        return switch (invoice) {
+            case Invoice.Paid paid -> OrderResponse.InvoiceStatus.Paid;
+            case Invoice.Unpaid unpaid -> OrderResponse.InvoiceStatus.Due;
+        };
     }
 
     private boolean isTerminalState(OrderState orderState) {

@@ -1,0 +1,8 @@
+{
+  "properties": [
+    {
+      "name": "shipping_service.uri",
+      "type": "java.lang.String",
+      "description": "Description for shipping_service.uri."
+  }
+] }

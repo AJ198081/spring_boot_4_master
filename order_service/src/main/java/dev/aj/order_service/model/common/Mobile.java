@@ -10,8 +10,8 @@ public record Mobile(String mobile) {
 
         mobile = mobile.replaceAll("[^0-9]", "");
 
-        if (mobile.length() != 10) {
-            throw new IllegalArgumentException("Mobile must be 10 digits");
+        if (mobile.length() > 14) {
+            throw new IllegalArgumentException("Mobile must be at most 14 digits");
         }
     }
 }

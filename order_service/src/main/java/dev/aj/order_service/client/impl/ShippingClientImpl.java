@@ -21,7 +21,7 @@ public class ShippingClientImpl extends AbstractServiceClient implements Shippin
     @Override
     public ShipmentResponse createShipment(Shipment shipment) {
         return executeRequest(() -> shippingClient.post()
-                .uri("/shipping")
+                .uri("/")
                 .body(shipment)
                 .retrieve()
                 .body(ShipmentResponse.class)
