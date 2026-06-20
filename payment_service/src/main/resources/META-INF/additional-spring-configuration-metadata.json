@@ -1,0 +1,8 @@
+{
+  "properties": [
+    {
+      "name": "payment_service.uri",
+      "type": "java.lang.String",
+      "description": "Description for payment_service.uri."
+  }
+] }

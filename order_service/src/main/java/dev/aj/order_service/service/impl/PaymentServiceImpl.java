@@ -32,7 +32,7 @@ public class PaymentServiceImpl implements PaymentService {
                 order.orderId(),
                 priceSummary.total());
 
-        PaymentStatus processedPaymentStatus = this.paymentClient.processs(paymentRequest);
+        PaymentStatus processedPaymentStatus = this.paymentClient.process(paymentRequest);
 
         return switch (processedPaymentStatus) {
             case PaymentStatus.Completed completed -> this.generatePaidInvoice(order, priceSummary, completed);

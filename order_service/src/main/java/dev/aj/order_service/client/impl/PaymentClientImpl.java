@@ -23,9 +23,9 @@ public class PaymentClientImpl extends AbstractServiceClient implements PaymentC
     private final RestClient paymentClient;
 
     @Override
-    public PaymentStatus processs(PaymentRequest paymentRequest) {
+    public PaymentStatus process(PaymentRequest paymentRequest) {
         return executeRequest(() -> Objects.requireNonNull(paymentClient.post()
-                .uri("/payments")
+                .uri("/")
                 .body(paymentRequest)
                 .retrieve()
                 .body(PaymentStatus.class))
@@ -36,7 +36,7 @@ public class PaymentClientImpl extends AbstractServiceClient implements PaymentC
     public @Nullable PaymentStatus getPaymentStatus(UUID orderId) {
 
         return executeRequest(() -> paymentClient.get()
-                .uri("/payments/{paymentId}", orderId))
+                .uri("/{paymentId}", orderId))
                 .retrieve()
                 .body(PaymentStatus.class);
     }

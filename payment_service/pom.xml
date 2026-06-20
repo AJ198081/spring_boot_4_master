@@ -44,6 +44,12 @@
             <scope>test</scope>
         </dependency>
 
+        <dependency>
+            <groupId>dev.aj</groupId>
+            <artifactId>order_service</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+
     </dependencies>
 
 </project>

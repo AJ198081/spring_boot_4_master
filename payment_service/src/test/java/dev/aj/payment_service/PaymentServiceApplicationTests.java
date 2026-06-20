@@ -1,13 +1,13 @@
 package dev.aj.payment_service;
 
-import org.junit.jupiter.api.Test;
-import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.SpringApplication;
 
-@SpringBootTest
 class PaymentServiceApplicationTests {
 
-    @Test
-    void contextLoads() {
-    }
+    static void main(String[] args) {
+        SpringApplication.from(PaymentServiceApplication::main)
+                .withAdditionalProfiles("test", "local")
+                .run(args);
 
+    }
 }
