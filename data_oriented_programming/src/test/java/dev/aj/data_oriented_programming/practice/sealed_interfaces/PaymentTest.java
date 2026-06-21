@@ -24,8 +24,8 @@ class PaymentTest {
                 .forEach(amount -> log.info("OOP - Total amount charged: {}", amount));
     }
 
-    public BigDecimal getTotalAmountCharged(PaymentProcessor payment) {
-        return payment.processPayment();
+    public BigDecimal getTotalAmountCharged(PaymentProcessor paymentProcessor) {
+        return paymentProcessor.processPayment();
     }
 
     @Test

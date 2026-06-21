@@ -42,7 +42,7 @@ public sealed interface Payment {
                 throw new IllegalArgumentException("Expiry date must be in MM/YY format");
             }
             if (cardHolderName.isBlank()) {
-                throw new IllegalArgumentException("Card holder name cannot be blank");
+                throw new IllegalArgumentException("cardholder name cannot be blank");
             }
         }
     }
@@ -54,7 +54,7 @@ public sealed interface Payment {
 
     record Email(String email) {
 
-        private static final Predicate<String> IS_INVALID_EMAIL_ADDRESS = Pattern.compile("^[a-zA-Z]+[a-zA-Z_+0-9]+@[a-z.]+$")
+        private static final Predicate<String> IS_INVALID_EMAIL_ADDRESS = Pattern.compile("^[a-zA-Z]+[a-zA-Z_+0-9]+@[a-z.]{3,}+$")
                 .asMatchPredicate()
                 .negate();
 
