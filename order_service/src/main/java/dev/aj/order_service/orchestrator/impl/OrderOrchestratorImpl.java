@@ -29,28 +29,23 @@ public class OrderOrchestratorImpl implements OrderOrchestrator {
 
     @Override
     public OrderState handle(OrderState.Placed placedOrder) {
-
         return this.orderValidatorService.validate(placedOrder);
     }
 
     @Override
     public OrderState handle(OrderState.Validated validatedOrder) {
-
         PriceSummary calculatedPriceSummary = this.priceCalculatorService.calculate(validatedOrder.order());
         return new OrderState.Priced(validatedOrder.order(), calculatedPriceSummary);
     }
 
     @Override
     public OrderState handle(OrderState.Priced priced) {
-
         Invoice invoice = this.paymentService.processPayment(priced.order(), priced.priceSummary());
-
         return new OrderState.Invoiced(priced.order(), invoice);
     }
 
     @Override
     public OrderState handle(OrderState.Invoiced invoicedOrder) {
-
         return new OrderState.Shipped(
                 invoicedOrder.order(),
                 invoicedOrder.invoice(),

@@ -10,6 +10,8 @@ import java.util.UUID;
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.PROPERTY, property = "status")
 public sealed interface Invoice {
 
+    PriceSummary priceSummary();
+
     record Paid(UUID invoiceId, UUID orderId, UUID customerId, UUID transactionId, PriceSummary priceSummary) implements Invoice {
     }
 

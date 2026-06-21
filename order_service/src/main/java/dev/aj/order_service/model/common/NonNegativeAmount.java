@@ -28,4 +28,19 @@ public record NonNegativeAmount(BigDecimal amount) {
     public NonNegativeAmount multiply(NonNegativeAmount otherAmount) {
         return new NonNegativeAmount(this.amount.multiply(otherAmount.amount));
     }
+
+    public boolean greaterThan(NonNegativeAmount amount) {
+        return this.amount.compareTo(amount.amount) > 0;
+    }
+
+    public NonNegativeAmount subtract(NonNegativeAmount subtrahend) {
+        return new NonNegativeAmount(this.amount.subtract(subtrahend.amount));
+    }
+
+    public NonNegativeAmount percentage(Rate percentage) {
+        return NonNegativeAmount.of(
+                this.amount.multiply(
+                        BigDecimal.valueOf(1.0 - percentage.value()))
+        );
+    }
 }

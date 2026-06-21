@@ -4,6 +4,7 @@ import dev.aj.order_service.model.common.Country;
 import dev.aj.order_service.model.common.NonNegativeAmount;
 import dev.aj.order_service.model.common.PriceSummary;
 import dev.aj.order_service.model.common.Rate;
+import dev.aj.order_service.model.coupon.Coupon;
 import dev.aj.order_service.model.order.Order;
 import dev.aj.order_service.model.order.OrderItem;
 import dev.aj.order_service.model.product.Product;
@@ -24,11 +25,29 @@ public class PriceCalculatorServiceImpl implements PriceCalculatorService {
                 .map(Product::price)
                 .reduce(NonNegativeAmount.ZERO(), NonNegativeAmount::add);
 
+        NonNegativeAmount totalDiscountedPrice = switch (order.coupon()) {
 
-        NonNegativeAmount totalDiscountedPrice = order.items().stream()
-                .map(OrderItem::product)
-                .map(this::priceToBeChargedForProduct)
-                .reduce(NonNegativeAmount.ZERO(), NonNegativeAmount::add);
+            case Coupon.NoDiscount _ -> totalPrice;
+
+            case Coupon.FlatDiscount flatDiscount -> totalPrice.greaterThan(flatDiscount.amount())
+                    ? totalPrice.subtract(flatDiscount.amount())
+                    : NonNegativeAmount.ZERO();
+
+            case Coupon.FreeShipping freeShipping -> totalPrice.greaterThan(freeShipping.discountAmount())
+                    ? totalPrice.subtract(freeShipping.discountAmount())
+                    : NonNegativeAmount.ZERO();
+
+            case Coupon.PercentageDiscount percentageDiscount -> totalPrice.greaterThan(NonNegativeAmount.ZERO())
+                    ? totalPrice.percentage(percentageDiscount.percentage())
+                    : NonNegativeAmount.ZERO();
+
+            case Coupon.MaxPercentageDiscount maxPercentageDiscount ->
+                    totalPrice.greaterThan(maxPercentageDiscount.maxDiscountAmount())
+                            ? totalPrice.percentage(maxPercentageDiscount.percentage()).greaterThan(maxPercentageDiscount.maxDiscountAmount())
+                              ? maxPercentageDiscount.maxDiscountAmount()
+                              : totalPrice.percentage(maxPercentageDiscount.percentage())
+                            : NonNegativeAmount.ZERO();
+        };
 
         NonNegativeAmount totalTaxAmount = NonNegativeAmount.of(this.getTaxRate(order.customer().address().country()))
                 .multiply(totalDiscountedPrice);
