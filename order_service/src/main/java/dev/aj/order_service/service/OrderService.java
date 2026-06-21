@@ -3,6 +3,7 @@ package dev.aj.order_service.service;
 import dev.aj.order_service.model.order.OrderRequest;
 import dev.aj.order_service.model.order.OrderResponse;
 import dev.aj.order_service.orchestrator.OrderState;
+import org.jspecify.annotations.Nullable;
 
 import java.util.UUID;
 
@@ -11,7 +12,7 @@ public interface OrderService {
 
     OrderResponse createOrder(OrderRequest orderRequest);
 
-    OrderState getCurrentState(UUID orderId);
+    @Nullable OrderState getCurrentState(UUID orderId);
 
     Boolean cancelOrder(UUID orderId);
 }

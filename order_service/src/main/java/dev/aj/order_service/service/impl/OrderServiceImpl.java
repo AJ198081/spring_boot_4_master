@@ -1,4 +1,4 @@
-package dev.aj.order_service.service;
+package dev.aj.order_service.service.impl;
 
 import dev.aj.order_service.client.CouponClient;
 import dev.aj.order_service.client.CustomerClient;
@@ -13,8 +13,11 @@ import dev.aj.order_service.model.product.ProductStatus;
 import dev.aj.order_service.model.shipping.ShipmentItem;
 import dev.aj.order_service.orchestrator.OrderOrchestrator;
 import dev.aj.order_service.orchestrator.OrderState;
+import dev.aj.order_service.service.OrderService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -28,6 +31,7 @@ import java.util.UUID;
 @SuppressWarnings("unused")
 @Slf4j
 @RequiredArgsConstructor
+@NullMarked
 public class OrderServiceImpl implements OrderService {
 
     private final OrderOrchestrator orderOrchestrator;
@@ -107,13 +111,13 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
-    public OrderState getCurrentState(UUID orderId) {
+    public @Nullable OrderState getCurrentState(UUID orderId) {
         return null;
     }
 
     @Override
     public Boolean cancelOrder(UUID orderId) {
-        return null;
+        return false;
     }
 }
 

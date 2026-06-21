@@ -4,10 +4,10 @@ import dev.aj.order_service.client.AbstractServiceClient;
 import dev.aj.order_service.client.PaymentClient;
 import dev.aj.order_service.model.payment.PaymentRequest;
 import dev.aj.order_service.model.payment.PaymentStatus;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.jspecify.annotations.NullMarked;
 import org.jspecify.annotations.Nullable;
-import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClient;
 
@@ -17,14 +17,10 @@ import java.util.UUID;
 @Service
 @Slf4j
 @NullMarked
+@RequiredArgsConstructor
 public class PaymentClientImpl extends AbstractServiceClient implements PaymentClient {
 
     private final RestClient paymentClient;
-
-    public PaymentClientImpl(RestClient paymentClient, Environment environment) {
-        super(environment);
-        this.paymentClient = paymentClient;
-    }
 
     @Override
     public PaymentStatus process(PaymentRequest paymentRequest) {
@@ -43,5 +39,10 @@ public class PaymentClientImpl extends AbstractServiceClient implements PaymentC
                 .uri("/{paymentId}", orderId))
                 .retrieve()
                 .body(PaymentStatus.class);
+    }
+
+    @Override
+    public String getServiceName() {
+        return "payment-service";
     }
 }
