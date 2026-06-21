@@ -16,13 +16,38 @@ public class LoggingInterceptor implements ClientHttpRequestInterceptor {
     @Override
     public ClientHttpResponse intercept(HttpRequest request, byte[] body, ClientHttpRequestExecution execution) throws IOException {
 
-        log.info("\nRequest: {}", request.getMethod() + " " + request.getURI());
-        log.info("Headers: {}", request.getHeaders());
-
         if (body.length > 0) {
-            log.info("Body: {}\n", new String(body));
+            log.info("""
+                            \nRequesting : {}  to {},
+                            Headers: {},
+                            Body: {}
+                            """,
+                    request.getMethod(),
+                    request.getURI(),
+                    request.getHeaders(),
+                    new String(body));
+        } else {
+            log.info("""
+                            \nRequesting : {}  to {},
+                            Headers: {}
+                            """,
+                    request.getMethod(),
+                    request.getURI(),
+                    request.getHeaders());
         }
 
-        return execution.execute(request, body);
+        ClientHttpResponse clientHttpResponse = execution.execute(request, body);
+
+        log.info("""
+                \nResponse received from {},
+                Status code: {},
+                Headers: {},
+                Body: {}
+                """,
+                request.getURI(),
+                clientHttpResponse.getStatusCode(), clientHttpResponse.getHeaders(),
+                clientHttpResponse.getBody());
+
+        return clientHttpResponse;
     }
 }
