@@ -5,7 +5,7 @@ import dev.aj.order_service.model.order.Order;
 import dev.aj.order_service.model.shipping.Recipient;
 import dev.aj.order_service.model.shipping.Shipment;
 import dev.aj.order_service.model.shipping.ShipmentItem;
-import dev.aj.order_service.model.shipping.ShipmentResponse;
+import dev.aj.order_service.model.shipping.ShipmentStatus;
 import dev.aj.order_service.service.ShippingService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -23,7 +23,7 @@ public class ShippingServiceImpl implements ShippingService {
     private final ShippingClient shippingClient;
 
     @Override
-    public ShipmentResponse createShipment(Order order) {
+    public ShipmentStatus createShipment(Order order) {
         log.info("Creating a shipment for order {}", order);
 
         return shippingClient.createShipment(

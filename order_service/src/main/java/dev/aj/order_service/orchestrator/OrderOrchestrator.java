@@ -9,7 +9,7 @@ public interface OrderOrchestrator {
             case OrderState.Validated validated -> this.handle(validated);
             case OrderState.Priced priced -> this.handle(priced);
             case OrderState.OrderCancellationRequested cancellationRequested -> this.handle(cancellationRequested);
-            case OrderState.Cancelled cancelled -> cancelled;
+            case OrderState.Cancelled cancelled -> this.handle(cancelled);
             case OrderState.Shipped shipped -> this.handle(shipped);
             case OrderState.Invoiced invoiced -> this.handle(invoiced);
             case OrderState.Completed completed -> completed;
@@ -23,5 +23,6 @@ public interface OrderOrchestrator {
     OrderState handle(OrderState.OrderCancellationRequested cancellationRequest);
     OrderState handle(OrderState.Shipped shippedOrder);
     OrderState handle(OrderState.Invoiced invoicedOrder);
+    OrderState handle(OrderState.Cancelled cancelledOrder);
 
 }

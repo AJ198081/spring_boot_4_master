@@ -9,6 +9,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClient;
 
+import java.util.UUID;
+
 @Service
 @Slf4j
 @RequiredArgsConstructor
@@ -24,6 +26,14 @@ public class BillingClientImpl extends AbstractServiceClient implements BillingC
         return executeRequest(() -> billingClient.post()
                 .uri("/")
                 .body(invoiceRequest)
+                .retrieve()
+                .body(Invoice.class));
+    }
+
+    @Override
+    public Invoice cancelInvoice(UUID invoiceId) {
+        return this.executeRequest(() -> billingClient.post()
+                .uri("/cancel/{invoiceId}", invoiceId)
                 .retrieve()
                 .body(Invoice.class));
     }

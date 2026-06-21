@@ -9,4 +9,5 @@ import org.jspecify.annotations.NullMarked;
 public interface PaymentService {
 
     Invoice processPayment(Order order, PriceSummary priceSummary);
+
 }

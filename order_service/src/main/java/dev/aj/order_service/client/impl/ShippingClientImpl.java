@@ -3,7 +3,7 @@ package dev.aj.order_service.client.impl;
 import dev.aj.order_service.client.AbstractServiceClient;
 import dev.aj.order_service.client.ShippingClient;
 import dev.aj.order_service.model.shipping.Shipment;
-import dev.aj.order_service.model.shipping.ShipmentResponse;
+import dev.aj.order_service.model.shipping.ShipmentStatus;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -19,12 +19,12 @@ public class ShippingClientImpl extends AbstractServiceClient implements Shippin
     private final RestClient shippingClient;
 
     @Override
-    public ShipmentResponse createShipment(Shipment shipment) {
+    public ShipmentStatus createShipment(Shipment shipment) {
         return executeRequest(() -> shippingClient.post()
                 .uri("/")
                 .body(shipment)
                 .retrieve()
-                .body(ShipmentResponse.class)
+                .body(ShipmentStatus.Scheduled.class)
         );
     }
 

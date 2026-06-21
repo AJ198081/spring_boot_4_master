@@ -1,7 +1,7 @@
 package dev.aj.shipping_service.controller;
 
 import dev.aj.order_service.model.shipping.Shipment;
-import dev.aj.order_service.model.shipping.ShipmentResponse;
+import dev.aj.order_service.model.shipping.ShipmentStatus;
 import dev.aj.shipping_service.service.ShippingService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.MediaType;
@@ -20,7 +20,7 @@ public class ShippingController {
     private final ShippingService shippingService;
 
     @PostMapping(path = "/")
-    public ResponseEntity<ShipmentResponse> createShipment(@RequestBody @Validated Shipment shipment) {
+    public ResponseEntity<ShipmentStatus> createShipment(@RequestBody @Validated Shipment shipment) {
         return ResponseEntity.ok(shippingService.createShipment(shipment));
     }
 

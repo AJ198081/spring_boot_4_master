@@ -2,8 +2,10 @@ package dev.aj.order_service.client.impl;
 
 import dev.aj.order_service.client.AbstractServiceClient;
 import dev.aj.order_service.client.PaymentClient;
+import dev.aj.order_service.model.invoice.Invoice;
 import dev.aj.order_service.model.payment.PaymentRequest;
 import dev.aj.order_service.model.payment.PaymentStatus;
+import dev.aj.order_service.model.payment.RefundRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.jspecify.annotations.NullMarked;
@@ -39,6 +41,31 @@ public class PaymentClientImpl extends AbstractServiceClient implements PaymentC
                 .uri("/{paymentId}", orderId))
                 .retrieve()
                 .body(PaymentStatus.class);
+    }
+
+    @Override
+    public void refund(RefundRequest refundRequest) {
+        this.executeRequest(() -> paymentClient.post()
+                .uri("/refund")
+                .body(refundRequest)
+                .retrieve()
+                .toBodilessEntity()
+        );
+    }
+
+    @Override
+    public void refund(Invoice invoice) {
+
+        log.info("Refunding invoice {}", invoice);
+
+        switch (invoice) {
+
+            case Invoice.Paid paid -> this.executeRequest(() -> paymentClient.put()
+                    .uri("/refund/{invoiceId}", paid.invoiceId())
+                    .retrieve().toBodilessEntity());
+
+            case Invoice.Unpaid _ -> log.info("Invoice is not paid, no refund needed");
+        }
     }
 
     @Override

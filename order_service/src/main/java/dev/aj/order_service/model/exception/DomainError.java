@@ -19,5 +19,6 @@ public sealed interface DomainError extends ApplicationError {
     }
     record PaymentFailed(UUID orderId, UUID customerId, NonNegativeAmount amount, String reason) implements DomainError { }
     record MissingArgument(String argumentName) implements DomainError { }
+    record InvalidResponseBody(String message) implements DomainError { }
 
 }
