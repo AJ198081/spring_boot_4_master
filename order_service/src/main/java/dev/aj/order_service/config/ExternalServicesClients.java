@@ -11,7 +11,7 @@ import org.springframework.web.client.RestClient;
 @EnableConfigurationProperties(value = ExternalServiceProperties.class)
 public class ExternalServicesClients {
 
-    private final LoggingInterceptor loggingInterceptor = new LoggingInterceptor();
+    private final RequestLoggingInterceptor loggingInterceptor = new RequestLoggingInterceptor();
 
     @Bean
     public RestClient billingClient(ExternalServiceProperties services) {
@@ -36,6 +36,11 @@ public class ExternalServicesClients {
     @Bean
     public RestClient shippingClient(ExternalServiceProperties services) {
         return createRestClient(services.shipping());
+    }
+
+    @Bean
+    public RestClient couponClient(ExternalServiceProperties services) {
+        return createRestClient(services.coupon());
     }
 
 

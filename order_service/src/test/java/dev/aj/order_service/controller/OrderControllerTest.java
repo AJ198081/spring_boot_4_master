@@ -66,7 +66,8 @@ class OrderControllerTest {
         return Stream.generate(() -> new OrderRequest(
                 UUID.randomUUID(),
                 faker.idNumber().valid(),
-                faker.random().nextInt(Range.inclusive(1,10))
+                faker.random().nextInt(Range.inclusive(1, 10)),
+                UUID.fromString("0fb3f103-7b63-462e-ad72-33806966ee71")
         ));
     }
 

@@ -1,0 +1,12 @@
+services:
+  postgres:
+    image: 'postgres:latest'
+    container_name: 'coupon_service_postgres'
+    env_file:
+      - './src/main/resources/application-local.properties'
+    environment:
+      - 'POSTGRES_DB=mydatabase'
+      - 'POSTGRES_PASSWORD=secret'
+      - 'POSTGRES_USER=myuser'
+    ports:
+      - '${POSTGRES_PORT}:5432'

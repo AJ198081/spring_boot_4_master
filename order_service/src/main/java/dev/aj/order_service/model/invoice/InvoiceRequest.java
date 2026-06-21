@@ -6,7 +6,7 @@ import dev.aj.order_service.model.payment.PaymentStatus;
 
 import java.util.UUID;
 
-@JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.PROPERTY, property = "status")
+@JsonTypeInfo(use = JsonTypeInfo.Id.SIMPLE_NAME, include = JsonTypeInfo.As.PROPERTY, property = "status")
 public sealed interface InvoiceRequest {
 
     record Paid(UUID orderId, UUID customerId, UUID transactionId, PriceSummary priceSummary) implements InvoiceRequest {

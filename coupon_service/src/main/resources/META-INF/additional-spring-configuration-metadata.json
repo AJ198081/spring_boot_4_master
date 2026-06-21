@@ -1,0 +1,28 @@
+{
+  "properties": [
+    {
+      "name": "coupon_service.uri",
+      "type": "java.lang.String",
+      "description": "Description for coupon_service.uri."
+    },
+    {
+      "name": "coupon.type.flat",
+      "type": "java.lang.String",
+      "description": "Description for coupon.type.flat."
+    },
+    {
+      "name": "coupon.type.percentage",
+      "type": "java.lang.String",
+      "description": "Description for coupon.type.percentage."
+    },
+    {
+      "name": "coupon.type.maxPercentage",
+      "type": "java.lang.String",
+      "description": "Description for coupon.type.maxPercentage."
+    },
+    {
+      "name": "coupon.type.freeShipping",
+      "type": "java.lang.String",
+      "description": "Description for coupon.type.freeShipping."
+    }
+  ] }

@@ -22,22 +22,16 @@ public class LoanProcessorImpl implements LoanProcessor {
     public LoanStatus handle(LoanStatus.OfferPhase offerPhaseLoan) {
 
         double interestRate = switch (offerPhaseLoan.loan()) {
-
             case Loan.PersonalLoan _ -> 0.20;
-
             case Loan.AutoLoan _ -> 0.07;
-
             case Loan.PropertyLoan(_, Property.Residential(_, int rooms)) -> {
                 if (rooms < 4) {
                     yield 0.05;
                 }
                 yield 0.06;
             }
-
-            case Loan.PropertyLoan(
-                    _,
-                    Property.Commercial(_, BusinessType businessType)
-            ) -> businessType.equals(BusinessType.OFFICE)
+            case Loan.PropertyLoan(_, Property.Commercial(_, BusinessType businessType)) ->
+                    businessType.equals(BusinessType.OFFICE)
                     ? 0.07
                     : 0.09;
         };

@@ -1,5 +1,6 @@
 package dev.aj.order_service.service;
 
+import dev.aj.order_service.client.CouponClient;
 import dev.aj.order_service.client.CustomerClient;
 import dev.aj.order_service.client.ProductClient;
 import dev.aj.order_service.model.invoice.Invoice;
@@ -15,7 +16,9 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
 
@@ -29,6 +32,7 @@ public class OrderServiceImpl implements OrderService {
     private final OrderOrchestrator orderOrchestrator;
     private final CustomerClient customerClient;
     private final ProductClient productClient;
+    private final CouponClient couponClient;
 
     @Override
     public OrderResponse createOrder(OrderRequest orderRequest) {
@@ -44,7 +48,13 @@ public class OrderServiceImpl implements OrderService {
                 orderRequest.quantity()
         ));
 
-        OrderState orderState = new OrderState.Placed(new Order(UUID.randomUUID(), customerClient.getCustomer(orderRequest.customerId()), orderItems, LocalDate.now()));
+        OrderState orderState = new OrderState.Placed(new Order(
+                UUID.randomUUID(),
+                customerClient.getCustomer(orderRequest.customerId()),
+                orderItems,
+                LocalDate.now(),
+                couponClient.getCoupon(orderRequest.coupon()))
+        );
 
         while (!isTerminalState(orderState)) {
             orderState = orderOrchestrator.orchestrate(orderState);
@@ -55,18 +65,21 @@ public class OrderServiceImpl implements OrderService {
                     completed.order().orderId(),
                     OrderResponse.OrderStatus.COMPLETED,
                     invoiceStatus(completed.invoice()),
+                    completed.invoice().priceSummary().total().amount(),
                     shipmentItems(completed.order().items())
             );
             case OrderState.Cancelled cancelled -> new OrderResponse(
                     cancelled.order().orderId(),
                     OrderResponse.OrderStatus.CANCELLED,
                     OrderResponse.InvoiceStatus.CANCELLED,
-                    null
+                    BigDecimal.ZERO,
+                    Collections.emptyList()
             );
             case OrderState.Failed failed -> new OrderResponse(
                     failed.order().orderId(),
                     invoiceStatus(failed.invoice()),
-                    null);
+                    failed.invoice().priceSummary().total().amount(),
+                   Collections.emptyList());
             default -> throw new IllegalStateException("Unexpected value: " + orderState);
         };
     }

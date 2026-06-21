@@ -41,7 +41,8 @@ public class OrderValidatorServiceImpl implements OrderValidatorService {
                 UUID.randomUUID(),
                 customer,
                 List.of(new OrderItem(product, placedOrder.order().items().stream().findFirst().orElseThrow().quantity())),
-                LocalDate.now()));
+                LocalDate.now(),
+                placedOrder.order().coupon()));
     }
 
     private Product getProduct(String productId) {

@@ -32,6 +32,7 @@
         <module>payment_service</module>
         <module>product_service</module>
         <module>shipping_service</module>
+        <module>coupon_service</module>
     </modules>
 
     <properties>
@@ -54,6 +55,7 @@
         <payment_service.port>8084</payment_service.port>
         <product_service.port>8085</product_service.port>
         <shipping_service.port>8086</shipping_service.port>
+        <coupon_service.port>8087</coupon_service.port>
 
         <billing_service.uri>/api/v1/billings</billing_service.uri>
         <customer_service.uri>/api/v1/customers</customer_service.uri>
@@ -61,6 +63,7 @@
         <payment_service.uri>/api/v1/payments</payment_service.uri>
         <product_service.uri>/api/v1/products</product_service.uri>
         <shipping_service.uri>/api/v1/shippings</shipping_service.uri>
+        <coupon_service.uri>/api/v1/coupons</coupon_service.uri>
 
         <!--        Postgres ports-->
         <billing_service.postgres.port>6581</billing_service.postgres.port>
@@ -69,6 +72,7 @@
         <payment_service.postgres.port>6584</payment_service.postgres.port>
         <product_service.postgres.port>6585</product_service.postgres.port>
         <shipping_service.postgres.port>6586</shipping_service.postgres.port>
+        <coupon_service.postgres.port>6587</coupon_service.postgres.port>
 
         <!--        Postgres database names-->
         <billing_service.postgres.name>billing_database</billing_service.postgres.name>
@@ -77,6 +81,7 @@
         <payment_service.postgres.name>payment_database</payment_service.postgres.name>
         <product_service.postgres.name>product_database</product_service.postgres.name>
         <shipping_service.postgres.name>shipping_database</shipping_service.postgres.name>
+        <coupon_service.postgres.name>coupon_database</coupon_service.postgres.name>
     </properties>
 
     <dependencyManagement>

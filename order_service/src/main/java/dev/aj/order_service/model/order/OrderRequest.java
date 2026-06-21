@@ -5,5 +5,9 @@ import org.jspecify.annotations.NonNull;
 
 import java.util.UUID;
 
-public record OrderRequest(@NonNull UUID customerId, @NonNull String productId, @Min(1) int quantity) {
+public record OrderRequest(
+        @NonNull UUID customerId,
+        @NonNull String productId,
+        @Min(1) int quantity,
+        UUID coupon) {
 }

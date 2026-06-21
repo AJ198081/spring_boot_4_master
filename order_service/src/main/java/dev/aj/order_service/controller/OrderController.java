@@ -13,7 +13,6 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.context.request.ServletWebRequest;
 
 import java.util.UUID;
 
@@ -28,8 +27,8 @@ public class OrderController {
 
 
     @PostMapping
-    public ResponseEntity<OrderResponse> placeOrder(@Validated @RequestBody OrderRequest orderRequest, ServletWebRequest request) {
-        log.info("URI to order service: {}", request.getRequest().getRequestURL());
+    public ResponseEntity<OrderResponse> placeOrder(
+            @Validated @RequestBody OrderRequest orderRequest) {
         return ResponseEntity.ok(orderService.createOrder(orderRequest));
     }
 

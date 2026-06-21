@@ -4,17 +4,21 @@ import dev.aj.order_service.client.AbstractServiceClient;
 import dev.aj.order_service.client.BillingClient;
 import dev.aj.order_service.model.invoice.Invoice;
 import dev.aj.order_service.model.invoice.InvoiceRequest;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClient;
 
 @Service
-@RequiredArgsConstructor
 @Slf4j
 public class BillingClientImpl extends AbstractServiceClient implements BillingClient {
 
     private final RestClient billingClient;
+
+    public BillingClientImpl(RestClient billingClient, Environment environment) {
+        super(environment);
+        this.billingClient = billingClient;
+    }
 
     @Override
     public Invoice createInvoice(InvoiceRequest invoiceRequest) {
@@ -32,10 +36,5 @@ public class BillingClientImpl extends AbstractServiceClient implements BillingC
                 .body(invoiceRequest)
                 .retrieve()
                 .body(Invoice.class));
-    }
-
-    @Override
-    protected String getServiceName() {
-        return "billing-service";
     }
 }

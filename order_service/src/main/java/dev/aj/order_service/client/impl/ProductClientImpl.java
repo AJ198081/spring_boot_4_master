@@ -5,17 +5,21 @@ import dev.aj.order_service.client.ProductClient;
 import dev.aj.order_service.model.exception.ApplicationException;
 import dev.aj.order_service.model.exception.DomainError;
 import dev.aj.order_service.model.product.ProductStatus;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClient;
 
 @Service
-@RequiredArgsConstructor
 @Slf4j
 public class ProductClientImpl extends AbstractServiceClient implements ProductClient {
 
     private final RestClient productClient;
+
+    public ProductClientImpl(RestClient productClient, Environment environment) {
+        super(environment);
+        this.productClient = productClient;
+    }
 
     @Override
     public ProductStatus getProduct(String productId) {
