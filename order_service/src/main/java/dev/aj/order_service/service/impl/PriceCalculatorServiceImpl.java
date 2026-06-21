@@ -37,16 +37,20 @@ public class PriceCalculatorServiceImpl implements PriceCalculatorService {
                     ? totalPrice.subtract(freeShipping.discountAmount())
                     : NonNegativeAmount.ZERO();
 
-            case Coupon.PercentageDiscount percentageDiscount -> totalPrice.greaterThan(NonNegativeAmount.ZERO())
-                    ? totalPrice.percentage(percentageDiscount.percentage())
-                    : NonNegativeAmount.ZERO();
-
-            case Coupon.MaxPercentageDiscount maxPercentageDiscount ->
-                    totalPrice.greaterThan(maxPercentageDiscount.maxDiscountAmount())
-                            ? totalPrice.percentage(maxPercentageDiscount.percentage()).greaterThan(maxPercentageDiscount.maxDiscountAmount())
-                              ? maxPercentageDiscount.maxDiscountAmount()
-                              : totalPrice.percentage(maxPercentageDiscount.percentage())
+            case Coupon.PercentageDiscount(_, Rate percentageDiscount) ->
+                    totalPrice.greaterThan(NonNegativeAmount.ZERO())
+                            ? totalPrice.percentage(percentageDiscount)
                             : NonNegativeAmount.ZERO();
+
+            case Coupon.MaxPercentageDiscount(_, Rate rate, NonNegativeAmount maxDiscountAmount) -> {
+                NonNegativeAmount percentageDiscountAmount = totalPrice.percentage(rate);
+
+                NonNegativeAmount effectiveDiscountAmount = percentageDiscountAmount.greaterThan(maxDiscountAmount)
+                        ? maxDiscountAmount
+                        : percentageDiscountAmount;
+
+                yield totalPrice.subtract(effectiveDiscountAmount);
+            }
         };
 
         NonNegativeAmount totalTaxAmount = NonNegativeAmount.of(this.getTaxRate(order.customer().address().country()))

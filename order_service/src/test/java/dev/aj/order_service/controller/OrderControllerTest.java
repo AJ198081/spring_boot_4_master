@@ -8,10 +8,13 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.core.env.Environment;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.web.servlet.client.EntityExchangeResult;
+import org.springframework.test.web.servlet.client.RestTestClient;
 import org.springframework.web.client.RestClient;
 
 import java.util.UUID;
@@ -24,6 +27,7 @@ import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 class OrderControllerTest {
 
     private RestClient restClient;
+    private RestTestClient restTestClient;
 
     @Autowired
     private Environment environment;
@@ -41,6 +45,10 @@ class OrderControllerTest {
                             httpHeaders.add(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE);
                         }
                 )
+                .build();
+
+        restTestClient = RestTestClient.bindToServer()
+                .baseUrl("http://localhost:%s".formatted(environment.getProperty("server.port")))
                 .build();
 
     }
@@ -62,16 +70,36 @@ class OrderControllerTest {
 
     }
 
+    @Test
+    void placeOrderWithRestTestClient() {
+
+        Stream<OrderRequest> orderRequests = this.getStreamOfOrderRequests();
+
+        restTestClient.post()
+                .uri("%s".formatted(environment.getProperty("order_service.uri")))
+                .body(orderRequests.limit(1).findAny().orElseThrow())
+                .exchange()
+                .expectAll(responseSpec -> {
+                    responseSpec.expectStatus().isOk();
+                    responseSpec.expectBody(new ParameterizedTypeReference<OrderResponse>() {})
+                            .consumeWith(OrderControllerTest::logResponse);
+                });
+    }
+
     private Stream<OrderRequest> getStreamOfOrderRequests() {
         return Stream.generate(() -> new OrderRequest(
                 UUID.randomUUID(),
                 faker.idNumber().valid(),
-                faker.random().nextInt(Range.inclusive(1, 10)),
-                UUID.fromString("0fb3f103-7b63-462e-ad72-33806966ee71")
+                faker.random().nextInt(Range.inclusive(10, 20)),
+                UUID.fromString("0fb3f103-7b63-462e-ad72-33806966ee70")
         ));
     }
 
     @Test
     void cancelOrder() {
+    }
+
+    private static void logResponse(EntityExchangeResult<OrderResponse> orderResponse) {
+        System.out.println(orderResponse.getResponseBody());
     }
 }

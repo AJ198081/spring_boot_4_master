@@ -3,6 +3,7 @@ package dev.aj.order_service.service;
 import dev.aj.order_service.client.CouponClient;
 import dev.aj.order_service.client.CustomerClient;
 import dev.aj.order_service.client.ProductClient;
+import dev.aj.order_service.model.coupon.Coupon;
 import dev.aj.order_service.model.invoice.Invoice;
 import dev.aj.order_service.model.order.Order;
 import dev.aj.order_service.model.order.OrderItem;
@@ -48,12 +49,14 @@ public class OrderServiceImpl implements OrderService {
                 orderRequest.quantity()
         ));
 
+        Coupon validCoupon = couponClient.getCoupon(orderRequest.coupon());
+
         OrderState orderState = new OrderState.Placed(new Order(
                 UUID.randomUUID(),
                 customerClient.getCustomer(orderRequest.customerId()),
                 orderItems,
                 LocalDate.now(),
-                couponClient.getCoupon(orderRequest.coupon()))
+                validCoupon)
         );
 
         while (!isTerminalState(orderState)) {
@@ -80,7 +83,7 @@ public class OrderServiceImpl implements OrderService {
                     invoiceStatus(failed.invoice()),
                     failed.invoice().priceSummary().total().amount(),
                    Collections.emptyList());
-            default -> throw new IllegalStateException("Unexpected value: " + orderState);
+            default -> throw new IllegalStateException("Unexpected terminal order state: " + orderState);
         };
     }
 

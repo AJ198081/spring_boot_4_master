@@ -31,7 +31,7 @@ public class CouponServiceImpl implements CouponService {
 
         if (Objects.equals(fromString(discountTypeCodes.flat().getFirst()), couponCode)) {
             return new Coupon.FlatDiscount(couponCode,
-                    getDiscountAmount(1)
+                    getDiscountAmount(discountTypeCodes.flat().get(1))
             );
         }
 
@@ -43,12 +43,12 @@ public class CouponServiceImpl implements CouponService {
         if (fromString(discountTypeCodes.maxPercentage().getFirst()).equals(couponCode)) {
             return new Coupon.MaxPercentageDiscount(couponCode,
                     getDiscountPercentage(discountTypeCodes.maxPercentage()),
-                    getDiscountAmount(2));
+                    getDiscountAmount(discountTypeCodes.maxPercentage().get(2)));
         }
 
         if (fromString(discountTypeCodes.freeShipping().getFirst()).equals(couponCode)) {
             return new Coupon.FlatDiscount(couponCode,
-                    getDiscountAmount(1));
+                    getDiscountAmount(discountTypeCodes.freeShipping().get(1)));
         }
 
         return new Coupon.NoDiscount();
@@ -59,8 +59,8 @@ public class CouponServiceImpl implements CouponService {
         );
     }
 
-    private @NonNull NonNegativeAmount getDiscountAmount(int index) {
-        return new NonNegativeAmount(BigDecimal.valueOf(Double.parseDouble(discountTypeCodes.flat().get(index))));
+    private @NonNull NonNegativeAmount getDiscountAmount(String amount) {
+        return new NonNegativeAmount(BigDecimal.valueOf(Double.parseDouble(amount)));
     }
 
 }
