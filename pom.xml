@@ -6,7 +6,7 @@
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
-        <version>4.0.6</version>
+        <version>4.1.0</version>
         <relativePath/>
     </parent>
 
@@ -33,6 +33,7 @@
         <module>product_service</module>
         <module>shipping_service</module>
         <module>coupon_service</module>
+        <module>stream_gatherers</module>
     </modules>
 
     <properties>

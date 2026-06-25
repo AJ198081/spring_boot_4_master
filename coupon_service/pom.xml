@@ -6,7 +6,6 @@
         <groupId>dev.aj</groupId>
         <artifactId>spring_boot_4_master</artifactId>
         <version>0.0.1-SNAPSHOT</version>
-        <relativePath/> <!-- lookup parent from repository -->
     </parent>
 
     <artifactId>coupon_service</artifactId>

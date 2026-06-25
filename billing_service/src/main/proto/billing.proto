@@ -1,0 +1,87 @@
+syntax = "proto3";
+
+option java_package = "dev.aj.billing";
+option java_multiple_files = true;
+
+service Billing {
+  rpc CreateInvoice (InvoiceRequest) returns (Invoice) {}
+}
+
+message InvoiceRequest {
+  oneof status {
+    Paid paid = 1;
+    Unpaid unpaid = 2;
+    Failed failed = 3;
+  }
+
+  message Paid {
+    string order_id = 1;
+    string customer_id = 2;
+    string transaction_id = 3;
+    PriceSummary price_summary = 4;
+  }
+
+  message Unpaid {
+    string order_id = 1;
+    string customer_id = 2;
+    PriceSummary price_summary = 3;
+  }
+
+  message Failed {
+    string order_id = 1;
+    string customer_id = 2;
+    PriceSummary price_summary = 3;
+  }
+}
+
+message PriceSummary {
+  NonNegativeAmount subtotal = 1;
+  NonNegativeAmount discounted_price = 2;
+  NonNegativeAmount tax = 3;
+  NonNegativeAmount total = 4;
+}
+
+
+message NonNegativeAmount {
+  string amount = 1;
+}
+
+message Invoice {
+  oneof invoice_type {
+    Paid paid = 1;
+    Unpaid unpaid = 2;
+  }
+}
+
+message Paid {
+  UUID invoice_id = 1;
+  UUID order_id = 2;
+  UUID customer_id = 3;
+  UUID transaction_id = 4;
+  PriceSummary price_summary = 5;
+}
+
+message Unpaid {
+  UUID order_id = 1;
+  UUID customer_id = 2;
+  PriceSummary price_summary = 3;
+  LocalDate due_date = 4;
+
+  // Optional field handles the business vs retail conditional logic
+  optional ABN abn = 5;
+}
+
+// Supporting helper messages
+message UUID {
+  string value = 1; // Standard UUID string format (e.g., "123e4567-e89b-12d3-a456-426614174000")
+}
+
+message LocalDate {
+  int32 year = 1;  // Year (e.g., 2026)
+  int32 month = 2; // Month (1-12)
+  int32 day = 3;   // Day (1-31)
+}
+
+message ABN {
+  string value = 1;
+}

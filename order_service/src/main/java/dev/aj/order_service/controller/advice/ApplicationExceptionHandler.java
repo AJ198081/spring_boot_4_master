@@ -21,6 +21,7 @@ public class ApplicationExceptionHandler {
             case DomainError.PaymentFailed _ -> HttpStatus.PAYMENT_REQUIRED;
             case DomainError.MissingArgument _ -> HttpStatus.BAD_REQUEST;
             case DomainError.ProductDiscontinued _ -> HttpStatus.GONE;
+            case DomainError.InvalidResponseBody _ -> HttpStatus.PAYMENT_REQUIRED;
 
             case SystemError _ -> HttpStatus.INTERNAL_SERVER_ERROR;
         });

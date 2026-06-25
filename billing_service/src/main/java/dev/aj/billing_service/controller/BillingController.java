@@ -24,7 +24,7 @@ public class BillingController {
     private final BillingService billingService;
 
     @PostMapping(path = "/")
-    public ResponseEntity<Invoice> createCustomer(@RequestBody @Validated InvoiceRequest invoiceRequest) {
+    public ResponseEntity<Invoice> createInvoice(@RequestBody @Validated InvoiceRequest invoiceRequest) {
 
         return ResponseEntity
                 .ok(billingService.createInvoice(invoiceRequest));
