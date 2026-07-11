@@ -8,3 +8,4 @@ services:
       - 'POSTGRES_USER=myuser'
     ports:
       - '${POSTGRES_PORT}:5432'
+# Interpolation of .env in compose.yaml -> https://docs.docker.com/compose/how-tos/environment-variables/variable-interpolation/

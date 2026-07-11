@@ -1,0 +1,14 @@
+{
+  "properties": [
+    {
+      "name": "bank_customer_uri",
+      "type": "java.lang.String",
+      "description": "Request base URI for bank's customer microservice."
+    },
+    {
+      "name": "async.request.processing.header",
+      "type": "java.lang.String",
+      "defaultValue": "false",
+      "description": "Set to true to enable asynchronous request processing. Default is false."
+    }
+  ] }

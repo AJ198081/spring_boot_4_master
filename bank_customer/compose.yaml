@@ -1,0 +1,12 @@
+services:
+  postgres:
+    image: 'postgres:18.4-alpine'
+    restart: unless-stopped
+    container_name: 'bank_service_postgres'
+    environment:
+      - 'POSTGRES_DB=mydatabase'
+      - 'POSTGRES_PASSWORD=secret'
+      - 'POSTGRES_USER=myuser'
+# Interpolation of .env in compose.yaml -> https://docs.docker.com/compose/how-tos/environment-variables/variable-interpolation/
+    ports:
+      - '${POSTGRES_PORT}:5432'

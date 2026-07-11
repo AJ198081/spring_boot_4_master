@@ -40,7 +40,7 @@
         <java.version>26</java.version>
         <maven.compiler.source>26</maven.compiler.source>
         <maven.compiler.target>26</maven.compiler.target>
-        <spring-modulith.version>2.0.2</spring-modulith.version>
+        <spring-modulith.version>2.1.0</spring-modulith.version>
         <mapstruct.version>1.6.3</mapstruct.version>
         <datafaker.version>2.5.4</datafaker.version>
         <jackson-2-bom.version>2.21.1</jackson-2-bom.version>
@@ -66,6 +66,11 @@
         <shipping_service.uri>/api/v1/shippings</shipping_service.uri>
         <coupon_service.uri>/api/v1/coupons</coupon_service.uri>
 
+        <!--        Bank-->
+        <bank_customer.uri>/api/v1/customers</bank_customer.uri>
+        <bank_customer.port>9091</bank_customer.port>
+
+        <async_processing.header>X-Async-Processing</async_processing.header>
         <!--        Postgres ports-->
         <billing_service.postgres.port>6581</billing_service.postgres.port>
         <customer_service.postgres.port>6582</customer_service.postgres.port>
