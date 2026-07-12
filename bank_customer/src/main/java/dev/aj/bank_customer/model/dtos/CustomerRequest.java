@@ -6,7 +6,7 @@ public record CustomerRequest(
         String firstName,
         String lastName,
         Email email,
-        AddressRequest address,
+        AddressDto address,
         String phoneNumber
 ) {
 }

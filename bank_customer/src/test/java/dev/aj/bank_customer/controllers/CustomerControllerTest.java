@@ -2,9 +2,11 @@ package dev.aj.bank_customer.controllers;
 
 import dev.aj.bank_commons.types.Email;
 import dev.aj.bank_customer.bootstrap.Config;
-import dev.aj.bank_customer.model.dtos.AddressRequest;
+import dev.aj.bank_customer.model.dtos.AddressDto;
 import dev.aj.bank_customer.model.dtos.CustomerCreatedResponse;
 import dev.aj.bank_customer.model.dtos.CustomerRequest;
+import dev.aj.bank_customer.model.dtos.CustomerResponse;
+import dev.aj.bank_customer.model.dtos.KycStatus;
 import net.datafaker.Faker;
 import net.datafaker.providers.base.Address;
 import net.datafaker.providers.base.Superhero;
@@ -25,6 +27,7 @@ import org.springframework.test.context.junit.jupiter.SpringJUnitConfig;
 import org.springframework.test.web.servlet.client.RestTestClient;
 
 import java.net.URI;
+import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.UUID;
 import java.util.function.Consumer;
@@ -48,7 +51,6 @@ class CustomerControllerTest {
     private Faker faker;
 
     private RestTestClient restTestClient;
-
 
     @BeforeAll
     void setUp() {
@@ -98,8 +100,6 @@ class CustomerControllerTest {
                             URI location = createdCustomerResponse.getResponseHeaders().getLocation();
                             assert location != null;
                         }));
-
-
     }
 
 
@@ -141,8 +141,6 @@ class CustomerControllerTest {
                             String createdCustomerId = location.getPath().substring(location.getPath().lastIndexOf('/') + 1);
                             assert uuid.equals(UUID.fromString(createdCustomerId));
                         }));
-
-
     }
 
     @Test
@@ -156,7 +154,7 @@ class CustomerControllerTest {
                     UUID customerId = createdCustomerResponse.getResponseBody().externalId();
                     restTestClient.patch()
                             .uri(uriBuilder -> uriBuilder.path("/{externalId}/kyc-status")
-                                    .queryParam("kycStatus", CustomerCreatedResponse.KycStatus.APPROVED).build(customerId))
+                                    .queryParam("kycStatus", KycStatus.APPROVED).build(customerId))
                             .headers(getRequestHeaders(false))
                             .exchange()
                             .expectAll(consumer -> {
@@ -180,10 +178,36 @@ class CustomerControllerTest {
                     UUID customerId = createdCustomerResponse.getResponseBody().externalId();
                     restTestClient.patch()
                             .uri(uriBuilder -> uriBuilder.path("/{externalId}/kyc-status")
-                                    .queryParam("kycStatus", CustomerCreatedResponse.KycStatus.APPROVED).build(customerId))
+                                    .queryParam("kycStatus", KycStatus.APPROVED).build(customerId))
                             .headers(getRequestHeaders(true))
                             .exchange()
                             .expectAll(consumer -> consumer.expectStatus().isAccepted());
+                });
+    }
+
+    @Test
+    void testCustomerGetSuccessful_WhenValidExternalIdSent() {
+        postCustomerRequest()
+                .expectBody(new ParameterizedTypeReference<CustomerCreatedResponse>() {
+                })
+                .consumeWith(customerCreatedResponse -> {
+                    CustomerCreatedResponse createdCustomerResponse = customerCreatedResponse.getResponseBody();
+
+                    assert createdCustomerResponse != null;
+                    UUID customerId = createdCustomerResponse.externalId();
+
+                    restTestClient.get()
+                            .uri("/{externalId}", customerId)
+                            .headers(getRequestHeaders(false))
+                            .exchange()
+                            .expectStatus().isOk()
+                            .expectAll(consumer -> consumer.expectBody(new ParameterizedTypeReference<CustomerResponse>() {})
+                                    .consumeWith(customerResponse -> {
+                                        assert customerResponse.getResponseBody() != null;
+                                        assert customerResponse.getResponseBody().externalId().equals(customerId);
+                                        assertThat(customerResponse.getResponseBody().createdAt().truncatedTo(ChronoUnit.MILLIS))
+                                                .isEqualTo(createdCustomerResponse.createdAt().truncatedTo(ChronoUnit.MILLIS));
+                                    }));
                 });
     }
 
@@ -198,8 +222,8 @@ class CustomerControllerTest {
                     superhero.name(),
                     faker.name().lastName(),
                     new Email(faker.internet().emailAddress()),
-                    new AddressRequest(
-                            AddressRequest.AddressType.HOME,
+                    new AddressDto(
+                            AddressDto.AddressType.HOME,
                             address.streetAddressNumber(),
                             address.streetAddress(),
                             address.city(),
@@ -219,5 +243,4 @@ class CustomerControllerTest {
             headers.add(environment.getRequiredProperty("async.request.processing.header"), String.valueOf(asyncProcessingEnabled));
         };
     }
-
 }

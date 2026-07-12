@@ -1,6 +1,6 @@
 package dev.aj.bank_customer.model.dtos;
 
-public record AddressRequest(
+public record AddressDto(
         AddressType addressType,
         String streetNumber,
         String street,

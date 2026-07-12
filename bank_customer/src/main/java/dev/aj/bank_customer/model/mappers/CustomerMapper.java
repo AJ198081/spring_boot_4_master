@@ -1,9 +1,10 @@
 package dev.aj.bank_customer.model.mappers;
 
 import dev.aj.bank_commons.types.Email;
-import dev.aj.bank_customer.model.dtos.AddressRequest;
+import dev.aj.bank_customer.model.dtos.AddressDto;
 import dev.aj.bank_customer.model.dtos.CustomerCreatedResponse;
 import dev.aj.bank_customer.model.dtos.CustomerRequest;
+import dev.aj.bank_customer.model.dtos.CustomerResponse;
 import dev.aj.bank_customer.model.entities.Address;
 import dev.aj.bank_customer.model.entities.Customer;
 import org.mapstruct.BeanMapping;
@@ -42,7 +43,7 @@ public interface CustomerMapper {
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
     void updateCustomer(CustomerRequest customerRequest, @MappingTarget Customer customer);
 
-    default Address toAddress(AddressRequest addressRequest) {
+    default Address toAddress(AddressDto addressRequest) {
 
         if (addressRequest == null) {
             return null;
@@ -59,6 +60,23 @@ public interface CustomerMapper {
         );
     }
 
+    default AddressDto toAddress(Address address) {
+
+        if (address == null) {
+            return null;
+        }
+
+        return new AddressDto(
+                map(address.getType()),
+                address.getStreetNumber(),
+                address.getStreet(),
+                address.getCity(),
+                address.getState(),
+                address.getPostCode(),
+                address.getCountry()
+        );
+    }
+
     default String emailToString(Email email) {
         return email.email();
     }
@@ -67,6 +85,10 @@ public interface CustomerMapper {
         return new Email(email);
     }
 
-    Address.AddressType map(AddressRequest.AddressType addressType);
+    Address.AddressType map(AddressDto.AddressType addressType);
 
+    AddressDto.AddressType map(Address.AddressType addressType);
+
+    @Mapping(target = "createdAt", source = "customer.auditMetaData.createdDate")
+    CustomerResponse toCustomerResponse(Customer customer);
 }

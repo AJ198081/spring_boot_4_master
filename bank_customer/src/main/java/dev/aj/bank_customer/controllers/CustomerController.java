@@ -2,12 +2,14 @@ package dev.aj.bank_customer.controllers;
 
 import dev.aj.bank_customer.model.dtos.CustomerCreatedResponse;
 import dev.aj.bank_customer.model.dtos.CustomerRequest;
+import dev.aj.bank_customer.model.dtos.CustomerResponse;
 import dev.aj.bank_customer.services.CustomerService;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.env.Environment;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -50,8 +52,9 @@ public class CustomerController {
         return ResponseEntity.created(customerLocationURI).body(customerCreatedResponse);
     }
 
-    private boolean isAsyncRequest(HttpServletRequest request) {
-        return Boolean.parseBoolean(request.getHeader(environment.getRequiredProperty("async.request.processing.header")));
+    @GetMapping(path = "/{externalId}")
+    public ResponseEntity<CustomerResponse> getCustomer(@PathVariable UUID externalId) {
+        return ResponseEntity.ok(customerService.getCustomer(externalId));
     }
 
     @PatchMapping(path = "/{externalId}/kyc-status")
@@ -71,4 +74,8 @@ public class CustomerController {
                 .build();
     }
 
+
+    private boolean isAsyncRequest(HttpServletRequest request) {
+        return Boolean.parseBoolean(request.getHeader(environment.getRequiredProperty("async.request.processing.header")));
+    }
 }

@@ -5,6 +5,7 @@ import dev.aj.bank_customer.events.CustomerCreateEvent;
 import dev.aj.bank_customer.events.UpdateKycStatusEvent;
 import dev.aj.bank_customer.model.dtos.CustomerCreatedResponse;
 import dev.aj.bank_customer.model.dtos.CustomerRequest;
+import dev.aj.bank_customer.model.dtos.CustomerResponse;
 import dev.aj.bank_customer.model.entities.Customer;
 import dev.aj.bank_customer.model.entities.KycStatus;
 import dev.aj.bank_customer.model.mappers.CustomerMapper;
@@ -87,6 +88,12 @@ public class CustomerServiceImpl implements dev.aj.bank_customer.services.Custom
     @Transactional
     public void updateKycStatusAsync(UUID externalId, String kycStatus) {
         applicationEventPublisher.publishEvent(new UpdateKycStatusEvent(externalId, kycStatus));
+    }
+
+    @Override
+    public CustomerResponse getCustomer(UUID customerExternalId) {
+        return customerMapper.toCustomerResponse(customerRepository.findByExternalId(customerExternalId)
+                .orElseThrow(() -> new IllegalArgumentException("No customer with external Id %s exists.".formatted(customerExternalId))));
     }
 
     private @NonNull Customer registerNewCustomer(CustomerRequest customerRequest) {

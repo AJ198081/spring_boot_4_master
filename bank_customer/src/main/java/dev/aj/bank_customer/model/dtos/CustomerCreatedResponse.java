@@ -12,9 +12,4 @@ public record CustomerCreatedResponse(
         int version,
         ZonedDateTime createdAt
         ) {
-    public enum KycStatus {
-        PENDING,
-        APPROVED,
-        REJECTED
-    }
 }
