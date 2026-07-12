@@ -1,13 +1,15 @@
 package dev.aj.bank_customer.services.impl;
 
 import dev.aj.bank_commons.utils.FingerPrint;
+import dev.aj.bank_customer.events.CustomerCreateEvent;
+import dev.aj.bank_customer.events.UpdateKycStatusEvent;
 import dev.aj.bank_customer.model.dtos.CustomerCreatedResponse;
 import dev.aj.bank_customer.model.dtos.CustomerRequest;
 import dev.aj.bank_customer.model.entities.Customer;
 import dev.aj.bank_customer.model.entities.KycStatus;
-import dev.aj.bank_customer.events.CustomerCreateEvent;
 import dev.aj.bank_customer.model.mappers.CustomerMapper;
 import dev.aj.bank_customer.repositories.CustomerRepository;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.jspecify.annotations.NonNull;
@@ -62,6 +64,29 @@ public class CustomerServiceImpl implements dev.aj.bank_customer.services.Custom
 
 
         return externalId;
+    }
+
+    @Override
+    public Short updateKycStatus(UUID customerId, String kycStatus) {
+
+        return transactionTemplate.execute(_ ->
+                customerRepository.findByExternalId(customerId)
+                        .map(customer -> {
+                            KycStatus parsedKycStatus = KycStatus.valueOf(kycStatus);
+                            customer.setKycStatus(parsedKycStatus);
+                            customer.setActive(parsedKycStatus.equals(KycStatus.APPROVED));
+
+                            return customerRepository.saveAndFlush(customer).getVersion();
+                        })
+                        .orElseThrow(() -> new IllegalArgumentException("Customer with externalId: %s not found."
+                                .formatted(customerId)))
+        );
+    }
+
+    @Override
+    @Transactional
+    public void updateKycStatusAsync(UUID externalId, String kycStatus) {
+        applicationEventPublisher.publishEvent(new UpdateKycStatusEvent(externalId, kycStatus));
     }
 
     private @NonNull Customer registerNewCustomer(CustomerRequest customerRequest) {

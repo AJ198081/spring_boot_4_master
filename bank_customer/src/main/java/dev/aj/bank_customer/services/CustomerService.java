@@ -13,4 +13,8 @@ public interface CustomerService {
     Customer create(CustomerCreateEvent customerCreateEvent);
 
     UUID createAsync(CustomerRequest customerRequest);
+
+    Short updateKycStatus(UUID customerId, String kycStatus);
+
+    void updateKycStatusAsync(UUID externalId, String kycStatus);
 }

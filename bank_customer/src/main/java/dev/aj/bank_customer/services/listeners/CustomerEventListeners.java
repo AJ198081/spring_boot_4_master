@@ -1,6 +1,7 @@
 package dev.aj.bank_customer.services.listeners;
 
 import dev.aj.bank_customer.events.CustomerCreateEvent;
+import dev.aj.bank_customer.events.UpdateKycStatusEvent;
 import dev.aj.bank_customer.model.entities.Customer;
 import dev.aj.bank_customer.services.CustomerService;
 import lombok.RequiredArgsConstructor;
@@ -31,6 +32,15 @@ public class CustomerEventListeners {
         Customer newCustomerCreated = customerService.create(customerCreateEvent);
 
         log.info("Customer created with internal ID: {}, and external ID: {}", newCustomerCreated.getId(), newCustomerCreated.getExternalId());
+    }
+
+    @ApplicationModuleListener
+    @Transactional(
+            propagation = Propagation.REQUIRES_NEW
+    )
+    public void on(UpdateKycStatusEvent updateKycStatusEvent) {
+        Short updatedKycStatus = customerService.updateKycStatus(updateKycStatusEvent.externalId(), updateKycStatusEvent.kycStatus());
+        log.info("Customer ID {}, KYC status updated at snapshot: {}", updateKycStatusEvent.externalId(), updatedKycStatus);
     }
 
 }

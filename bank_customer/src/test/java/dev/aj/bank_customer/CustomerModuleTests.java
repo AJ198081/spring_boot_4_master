@@ -21,6 +21,4 @@ public class CustomerModuleTests {
     void createDocumentation() {
         new Documenter(modules).writeModulesAsPlantUml();
     }
-
-
 }
