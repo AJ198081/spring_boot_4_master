@@ -37,4 +37,14 @@ public class CustomerExceptionHandler {
 
         return problemDetail;
     }
+
+    @ExceptionHandler(value = IllegalStateException.class)
+    public ProblemDetail handleIllegalStateException(IllegalStateException exception) {
+        ProblemDetail problemDetail = ProblemDetail.forStatus(HttpStatus.CONFLICT);
+        problemDetail.setTitle(exception.getClass().getSimpleName());
+        problemDetail.setDetail(exception.getMessage());
+
+        return problemDetail;
+    }
+
 }

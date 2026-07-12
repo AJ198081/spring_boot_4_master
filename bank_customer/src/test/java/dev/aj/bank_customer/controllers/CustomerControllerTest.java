@@ -21,15 +21,19 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.core.env.Environment;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit.jupiter.SpringJUnitConfig;
+import org.springframework.test.web.servlet.client.ExchangeResult;
 import org.springframework.test.web.servlet.client.RestTestClient;
 
 import java.net.URI;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.UUID;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Consumer;
 import java.util.stream.Stream;
 
@@ -79,14 +83,6 @@ class CustomerControllerTest {
                             String createdCustomerId = location.getPath().substring(location.getPath().lastIndexOf('/') + 1);
                             assert uuid.equals(UUID.fromString(createdCustomerId));
                         }));
-    }
-
-    private RestTestClient.@NonNull ResponseSpec postCustomerRequest() {
-        return restTestClient.post()
-                .uri("/")
-                .headers(getRequestHeaders(false))
-                .body(getStreamOfCustomerRequests().limit(1).findAny().orElseThrow())
-                .exchange();
     }
 
     @Test
@@ -152,12 +148,37 @@ class CustomerControllerTest {
                 .consumeWith(createdCustomerResponse -> {
                     assert createdCustomerResponse.getResponseBody() != null;
                     UUID customerId = createdCustomerResponse.getResponseBody().externalId();
-                    restTestClient.patch()
+                    AtomicReference<RestTestClient.ResponseSpec> kycUpdateResponse = new AtomicReference<>(restTestClient.patch()
                             .uri(uriBuilder -> uriBuilder.path("/{externalId}/kyc-status")
-                                    .queryParam("kycStatus", KycStatus.APPROVED).build(customerId))
+                                    .queryParam("kycStatus", KycStatus.APPROVED)
+                                    .queryParam("version", createdCustomerResponse.getResponseBody().version() + 1)
+                                    .build(customerId))
                             .headers(getRequestHeaders(false))
-                            .exchange()
+                            .exchange());
+
+                    ExchangeResult exchangeResult = kycUpdateResponse.get().returnResult();
+                    if (exchangeResult.getStatus().isSameCodeAs(HttpStatus.CONFLICT)) {
+                        getCustomerWithExternalId(customerId)
+                                .expectStatus().isOk()
+                                .expectBody(new ParameterizedTypeReference<CustomerResponse>() {
+                                })
+                                .consumeWith(customerResponse -> {
+                                    assert customerResponse.getResponseBody() != null;
+                                    kycUpdateResponse.set(restTestClient.patch()
+                                            .uri(uriBuilder -> uriBuilder.path("/{externalId}/kyc-status")
+                                                    .queryParam("kycStatus", KycStatus.APPROVED)
+                                                    .queryParam("version", customerResponse.getResponseBody().version())
+                                                    .build(customerId))
+                                            .headers(getRequestHeaders(false))
+                                            .exchange());
+                                });
+                    }
+
+                    kycUpdateResponse.get()
                             .expectAll(consumer -> {
+
+                                consumer.expectStatus().isEqualTo(HttpStatusCode.valueOf(HttpStatus.NO_CONTENT.value()));
+
                                 consumer.expectStatus().isNoContent();
                                 consumer.expectBody().isEmpty();
                                 consumer.expectHeader().value(HttpHeaders.ETAG,
@@ -178,7 +199,9 @@ class CustomerControllerTest {
                     UUID customerId = createdCustomerResponse.getResponseBody().externalId();
                     restTestClient.patch()
                             .uri(uriBuilder -> uriBuilder.path("/{externalId}/kyc-status")
-                                    .queryParam("kycStatus", KycStatus.APPROVED).build(customerId))
+                                    .queryParam("kycStatus", KycStatus.APPROVED)
+                                    .queryParam("version", createdCustomerResponse.getResponseBody().version())
+                                    .build(customerId))
                             .headers(getRequestHeaders(true))
                             .exchange()
                             .expectAll(consumer -> consumer.expectStatus().isAccepted());
@@ -196,10 +219,7 @@ class CustomerControllerTest {
                     assert createdCustomerResponse != null;
                     UUID customerId = createdCustomerResponse.externalId();
 
-                    restTestClient.get()
-                            .uri("/{externalId}", customerId)
-                            .headers(getRequestHeaders(false))
-                            .exchange()
+                    getCustomerWithExternalId(customerId)
                             .expectStatus().isOk()
                             .expectAll(consumer -> consumer.expectBody(new ParameterizedTypeReference<CustomerResponse>() {})
                                     .consumeWith(customerResponse -> {
@@ -211,7 +231,11 @@ class CustomerControllerTest {
                 });
     }
 
-
+    private RestTestClient.@NonNull ResponseSpec getCustomerWithExternalId(UUID customerId) {
+        return restTestClient.get()
+                .uri("/{externalId}", customerId)
+                .exchange();
+    }
 
     private Stream<CustomerRequest> getStreamOfCustomerRequests() {
         return Stream.generate(() -> {
@@ -242,5 +266,13 @@ class CustomerControllerTest {
             headers.setContentType(MediaType.APPLICATION_JSON);
             headers.add(environment.getRequiredProperty("async.request.processing.header"), String.valueOf(asyncProcessingEnabled));
         };
+    }
+
+    private RestTestClient.@NonNull ResponseSpec postCustomerRequest() {
+        return restTestClient.post()
+                .uri("/")
+                .headers(getRequestHeaders(false))
+                .body(getStreamOfCustomerRequests().limit(1).findAny().orElseThrow())
+                .exchange();
     }
 }

@@ -18,6 +18,7 @@ import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.support.TransactionTemplate;
 
+import java.util.Optional;
 import java.util.UUID;
 
 @Service
@@ -68,26 +69,38 @@ public class CustomerServiceImpl implements dev.aj.bank_customer.services.Custom
     }
 
     @Override
-    public Short updateKycStatus(UUID customerId, String kycStatus) {
+    public Short updateKycStatus(UUID customerId, String kycStatus, short version) {
 
         return transactionTemplate.execute(_ ->
-                customerRepository.findByExternalId(customerId)
-                        .map(customer -> {
-                            KycStatus parsedKycStatus = KycStatus.valueOf(kycStatus);
-                            customer.setKycStatus(parsedKycStatus);
-                            customer.setActive(parsedKycStatus.equals(KycStatus.APPROVED));
+                {
+                    Optional<Customer> retrievedCustomer = customerRepository.findByExternalId(customerId);
 
-                            return customerRepository.saveAndFlush(customer).getVersion();
-                        })
-                        .orElseThrow(() -> new IllegalArgumentException("Customer with externalId: %s not found."
-                                .formatted(customerId)))
+                    if (retrievedCustomer.isEmpty()) {
+                        throw new IllegalArgumentException("Customer with externalId: %s not found.".formatted(customerId));
+                    }
+
+                    if (retrievedCustomer.get().getVersion() != version) {
+                        throw new IllegalStateException("Customer with externalId: %s at version %s is stale.".formatted(customerId, version));
+                    }
+
+                    return retrievedCustomer
+                            .map(customer -> {
+                                KycStatus parsedKycStatus = KycStatus.valueOf(kycStatus);
+                                customer.setKycStatus(parsedKycStatus);
+                                customer.setActive(parsedKycStatus.equals(KycStatus.APPROVED));
+
+                                return customerRepository.saveAndFlush(customer).getVersion();
+                            })
+                            .orElseThrow(() -> new IllegalArgumentException("Customer with externalId: %s at version %s not found."
+                                    .formatted(customerId, version)));
+                }
         );
     }
 
     @Override
     @Transactional
-    public void updateKycStatusAsync(UUID externalId, String kycStatus) {
-        applicationEventPublisher.publishEvent(new UpdateKycStatusEvent(externalId, kycStatus));
+    public void updateKycStatusAsync(UUID externalId, String kycStatus, short version) {
+        applicationEventPublisher.publishEvent(new UpdateKycStatusEvent(externalId, kycStatus, version));
     }
 
     @Override

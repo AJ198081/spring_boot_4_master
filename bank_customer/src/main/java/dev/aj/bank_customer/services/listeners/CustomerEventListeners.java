@@ -39,7 +39,7 @@ public class CustomerEventListeners {
             propagation = Propagation.REQUIRES_NEW
     )
     public void on(UpdateKycStatusEvent updateKycStatusEvent) {
-        Short updatedKycStatus = customerService.updateKycStatus(updateKycStatusEvent.externalId(), updateKycStatusEvent.kycStatus());
+        Short updatedKycStatus = customerService.updateKycStatus(updateKycStatusEvent.externalId(), updateKycStatusEvent.kycStatus(), updateKycStatusEvent.fromVersion());
         log.info("Customer ID {}, KYC status updated at snapshot: {}", updateKycStatusEvent.externalId(), updatedKycStatus);
     }
 

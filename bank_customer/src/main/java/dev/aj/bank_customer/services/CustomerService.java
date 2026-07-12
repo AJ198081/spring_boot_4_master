@@ -15,9 +15,9 @@ public interface CustomerService {
 
     UUID createAsync(CustomerRequest customerRequest);
 
-    Short updateKycStatus(UUID customerId, String kycStatus);
+    Short updateKycStatus(UUID customerId, String kycStatus, short version);
 
-    void updateKycStatusAsync(UUID customerExternalId, String kycStatus);
+    void updateKycStatusAsync(UUID customerExternalId, String kycStatus, short version);
 
     CustomerResponse getCustomer(UUID customerExternalId);
 }

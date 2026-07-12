@@ -61,14 +61,15 @@ public class CustomerController {
     public ResponseEntity<Void> updateKycStatus(
             @PathVariable UUID externalId,
             @RequestParam String kycStatus,
+            @RequestParam short version,
             HttpServletRequest request
     ) {
 
         if (isAsyncRequest(request)) {
-            customerService.updateKycStatusAsync(externalId, kycStatus);
+            customerService.updateKycStatusAsync(externalId, kycStatus, version);
             return ResponseEntity.accepted().build();
         }
-        Short updatedKycAtVersion = customerService.updateKycStatus(externalId, kycStatus);
+        Short updatedKycAtVersion = customerService.updateKycStatus(externalId, kycStatus, version);
         return ResponseEntity.noContent()
                 .eTag(String.valueOf(updatedKycAtVersion))
                 .build();
