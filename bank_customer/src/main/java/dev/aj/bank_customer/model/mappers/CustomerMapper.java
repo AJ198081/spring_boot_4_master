@@ -14,6 +14,9 @@ import org.mapstruct.MappingConstants;
 import org.mapstruct.MappingTarget;
 import org.mapstruct.NullValuePropertyMappingStrategy;
 
+import java.time.LocalDate;
+import java.util.Date;
+
 @Mapper(componentModel = MappingConstants.ComponentModel.SPRING)
 @SuppressWarnings("unused")
 public interface CustomerMapper {
@@ -91,4 +94,9 @@ public interface CustomerMapper {
 
     @Mapping(target = "createdAt", source = "customer.auditMetaData.createdDate")
     CustomerResponse toCustomerResponse(Customer customer);
+
+    default LocalDate toLocalDate(Date date) {
+
+        return LocalDate.from(date.toInstant().atZone(java.time.ZoneId.systemDefault()));
+    }
 }

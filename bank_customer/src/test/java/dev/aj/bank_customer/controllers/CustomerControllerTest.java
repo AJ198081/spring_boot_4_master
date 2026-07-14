@@ -30,6 +30,8 @@ import org.springframework.test.web.servlet.client.ExchangeResult;
 import org.springframework.test.web.servlet.client.RestTestClient;
 
 import java.net.URI;
+import java.sql.Date;
+import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.UUID;
@@ -112,14 +114,6 @@ class CustomerControllerTest {
                         }));
 
 
-    }
-
-    private RestTestClient.@NonNull ResponseSpec postAsyncCustomerRequest() {
-        return restTestClient.post()
-                .uri("/")
-                .headers(getRequestHeaders(true))
-                .body(getStreamOfCustomerRequests().limit(1).findAny().orElseThrow())
-                .exchange();
     }
 
     @RepeatedTest(value = 1, name = "{currentRepetition}/{totalRepetitions}")
@@ -246,6 +240,7 @@ class CustomerControllerTest {
                     superhero.name(),
                     faker.name().lastName(),
                     new Email(faker.internet().emailAddress()),
+                    Date.from(Instant.ofEpochMilli(696949200000L)),
                     new AddressDto(
                             AddressDto.AddressType.HOME,
                             address.streetAddressNumber(),
@@ -272,6 +267,14 @@ class CustomerControllerTest {
         return restTestClient.post()
                 .uri("/")
                 .headers(getRequestHeaders(false))
+                .body(getStreamOfCustomerRequests().limit(1).findAny().orElseThrow())
+                .exchange();
+    }
+
+    private RestTestClient.@NonNull ResponseSpec postAsyncCustomerRequest() {
+        return restTestClient.post()
+                .uri("/")
+                .headers(getRequestHeaders(true))
                 .body(getStreamOfCustomerRequests().limit(1).findAny().orElseThrow())
                 .exchange();
     }

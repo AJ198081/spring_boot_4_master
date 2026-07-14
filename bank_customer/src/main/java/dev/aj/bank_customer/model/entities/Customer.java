@@ -22,6 +22,7 @@ import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
+import java.time.LocalDate;
 import java.util.UUID;
 
 @Entity
@@ -58,6 +59,9 @@ public class Customer {
 
     @Column(name = "last_name", nullable = false, columnDefinition = "VARCHAR(150)")
     private String lastName;
+
+    @Column(nullable = false, columnDefinition = "DATE")
+    private LocalDate dateOfBirth;
 
     @Column(nullable = false, columnDefinition = "VARCHAR(255)")
     private String email;
