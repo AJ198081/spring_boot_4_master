@@ -34,6 +34,8 @@
         <module>shipping_service</module>
         <module>coupon_service</module>
         <module>stream_gatherers</module>
+        <module>bank_commons</module>
+        <module>bank_customer</module>
     </modules>
 
     <properties>

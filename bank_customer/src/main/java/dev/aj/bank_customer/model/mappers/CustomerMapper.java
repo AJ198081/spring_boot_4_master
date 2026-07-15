@@ -15,6 +15,7 @@ import org.mapstruct.MappingTarget;
 import org.mapstruct.NullValuePropertyMappingStrategy;
 
 import java.time.LocalDate;
+import java.time.ZoneId;
 import java.util.Date;
 
 @Mapper(componentModel = MappingConstants.ComponentModel.SPRING)
@@ -29,7 +30,6 @@ public interface CustomerMapper {
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "externalId", ignore = true)
     @Mapping(target = "auditMetaData", ignore = true)
-//    @Mapping(target = "address", source = "customerRequest.address")
    Customer toEntity(CustomerRequest customerRequest);
 
     @Mapping(target = "createdAt", source = "customer.auditMetaData.createdDate")
@@ -97,6 +97,9 @@ public interface CustomerMapper {
 
     default LocalDate toLocalDate(Date date) {
 
-        return LocalDate.from(date.toInstant().atZone(java.time.ZoneId.systemDefault()));
+        LocalDate fromRdxRequestConverter = LocalDate.ofInstant(date.toInstant(), ZoneId.of("UTC"));
+        LocalDate fromSB4MConverter = LocalDate.from(date.toInstant().atZone(ZoneId.systemDefault()));
+
+        return fromRdxRequestConverter;
     }
 }

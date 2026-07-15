@@ -101,7 +101,7 @@ class CustomerControllerTest {
     }
 
 
-    @RepeatedTest(value = 1, name = "{currentRepetition}/{totalRepetitions}")
+    @RepeatedTest(value = 1000, name = "{currentRepetition}/{totalRepetitions}")
     void testConcurrentAsync_CustomerGetsCreatedSuccessfully_WhenValidRequestIsSent() {
 
         postAsyncCustomerRequest()

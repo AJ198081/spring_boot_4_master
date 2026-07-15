@@ -1,7 +1,5 @@
 package dev.aj.bank_customer.config;
 
-import dev.aj.bank_commons.types.Email;
-import dev.aj.bank_commons.types.OperationType;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.actuate.endpoint.annotation.Endpoint;
 import org.springframework.boot.actuate.endpoint.annotation.ReadOperation;
@@ -18,7 +16,7 @@ import java.util.Map;
 import java.util.UUID;
 
 @Configuration
-@Endpoint(id = "modulith-events")
+@Endpoint(id = "trigger-events")
 @RequiredArgsConstructor
 @SuppressWarnings("unused")
 public class ModulithEventsActuatorEndpoint {
@@ -42,12 +40,17 @@ public class ModulithEventsActuatorEndpoint {
     }
 
     @WriteOperation
-    public Map<String, UUID> triggerIndividualEvent(
-            @Selector UUID eventIdentifier,
-            @Selector Email email,
-            @Selector OperationType operationType
+    public String triggerIndividualEvent(
+            @Selector UUID eventIdentifier
     ) {
-        return null;
+
+        incompleteEventPublications.resubmitIncompletePublications(
+                ResubmissionOptions.defaults()
+                        .withFilter(eventPublication ->
+                                eventPublication.getIdentifier().equals(eventIdentifier))
+        );
+
+        return "Re-triggered event identifier -> %s".formatted(eventIdentifier);
     }
 
 }
