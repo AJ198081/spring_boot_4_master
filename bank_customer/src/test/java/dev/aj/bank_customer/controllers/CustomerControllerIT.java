@@ -48,7 +48,7 @@ import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 })
 @Execution(ExecutionMode.CONCURRENT)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-class CustomerControllerTest {
+class CustomerControllerIT {
 
     @Autowired
     private Environment environment;
@@ -143,10 +143,13 @@ class CustomerControllerTest {
                     assert createdCustomerResponse.getResponseBody() != null;
                     UUID customerId = createdCustomerResponse.getResponseBody().externalId();
                     AtomicReference<RestTestClient.ResponseSpec> kycUpdateResponse = new AtomicReference<>(restTestClient.patch()
-                            .uri(uriBuilder -> uriBuilder.path("/{externalId}/kyc-status")
-                                    .queryParam("kycStatus", KycStatus.APPROVED)
-                                    .queryParam("version", createdCustomerResponse.getResponseBody().version() + 1)
-                                    .build(customerId))
+                            .uri(uriBuilder -> {
+                                assert createdCustomerResponse.getResponseBody() != null;
+                                return uriBuilder.path("/{externalId}/kyc-status")
+                                        .queryParam("kycStatus", KycStatus.APPROVED)
+                                        .queryParam("version", createdCustomerResponse.getResponseBody().version() + 1)
+                                        .build(customerId);
+                            })
                             .headers(getRequestHeaders(false))
                             .exchange());
 
@@ -159,10 +162,13 @@ class CustomerControllerTest {
                                 .consumeWith(customerResponse -> {
                                     assert customerResponse.getResponseBody() != null;
                                     kycUpdateResponse.set(restTestClient.patch()
-                                            .uri(uriBuilder -> uriBuilder.path("/{externalId}/kyc-status")
-                                                    .queryParam("kycStatus", KycStatus.APPROVED)
-                                                    .queryParam("version", customerResponse.getResponseBody().version())
-                                                    .build(customerId))
+                                            .uri(uriBuilder -> {
+                                                assert customerResponse.getResponseBody() != null;
+                                                return uriBuilder.path("/{externalId}/kyc-status")
+                                                        .queryParam("kycStatus", KycStatus.APPROVED)
+                                                        .queryParam("version", customerResponse.getResponseBody().version())
+                                                        .build(customerId);
+                                            })
                                             .headers(getRequestHeaders(false))
                                             .exchange());
                                 });
@@ -192,10 +198,13 @@ class CustomerControllerTest {
                     assert createdCustomerResponse.getResponseBody() != null;
                     UUID customerId = createdCustomerResponse.getResponseBody().externalId();
                     restTestClient.patch()
-                            .uri(uriBuilder -> uriBuilder.path("/{externalId}/kyc-status")
-                                    .queryParam("kycStatus", KycStatus.APPROVED)
-                                    .queryParam("version", createdCustomerResponse.getResponseBody().version())
-                                    .build(customerId))
+                            .uri(uriBuilder -> {
+                                assert createdCustomerResponse.getResponseBody() != null;
+                                return uriBuilder.path("/{externalId}/kyc-status")
+                                        .queryParam("kycStatus", KycStatus.APPROVED)
+                                        .queryParam("version", createdCustomerResponse.getResponseBody().version())
+                                        .build(customerId);
+                            })
                             .headers(getRequestHeaders(true))
                             .exchange()
                             .expectAll(consumer -> consumer.expectStatus().isAccepted());
