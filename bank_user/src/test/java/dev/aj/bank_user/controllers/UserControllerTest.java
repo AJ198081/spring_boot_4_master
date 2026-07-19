@@ -1,8 +1,7 @@
 package dev.aj.bank_user.controllers;
 
-import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.TestInstance;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.test.context.TestPropertySource;
@@ -15,7 +14,6 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 @TestPropertySource(locations = {
         "classpath:application.properties",
 })
-@TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class UserControllerTest {
 
     @Autowired
@@ -23,7 +21,7 @@ class UserControllerTest {
 
     private RestTestClient restTestClient;
 
-    @BeforeAll
+    @BeforeEach
     void setUp() {
 
         restTestClient = RestTestClient.bindToServer()
