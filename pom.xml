@@ -36,6 +36,7 @@
         <module>stream_gatherers</module>
         <module>bank_commons</module>
         <module>bank_customer</module>
+        <module>oauth2_0_rs</module>
     </modules>
 
     <properties>
@@ -71,6 +72,10 @@
         <!--        Bank-->
         <bank_customer.uri>/api/v1/customers</bank_customer.uri>
         <bank_customer.port>9091</bank_customer.port>
+
+<!--        Resource Server-->
+        <resource_server.uri>/api/v1/rs-verifier</resource_server.uri>
+        <resource_server.port>10001</resource_server.port>
 
         <async_processing.header>X-Async-Processing</async_processing.header>
         <!--        Postgres ports-->
