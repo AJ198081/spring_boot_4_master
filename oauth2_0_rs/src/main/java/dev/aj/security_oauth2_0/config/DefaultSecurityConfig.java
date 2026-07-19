@@ -40,9 +40,10 @@ public class DefaultSecurityConfig {
                 .sessionManagement(sm -> sm.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(amRequestMatcher -> amRequestMatcher
                         .requestMatchers(
-                                "/actuator/health",
-                                "/api/v1/health",
-                                "/api/v1/customer/register",
+//                                environment.getRequiredProperty("resource_server_uri").concat("/public"),
+                                "/**/public",
+                                "/**/actuator/health",
+                                "/api/v1/customers/register",
                                 "/.well-known/jwks.json").permitAll()
                         .anyRequest().authenticated()
                 )

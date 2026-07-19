@@ -14,13 +14,13 @@ public class RSVerifier {
         return "You are always welcome to view public pages";
     }
 
-    @PreAuthorize("hasAnyAuthority('SCOPE_fdx:accounts.read', 'SCOPE_fdx:accounts.write')")
+    @PreAuthorize("hasAnyAuthority('SCOPE_bank:accounts.read', 'SCOPE_bank:accounts.write')")
     @GetMapping("/secure")
     public String secureEndpoint() {
         return "You, in particular, having accounts read/write access, is welcome even in secure areas.";
     }
 
-    @PreAuthorize("hasAuthority('SCOPE_fdx:accounts.write')")
+    @PreAuthorize("hasAuthority('SCOPE_bank:accounts.write')")
     @GetMapping("/pii_secure")
     public String piiSecureEndpoint() {
         return "You are welcome because you are authorised to update accounts, hence can access secure areas.";

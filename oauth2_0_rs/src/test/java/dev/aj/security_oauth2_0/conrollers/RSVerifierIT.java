@@ -1,6 +1,6 @@
 package dev.aj.security_oauth2_0.conrollers;
 
-import dev.aj.security_oauth2_0.util.HttpRequestInterceptor;
+import dev.aj.security_oauth2_0.config.RestInterceptor;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,7 +12,7 @@ import org.springframework.test.web.servlet.client.RestTestClient;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @SpringJUnitConfig(classes = {
-        HttpRequestInterceptor.class
+        RestInterceptor.class
 })
 @TestPropertySource(locations = {
         "classpath:application.properties"
@@ -58,6 +58,24 @@ class RSVerifierIT {
 
     @Test
     void secureEndpoint() {
+
+        restTestClient.get()
+                .uri("/secure")
+                .exchange()
+                .expectAll(
+                        responseSpec -> {
+                            responseSpec.expectStatus().is2xxSuccessful();
+
+                            responseSpec.expectBody(String.class)
+                                    .consumeWith(response -> {
+                                                assert response.getResponseBody() != null;
+                                                assertTrue(
+                                                        response.getResponseBody().contains("welcome"));
+                                            }
+                                    );
+
+                        }
+                );
     }
 
     @Test

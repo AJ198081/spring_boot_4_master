@@ -37,6 +37,7 @@
         <module>bank_commons</module>
         <module>bank_customer</module>
         <module>oauth2_0_rs</module>
+        <module>bank_user</module>
     </modules>
 
     <properties>
@@ -72,6 +73,8 @@
         <!--        Bank-->
         <bank_customer.uri>/api/v1/customers</bank_customer.uri>
         <bank_customer.port>9091</bank_customer.port>
+        <bank_user.uri>/api/v1/users</bank_user.uri>
+        <bank_user.port>9092</bank_user.port>
 
 <!--        Resource Server-->
         <resource_server.uri>/api/v1/rs-verifier</resource_server.uri>
