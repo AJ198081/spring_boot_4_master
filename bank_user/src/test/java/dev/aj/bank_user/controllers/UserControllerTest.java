@@ -36,7 +36,7 @@ class UserControllerTest {
     }
 
     @Test
-    void getPublicEndpoint() {
+    void testGetPublicEndpoint() {
 
         RestTestClient.BodySpec<String, ?> expectedBody = restTestClient.get()
                 .uri("/public")
@@ -47,6 +47,20 @@ class UserControllerTest {
             assert responseEntity.getResponseBody() != null;
             assertTrue(responseEntity.getResponseBody().contains("welcome"));
         });
+    }
 
+
+    @Test
+    void testGetSecureEndpoint() {
+
+        RestTestClient.BodySpec<String, ?> expectedBody = restTestClient.get()
+                .uri("/secure")
+                .exchange()
+                .expectBody(String.class);
+
+        expectedBody.consumeWith(responseEntity -> {
+            assert responseEntity.getResponseBody() != null;
+            assertTrue(responseEntity.getResponseBody().contains("welcome"));
+        });
     }
 }

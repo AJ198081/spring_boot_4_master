@@ -16,4 +16,9 @@ public class UserController {
         return ResponseEntity.ok("You are welcome!!");
     }
 
+    @GetMapping("/secure")
+    public ResponseEntity<String> getSecureEndpoint() {
+        return ResponseEntity.ok("You are welcome!!");
+    }
+
 }

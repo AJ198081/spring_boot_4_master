@@ -1,0 +1,18 @@
+{
+  "properties": [
+    {
+      "name": "oauth_client_id",
+      "type": "java.lang.String",
+      "description": "Description for oauth_client_id."
+    },
+    {
+      "name": "oauth_client_secret",
+      "type": "java.lang.String",
+      "description": "Description for oauth_client_secret."
+    },
+    {
+      "name": "oauth_audience",
+      "type": "java.lang.String",
+      "description": "Description for oauth_audience."
+    }
+  ] }
