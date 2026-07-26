@@ -12,9 +12,9 @@ import org.springframework.data.redis.connection.RedisConnectionFactory;
 import org.springframework.data.redis.connection.lettuce.LettuceConnectionFactory;
 import org.springframework.data.redis.serializer.GenericJacksonJsonRedisSerializer;
 import org.springframework.data.redis.serializer.RedisSerializationContext;
-import tools.jackson.databind.ObjectMapper;
 import tools.jackson.databind.PropertyNamingStrategies;
-import tools.jackson.databind.json.JsonMapper;
+import tools.jackson.databind.jsontype.BasicPolymorphicTypeValidator;
+import tools.jackson.databind.jsontype.PolymorphicTypeValidator;
 
 import java.time.Duration;
 import java.util.Locale;
@@ -23,22 +23,25 @@ import java.util.Locale;
 public class BankConfigs {
 
     @Bean
-    public ObjectMapper objectMapper() {
-        return JsonMapper.builder()
-                .propertyNamingStrategy(new PropertyNamingStrategies.SnakeCaseStrategy())
-                .build();
-    }
+    public RedisCacheManager cacheManager(RedisConnectionFactory redisConnectionFactory) {
 
-    @Bean
-    public RedisCacheManager cacheManager(RedisConnectionFactory redisConnectionFactory, ObjectMapper objectMapper) {
-        var json = RedisSerializationContext.SerializationPair
-                .fromSerializer(new GenericJacksonJsonRedisSerializer(objectMapper));
+        PolymorphicTypeValidator typeValidator = BasicPolymorphicTypeValidator.builder()
+                .allowIfBaseType(Object.class)
+                .allowIfSubType("dev.aj.")
+                .allowIfSubType("java.util.")
+                .allowIfSubType("java.time.")
+                .build();
 
         return RedisCacheManager.builder(redisConnectionFactory)
                 .cacheDefaults(RedisCacheConfiguration.defaultCacheConfig()
                         .entryTtl(MyCustomTtlFunction.INSTANCE)
                         .disableCachingNullValues()
-                        .serializeValuesWith(json))
+                        .serializeValuesWith(RedisSerializationContext.SerializationPair
+                                .fromSerializer(GenericJacksonJsonRedisSerializer.builder()
+                                        .enableDefaultTyping(typeValidator)
+                                        .typePropertyName("@class")
+                                        .customize(mapper -> mapper.propertyNamingStrategy(new PropertyNamingStrategies.SnakeCaseStrategy()))
+                                        .build())))
                 .transactionAware()
                 .enableStatistics()
                 .build();
