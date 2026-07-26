@@ -23,6 +23,10 @@ public class ManagementTokenServiceImpl implements ManagementTokenService {
         return oAuthToken.accessToken();
     }
 
+    @Override
+    public TokenResponse getManagementToken() {
+        return managementApiClient.getOAuthToken();
+    }
 
 
 }

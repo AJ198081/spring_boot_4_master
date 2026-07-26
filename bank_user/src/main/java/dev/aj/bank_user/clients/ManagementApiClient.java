@@ -5,6 +5,8 @@ import dev.aj.commons.rest.client.AbstractServiceClient;
 import dev.aj.commons.types.TokenResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.cache.annotation.Cacheable;
+import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClient;
 
@@ -21,6 +23,8 @@ public class ManagementApiClient extends AbstractServiceClient {
     }
 
 
+    @Cacheable(cacheNames = "mgmt_cache", key = "#root.methodName")
+    @Bean
     public TokenResponse getOAuthToken() {
 
         RestClient.ResponseSpec responseSpec = this.executeRequest(() -> getManagementRestClient()

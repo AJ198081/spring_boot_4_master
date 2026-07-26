@@ -10,3 +10,15 @@ services:
 # Interpolation of .env in compose.yaml -> https://docs.docker.com/compose/how-tos/environment-variables/variable-interpolation/
     ports:
       - '${POSTGRES_PORT}:5432'
+
+  redis:
+    image: 'redis:8.8'
+    restart: unless-stopped
+    container_name: 'bank_service_redis'
+    environment:
+      - 'REDIS_PASSWORD=secret'
+      - 'REDIS_HOST=redis'
+      - 'REDIS_PORT=6379'
+      - 'REDIS_DATABASE=bank_redis'
+    ports:
+      - '${REDIS_PORT}:6379'
