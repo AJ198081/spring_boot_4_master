@@ -21,7 +21,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
         "classpath:application.properties",
         "classpath:application-test.properties",
 })
-@TestInstance(TestInstance.Lifecycle.PER_CLASS)
+@TestInstance(TestInstance.Lifecycle.PER_METHOD)
 class ManagementApiClientTest {
 
     @Autowired

@@ -59,11 +59,11 @@ public class BankConfigs {
         @Override
         public @NonNull Duration getTimeToLive(@Nullable Object key, @Nullable Object value) {
             if (key instanceof String && key.toString().toLowerCase(Locale.ROOT)
-                    .contains("auth")
+                    .contains("management")
                     && value instanceof TokenResponse tokenResponse) {
                 return Duration.ofSeconds(tokenResponse.expiresIn());
             }
-            return Duration.ofSeconds(20);
+            return Duration.ofSeconds(10);
         }
     }
 

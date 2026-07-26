@@ -6,6 +6,7 @@ import dev.aj.commons.types.TokenResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.cache.annotation.CacheConfig;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClient;
@@ -24,7 +25,7 @@ public class ManagementApiClient extends AbstractServiceClient {
     }
 
 
-    @Cacheable(key = "#root.methodName")
+    @Cacheable(key = "#root.targetClass")
     public TokenResponse getOAuthToken() {
 
         RestClient.ResponseSpec responseSpec = this.executeRequest(() -> getManagementRestClient()
@@ -33,6 +34,11 @@ public class ManagementApiClient extends AbstractServiceClient {
                 .retrieve());
 
         return responseSpec.body(TokenResponse.class);
+    }
+
+    @CacheEvict(key = "#root.targetClass")
+    public void evictCache() {
+
     }
 
     private RestClient getManagementRestClient() {
