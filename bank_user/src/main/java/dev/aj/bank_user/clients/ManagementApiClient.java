@@ -5,6 +5,7 @@ import dev.aj.commons.rest.client.AbstractServiceClient;
 import dev.aj.commons.types.TokenResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.cache.annotation.CacheConfig;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClient;
@@ -12,6 +13,7 @@ import org.springframework.web.client.RestClient;
 @Service
 @RequiredArgsConstructor
 @Slf4j
+@CacheConfig(cacheNames = "mgmt_cache")
 public class ManagementApiClient extends AbstractServiceClient {
 
     private final Auth0ManagementProperties properties;
@@ -22,7 +24,7 @@ public class ManagementApiClient extends AbstractServiceClient {
     }
 
 
-    @Cacheable(cacheNames = "mgmt_cache", key = "#root.methodName")
+    @Cacheable(key = "#root.methodName")
     public TokenResponse getOAuthToken() {
 
         RestClient.ResponseSpec responseSpec = this.executeRequest(() -> getManagementRestClient()

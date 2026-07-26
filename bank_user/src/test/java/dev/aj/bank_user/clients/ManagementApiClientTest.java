@@ -18,7 +18,8 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 }
 )
 @TestPropertySource(locations = {
-        "classpath:/application.properties",
+        "classpath:application.properties",
+        "classpath:application-test.properties",
 })
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class ManagementApiClientTest {

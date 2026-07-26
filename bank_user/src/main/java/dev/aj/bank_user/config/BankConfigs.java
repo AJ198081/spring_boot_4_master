@@ -10,7 +10,9 @@ import org.springframework.data.redis.cache.RedisCacheManager;
 import org.springframework.data.redis.cache.RedisCacheWriter;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
 import org.springframework.data.redis.connection.lettuce.LettuceConnectionFactory;
-import org.springframework.http.converter.json.JacksonJsonHttpMessageConverter;
+import org.springframework.data.redis.serializer.GenericJacksonJsonRedisSerializer;
+import org.springframework.data.redis.serializer.RedisSerializationContext;
+import tools.jackson.databind.ObjectMapper;
 import tools.jackson.databind.PropertyNamingStrategies;
 import tools.jackson.databind.json.JsonMapper;
 
@@ -21,24 +23,22 @@ import java.util.Locale;
 public class BankConfigs {
 
     @Bean
-    public JacksonJsonHttpMessageConverter jacksonHttpMessageConverter(JsonMapper.Builder builder) {
-
-        return new JacksonJsonHttpMessageConverter(builder.build());
-    }
-
-    @Bean
-    public JsonMapper.Builder jacksonBuilder() {
-
+    public ObjectMapper objectMapper() {
         return JsonMapper.builder()
-                .propertyNamingStrategy(new PropertyNamingStrategies.SnakeCaseStrategy());
+                .propertyNamingStrategy(new PropertyNamingStrategies.SnakeCaseStrategy())
+                .build();
     }
 
     @Bean
-    public RedisCacheManager cacheManager(RedisConnectionFactory redisConnectionFactory) {
+    public RedisCacheManager cacheManager(RedisConnectionFactory redisConnectionFactory, ObjectMapper objectMapper) {
+        var json = RedisSerializationContext.SerializationPair
+                .fromSerializer(new GenericJacksonJsonRedisSerializer(objectMapper));
+
         return RedisCacheManager.builder(redisConnectionFactory)
                 .cacheDefaults(RedisCacheConfiguration.defaultCacheConfig()
                         .entryTtl(MyCustomTtlFunction.INSTANCE)
-                        .disableCachingNullValues())
+                        .disableCachingNullValues()
+                        .serializeValuesWith(json))
                 .transactionAware()
                 .enableStatistics()
                 .build();
@@ -56,7 +56,7 @@ public class BankConfigs {
         @Override
         public @NonNull Duration getTimeToLive(@Nullable Object key, @Nullable Object value) {
             if (key instanceof String && key.toString().toLowerCase(Locale.ROOT)
-                    .contains("oauthtoken")
+                    .contains("auth")
                     && value instanceof TokenResponse tokenResponse) {
                 return Duration.ofSeconds(tokenResponse.expiresIn());
             }
