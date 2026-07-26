@@ -1,5 +1,6 @@
-package dev.aj.bank_commons.types;
+package dev.aj.commons.types;
 
+@SuppressWarnings("unused")
 public enum OperationType {
     DELETE,
     UPDATE,

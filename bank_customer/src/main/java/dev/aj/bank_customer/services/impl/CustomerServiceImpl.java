@@ -1,6 +1,6 @@
 package dev.aj.bank_customer.services.impl;
 
-import dev.aj.bank_commons.utils.FingerPrint;
+import dev.aj.commons.utils.FingerPrint;
 import dev.aj.bank_customer.events.CustomerCreateEvent;
 import dev.aj.bank_customer.events.UpdateKycStatusEvent;
 import dev.aj.bank_customer.model.dtos.CustomerCreatedResponse;

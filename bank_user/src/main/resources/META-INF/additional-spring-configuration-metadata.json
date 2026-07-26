@@ -11,8 +11,18 @@
       "description": "Description for oauth_client_secret."
     },
     {
-      "name": "oauth_audience",
+      "name": "auth0.mgmt.token-endpoint",
       "type": "java.lang.String",
-      "description": "Description for oauth_audience."
+      "description": "Description for auth0.mgmt.token-endpoint."
+    },
+    {
+      "name": "auth0.mgmt.grant-type",
+      "type": "java.lang.String",
+      "description": "Description for auth0.mgmt.grant-type."
+    },
+    {
+      "name": "auth0.mgmt.audience",
+      "type": "java.lang.String",
+      "description": "Who is going to be the audience of the token."
     }
   ] }

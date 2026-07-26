@@ -11,6 +11,7 @@ import org.springframework.modulith.Modulithic;
                 "config"
         }
 )
+
 public class BankUserApplication {
 
     public static void main(String[] args) {

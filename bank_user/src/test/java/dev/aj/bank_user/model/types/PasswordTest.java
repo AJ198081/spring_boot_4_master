@@ -1,5 +1,6 @@
 package dev.aj.bank_user.model.types;
 
+import dev.aj.commons.types.Password;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 
@@ -48,5 +49,13 @@ class PasswordTest {
         Password password = new Password("lower_UPPER_9");
         assertNotNull(password);
     }
+
+    @Test
+    void testStartingWithNumberIsAValidPassword() {
+        Password password = new Password("1lower!UPPER");
+        assertNotNull(password);
+    }
+
+
 
 }

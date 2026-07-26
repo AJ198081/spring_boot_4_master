@@ -1,6 +1,6 @@
 package dev.aj.bank_customer.controllers;
 
-import dev.aj.bank_commons.types.Email;
+import dev.aj.commons.types.Email;
 import dev.aj.bank_customer.bootstrap.Config;
 import dev.aj.bank_customer.model.dtos.AddressDto;
 import dev.aj.bank_customer.model.dtos.CustomerCreatedResponse;

@@ -1,4 +1,4 @@
-package dev.aj.bank_commons.types;
+package dev.aj.commons.types;
 
 import java.util.Set;
 import java.util.function.Predicate;

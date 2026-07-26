@@ -1,4 +1,4 @@
-package dev.aj.bank_user.model.types;
+package dev.aj.commons.types;
 
 import java.util.function.Predicate;
 import java.util.regex.Pattern;
@@ -9,7 +9,7 @@ public record Password(String password) {
 
     private static final Predicate<String> HAS_MAX_LENGTH = password -> password.length() <= 50;
 
-    //    ?= is a lookahead pattern, .*[0-9] -> from this position ahead, there must be digit
+    //    `?=` is a lookahead pattern, .*[0-9] -> from this position ahead, there must be a digit
     private static final Predicate<String> HAS_DIGIT =
             Pattern.compile(".*[0-9].*").asMatchPredicate();
 

@@ -1,6 +1,6 @@
 package dev.aj.bank_customer.model.dtos;
 
-import dev.aj.bank_commons.types.Email;
+import dev.aj.commons.types.Email;
 
 import java.util.Date;
 

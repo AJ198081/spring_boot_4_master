@@ -28,7 +28,7 @@
 
         <dependency>
             <groupId>dev.aj</groupId>
-            <artifactId>bank_commons</artifactId>
+            <artifactId>commons</artifactId>
             <version>0.0.1-SNAPSHOT</version>
         </dependency>
 

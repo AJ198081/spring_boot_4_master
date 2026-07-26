@@ -1,4 +1,4 @@
-package dev.aj.bank_commons.utils;
+package dev.aj.commons.utils;
 
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
