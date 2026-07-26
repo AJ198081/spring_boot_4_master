@@ -1,5 +1,6 @@
 package dev.aj.bank_user.clients;
 
+import dev.aj.bank_user.config.BankConfigs;
 import dev.aj.bank_user.config.ComposeConfigurations;
 import dev.aj.commons.types.TokenResponse;
 import org.junit.jupiter.api.RepeatedTest;
@@ -12,7 +13,8 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 @SpringJUnitConfig(classes = {
         ComposeConfigurations.class,
-        ManagementApiClient.class
+        ManagementApiClient.class,
+        BankConfigs.class
 }
 )
 @TestPropertySource(locations = {
