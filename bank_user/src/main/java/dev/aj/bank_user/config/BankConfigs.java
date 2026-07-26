@@ -14,6 +14,7 @@ import tools.jackson.databind.PropertyNamingStrategies;
 import tools.jackson.databind.json.JsonMapper;
 
 import java.time.Duration;
+import java.util.Locale;
 
 @Configuration
 public class BankConfigs {
@@ -48,7 +49,8 @@ public class BankConfigs {
 
         @Override
         public @NonNull Duration getTimeToLive(@Nullable Object key, @Nullable Object value) {
-            if (key instanceof String && key.toString().contains("getOAuthToken")
+            if (key instanceof String && key.toString().toLowerCase(Locale.ROOT)
+                    .contains("oauthtoken")
                     && value instanceof TokenResponse tokenResponse) {
                 return Duration.ofSeconds(tokenResponse.expiresIn());
             }
