@@ -60,14 +60,6 @@ public class CacheConfig {
         }
     }
 
-    //    @Bean
-    public CacheManager hazelcastCacheManager() {
-
-        HazelcastInstance hazelcastInstance = Hazelcast.newHazelcastInstance();
-
-        return new HazelcastCacheManager(hazelcastInstance);
-    }
-
     @Bean
     public RedisTemplate<String, Object> redisTemplate(RedisConnectionFactory redisConnectionFactory) {
         RedisTemplate<String, Object> redisTemplate = new RedisTemplate<>();
@@ -75,9 +67,15 @@ public class CacheConfig {
         redisTemplate.setConnectionFactory(redisConnectionFactory);
 
         redisTemplate.setKeySerializer(RedisSerializer.string());
-        redisTemplate.setHashKeySerializer(RedisSerializer.string());
+        redisTemplate.setValueSerializer(RedisSerializer.json());
 
         return redisTemplate;
+    }
+
+    //    @Bean
+    public CacheManager hazelcastCacheManager() {
+
+        return new HazelcastCacheManager(Hazelcast.newHazelcastInstance());
     }
 
 }
