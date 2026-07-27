@@ -25,6 +25,14 @@
             <artifactId>spring-boot-starter-data-redis</artifactId>
         </dependency>
 
+        <!-- Source: https://mvnrepository.com/artifact/com.hazelcast/hazelcast-spring -->
+        <dependency>
+            <groupId>com.hazelcast</groupId>
+            <artifactId>hazelcast-spring</artifactId>
+            <version>5.5.0</version>
+            <scope>compile</scope>
+        </dependency>
+
         <dependency>
             <groupId>dev.aj</groupId>
             <artifactId>security_oauth2_0</artifactId>

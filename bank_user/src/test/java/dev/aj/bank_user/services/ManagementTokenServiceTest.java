@@ -1,7 +1,7 @@
 package dev.aj.bank_user.services;
 
 import dev.aj.bank_user.clients.ManagementApiClient;
-import dev.aj.bank_user.config.BankConfigs;
+import dev.aj.bank_user.config.CacheConfig;
 import dev.aj.bank_user.services.impl.ManagementTokenServiceImpl;
 import dev.aj.commons.types.TokenResponse;
 import org.assertj.core.api.Assertions;
@@ -13,7 +13,7 @@ import org.springframework.test.context.junit.jupiter.SpringJUnitConfig;
 
 @SpringJUnitConfig(
         classes = {
-                BankConfigs.class,
+                CacheConfig.class,
                 ManagementTokenServiceImpl.class,
                 ManagementApiClient.class,
         }

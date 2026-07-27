@@ -6,18 +6,19 @@ import dev.aj.commons.types.TokenResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.cache.annotation.CacheConfig;
-import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClient;
 
 @Service
 @RequiredArgsConstructor
 @Slf4j
-@CacheConfig(cacheNames = "mgmt_cache")
+@CacheConfig(cacheNames = "mgmt_api_cache")
 public class ManagementApiClient extends AbstractServiceClient {
 
     private final Auth0ManagementProperties properties;
+    private final RedisTemplate<String, Object> redisTemplate;
 
     @Override
     protected String getServiceName() {
@@ -25,7 +26,7 @@ public class ManagementApiClient extends AbstractServiceClient {
     }
 
 
-    @Cacheable(key = "#root.targetClass")
+    @Cacheable(key = "#root.methodName")
     public TokenResponse getOAuthToken() {
 
         RestClient.ResponseSpec responseSpec = this.executeRequest(() -> getManagementRestClient()
@@ -36,10 +37,11 @@ public class ManagementApiClient extends AbstractServiceClient {
         return responseSpec.body(TokenResponse.class);
     }
 
-    @CacheEvict(key = "#root.targetClass")
-    public void evictCache() {
-
+    public Boolean clearCache(String cacheKey) {
+        return redisTemplate.delete(cacheKey);
     }
+
+
 
     private RestClient getManagementRestClient() {
         return createRestClient(properties.tokenEndpoint());

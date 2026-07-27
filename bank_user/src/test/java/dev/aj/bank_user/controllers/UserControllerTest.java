@@ -61,4 +61,16 @@ class UserControllerTest {
             assertTrue(responseEntity.getResponseBody().contains("welcome"));
         });
     }
+
+    @Test
+    void testClearCacheWhenCacheIsPopulated() {
+
+
+
+    }
+
+    @Test
+    void testClearCacheWhenCacheIsNotPopulated() {
+
+    }
 }
