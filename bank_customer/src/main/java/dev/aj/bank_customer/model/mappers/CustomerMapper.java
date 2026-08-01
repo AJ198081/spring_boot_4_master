@@ -46,39 +46,10 @@ public interface CustomerMapper {
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
     void updateCustomer(CustomerRequest customerRequest, @MappingTarget Customer customer);
 
-    default Address toAddress(AddressDto addressRequest) {
 
-        if (addressRequest == null) {
-            return null;
-        }
+    Address toAddress(AddressDto addressRequest);
 
-        return new Address(
-                map(addressRequest.addressType()),
-                addressRequest.streetNumber(),
-                addressRequest.street(),
-                addressRequest.city(),
-                addressRequest.state(),
-                addressRequest.postCode(),
-                addressRequest.country()
-        );
-    }
-
-    default AddressDto toAddress(Address address) {
-
-        if (address == null) {
-            return null;
-        }
-
-        return new AddressDto(
-                map(address.getType()),
-                address.getStreetNumber(),
-                address.getStreet(),
-                address.getCity(),
-                address.getState(),
-                address.getPostCode(),
-                address.getCountry()
-        );
-    }
+    AddressDto toAddress(Address address);
 
     default String emailToString(Email email) {
         return email.email();
