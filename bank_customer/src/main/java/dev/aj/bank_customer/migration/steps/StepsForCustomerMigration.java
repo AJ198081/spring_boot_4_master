@@ -22,15 +22,13 @@ public class StepsForCustomerMigration {
     @Bean
     public Step etlStepForMigration(
             JobRepository jobRepository,
-            JdbcCursorItemReader<Customer> customerJdbcCursorItemReader,
             RepositoryItemReader<Customer> customerRepositoryItemReader,
             ItemProcessor<Customer, NormalisedCustomerEntity> customerMigrationProcessor,
             ItemWriter<NormalisedCustomerEntity> repositoryItemWriterForNormalisedCustomer) {
 
-        return new StepBuilder(jobRepository)
+        return new StepBuilder("etlStepWithJpaRepositories", jobRepository)
                 .<Customer, NormalisedCustomerEntity>chunk(10)
-                .reader(customerJdbcCursorItemReader)
-//                .reader(customerRepositoryItemReader)
+                .reader(customerRepositoryItemReader)
                 .processor(customerMigrationProcessor)
                 .writer(repositoryItemWriterForNormalisedCustomer)
                 .build();
@@ -40,12 +38,10 @@ public class StepsForCustomerMigration {
     public Step elStepForTransfer(
             JobRepository jobRepository,
             JdbcCursorItemReader<Customer> customerJdbcCursorItemReader,
-            RepositoryItemReader<Customer> customerRepositoryItemReader,
             CustomerMigrationJDBCProcessor customerMigrationProcessor,
-            ItemWriter<NormalisedCustomerRecordEntity> jdbcBatchItemWriterForNormalisedCustomerRecordEntity
-    ) {
+            ItemWriter<NormalisedCustomerRecordEntity> jdbcBatchItemWriterForNormalisedCustomerRecordEntity) {
 
-        return new StepBuilder("elStepForTransfer", jobRepository)
+        return new StepBuilder("elStepWithJdbcRepositories", jobRepository)
                 .<Customer, NormalisedCustomerRecordEntity>chunk(10)
                 .reader(customerJdbcCursorItemReader)
                 .processor(customerMigrationProcessor)

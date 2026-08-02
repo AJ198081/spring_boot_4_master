@@ -17,18 +17,6 @@ import java.util.Set;
 public class DatabaseConfiguration {
 
     @Bean
-    public BeforeConvertCallback<NormalisedAddressRecordEntity> beforeAddressConvertCallback() {
-        return (addressRecordEntity) -> {
-
-            if (addressRecordEntity.id() == null) {
-                log.error("Address record entity id is null");
-            }
-
-            return addressRecordEntity;
-        };
-    }
-
-    @Bean
     public BeforeConvertCallback<NormalisedCustomerRecordEntity> beforeCustomerConvertCallback() {
 
         return (customerRecordEntity) -> {
@@ -41,6 +29,11 @@ public class DatabaseConfiguration {
         };
     }
 
+//    @Bean
+    public BeforeSaveCallback<NormalisedCustomerRecordEntity> beforeSaveCallback() {
+        return (customerRecordEntity, changeEntity) -> assignIdentifiersToAddresses(customerRecordEntity);
+    }
+
     private @NonNull NormalisedCustomerRecordEntity assignIdentifiersToAddresses(NormalisedCustomerRecordEntity customerRecordEntity) {
         Set<NormalisedAddressRecordEntity> updatedAddress = new HashSet<>();
 
@@ -51,11 +44,6 @@ public class DatabaseConfiguration {
         }
 
         return customerRecordEntity.withAddresses(updatedAddress);
-    }
-
-//    @Bean
-    public BeforeSaveCallback<NormalisedCustomerRecordEntity> beforeSaveCallback() {
-        return (customerRecordEntity, changeEntity) -> assignIdentifiersToAddresses(customerRecordEntity);
     }
 
     private NormalisedAddressRecordEntity assignIdentifierToAddressRecordIfMissing(NormalisedAddressRecordEntity addressRecordEntity, NormalisedCustomerRecordEntity customerRecordEntity, int index) {
