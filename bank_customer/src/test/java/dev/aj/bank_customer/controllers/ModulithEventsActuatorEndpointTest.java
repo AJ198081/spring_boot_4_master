@@ -1,4 +1,4 @@
-package dev.aj.bank_customer.config;
+package dev.aj.bank_customer.controllers;
 
 import dev.aj.bank_customer.bootstrap.Config;
 import org.assertj.core.api.Assertions;
@@ -21,6 +21,9 @@ import java.util.UUID;
 )
 @TestPropertySource(value = {
         "classpath:application.properties"
+},
+properties = {
+        "logging.level.org.springframework.modulith.events.core.DefaultEventPublicationRegistry=DEBUG"
 })
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class ModulithEventsActuatorEndpointTest {
@@ -57,7 +60,7 @@ class ModulithEventsActuatorEndpointTest {
     @Test
     void triggerIndividualEvent() {
 
-        UUID eventIdentifier = UUID.fromString("e3c8efb8-bd4f-4973-9f58-76d1c5e13742");
+        UUID eventIdentifier = UUID.fromString("f284dd58-eb09-48f2-b44a-d1521f54de17");
 
         restTestClient.post()
                 .uri(uriBuilder -> uriBuilder.path("/trigger-events/{eventIdentifier}")

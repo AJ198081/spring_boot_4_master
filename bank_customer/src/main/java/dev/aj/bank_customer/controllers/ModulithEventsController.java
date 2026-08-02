@@ -1,4 +1,4 @@
-package dev.aj.bank_customer.config;
+package dev.aj.bank_customer.controllers;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.actuate.endpoint.annotation.Endpoint;
@@ -19,7 +19,7 @@ import java.util.UUID;
 @Endpoint(id = "trigger-events")
 @RequiredArgsConstructor
 @SuppressWarnings("unused")
-public class ModulithEventsActuatorEndpoint {
+public class ModulithEventsController {
 
     private final IncompleteEventPublications incompleteEventPublications;
 
@@ -30,7 +30,7 @@ public class ModulithEventsActuatorEndpoint {
 
         incompleteEventPublications.resubmitIncompletePublications(
                 ResubmissionOptions.defaults()
-                        .withFilter(eventPublication -> eventPublication.getCompletionAttempts() <= 3)
+                        .withFilter(eventPublication -> eventPublication.getCompletionAttempts() <= 4)
                         .withBatchSize(10)
                         .withMinAge(Duration.ofMinutes(5L))
                         .withMaxInFlight(5)
