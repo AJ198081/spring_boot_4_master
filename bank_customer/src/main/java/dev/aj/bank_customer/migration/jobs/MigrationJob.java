@@ -13,6 +13,7 @@ public class MigrationJob {
 
     private final JobRepository jobRepository;
     private final Step etlStepForMigration;
+    private final Step elStepForTransfer;
 
     public Job customerMigrationJob() {
 
@@ -21,4 +22,10 @@ public class MigrationJob {
                 .build();
     }
 
+    public Job customerTransferJob() {
+
+        return new JobBuilder("customerTransferJob", jobRepository)
+                .start(elStepForTransfer)
+                .build();
+    }
 }

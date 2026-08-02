@@ -7,15 +7,17 @@ import org.springframework.data.relational.core.mapping.Table;
 
 @Table(name = "normalised_addresses")
 public record NormalisedAddressRecordEntity(
-        @Id
-        String id,
 
+        @Id
+        Long id,
+
+        @Embedded(onEmpty = Embedded.OnEmpty.USE_NULL)
         Address address,
 
         @Embedded(onEmpty = Embedded.OnEmpty.USE_NULL)
         AuditMetaDataRecord auditMetaDataRecord) {
 
-    public NormalisedAddressRecordEntity withId(String identifier) {
+    public NormalisedAddressRecordEntity withId(Long identifier) {
         return new NormalisedAddressRecordEntity(identifier, address, auditMetaDataRecord);
     }
 }

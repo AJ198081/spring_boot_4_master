@@ -13,6 +13,9 @@ import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.MappingConstants;
 
+import java.time.OffsetDateTime;
+import java.time.ZonedDateTime;
+import java.util.Objects;
 import java.util.Set;
 
 @Mapper(componentModel = MappingConstants.ComponentModel.SPRING)
@@ -38,6 +41,12 @@ public interface NormalisedCustomerMapper {
     AddressEntity customerToAddressEntity(Customer customer);
 
     AuditMetaDataRecord auditMetaDataToAuditMetaDataRecord(AuditMetaData auditMetaData);
+
+    default OffsetDateTime odtFromZdt(ZonedDateTime zdt) {
+        return Objects.nonNull(zdt)
+                ? zdt.toOffsetDateTime()
+                : null;
+    }
 
     default Set<NormalisedAddressRecordEntity> customerAddressToNormalisedAddressRecordEntities(Customer customer) {
         return Set.of(addressToNormalisedAddressRecordEntity(customer));

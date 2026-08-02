@@ -1,11 +1,11 @@
 package dev.aj.bank_customer.migration.model.entities;
 
-import java.time.ZonedDateTime;
+import java.time.OffsetDateTime;
 
 public record AuditMetaDataRecord(
         String createdBy,
         String lastModifiedBy,
-        ZonedDateTime createdDate,
-        ZonedDateTime lastModifiedDate
+        OffsetDateTime createdDate,
+        OffsetDateTime lastModifiedDate
 ) {
 }

@@ -5,5 +5,7 @@ import org.springframework.data.repository.ListCrudRepository;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface NormalisedCustomerRecordEntityRepository extends ListCrudRepository<NormalisedCustomerRecordEntity, String> {
+public interface NormalisedCustomerRecordEntityRepository extends ListCrudRepository<NormalisedCustomerRecordEntity, Long> {
+
+
 }

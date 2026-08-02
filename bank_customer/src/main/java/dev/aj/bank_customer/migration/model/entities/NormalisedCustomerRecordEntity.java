@@ -3,6 +3,7 @@ package dev.aj.bank_customer.migration.model.entities;
 import dev.aj.bank_customer.model.entities.KycStatus;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.relational.core.mapping.Embedded;
+import org.springframework.data.relational.core.mapping.MappedCollection;
 import org.springframework.data.relational.core.mapping.Table;
 
 import java.time.LocalDate;
@@ -28,6 +29,7 @@ public record NormalisedCustomerRecordEntity(
         @Embedded(onEmpty = Embedded.OnEmpty.USE_NULL)
         AuditMetaDataRecord auditMetaData,
 
+        @MappedCollection(idColumn = "normalised_customer_entity_id")
         Set<NormalisedAddressRecordEntity> addresses) {
 
     public NormalisedCustomerRecordEntity withAddresses(Set<NormalisedAddressRecordEntity> updatedAddress) {

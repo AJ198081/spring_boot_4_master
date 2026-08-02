@@ -25,4 +25,14 @@ class CustomerMigrationTest {
 
         migrationJob.runMigration(jobParameters);
     }
+
+    @Test
+    void runTransfer() {
+
+        JobParameters jobParameters = new JobParametersBuilder()
+                .addJobParameter("transfer", LocalDateTime.now(), LocalDateTime.class)
+                .toJobParameters();
+
+        migrationJob.runTransfer(jobParameters);
+    }
 }

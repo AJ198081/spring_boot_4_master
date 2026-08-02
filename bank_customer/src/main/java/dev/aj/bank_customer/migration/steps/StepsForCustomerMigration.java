@@ -1,6 +1,8 @@
 package dev.aj.bank_customer.migration.steps;
 
 import dev.aj.bank_customer.migration.model.entities.NormalisedCustomerEntity;
+import dev.aj.bank_customer.migration.model.entities.NormalisedCustomerRecordEntity;
+import dev.aj.bank_customer.migration.processors.CustomerMigrationJDBCProcessor;
 import dev.aj.bank_customer.model.entities.Customer;
 import lombok.RequiredArgsConstructor;
 import org.springframework.batch.core.repository.JobRepository;
@@ -15,7 +17,7 @@ import org.springframework.stereotype.Component;
 
 @RequiredArgsConstructor
 @Component
-public class ETLStepForMigration {
+public class StepsForCustomerMigration {
 
     @Bean
     public Step etlStepForMigration(
@@ -33,5 +35,23 @@ public class ETLStepForMigration {
                 .writer(repositoryItemWriterForNormalisedCustomer)
                 .build();
     }
+
+    @Bean
+    public Step elStepForTransfer(
+            JobRepository jobRepository,
+            JdbcCursorItemReader<Customer> customerJdbcCursorItemReader,
+            RepositoryItemReader<Customer> customerRepositoryItemReader,
+            CustomerMigrationJDBCProcessor customerMigrationProcessor,
+            ItemWriter<NormalisedCustomerRecordEntity> jdbcBatchItemWriterForNormalisedCustomerRecordEntity
+    ) {
+
+        return new StepBuilder("elStepForTransfer", jobRepository)
+                .<Customer, NormalisedCustomerRecordEntity>chunk(10)
+                .reader(customerJdbcCursorItemReader)
+                .processor(customerMigrationProcessor)
+                .writer(jdbcBatchItemWriterForNormalisedCustomerRecordEntity)
+                .build();
+    }
+
 
 }

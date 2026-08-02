@@ -10,11 +10,13 @@ import dev.aj.bank_customer.migration.repositories.NormalisedCustomerRecordEntit
 import jakarta.persistence.EntityManagerFactory;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.batch.infrastructure.item.ItemWriter;
 import org.springframework.batch.infrastructure.item.data.RepositoryItemWriter;
 import org.springframework.batch.infrastructure.item.data.builder.RepositoryItemWriterBuilder;
 import org.springframework.batch.infrastructure.item.database.JpaItemWriter;
 import org.springframework.batch.infrastructure.item.database.builder.JpaItemWriterBuilder;
 import org.springframework.context.annotation.Bean;
+import org.springframework.data.jdbc.core.JdbcAggregateTemplate;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -55,6 +57,12 @@ public class NormalisedEntityWriter {
         return new RepositoryItemWriterBuilder<NormalisedCustomerRecordEntity>()
                 .repository(normalisedCustomerRecordEntityRepository)
                 .build();
+    }
+
+    @Bean
+    public ItemWriter<NormalisedCustomerRecordEntity> jdbcBatchItemWriterForNormalisedCustomerRecordEntity(JdbcAggregateTemplate jdbcAggregateTemplate) {
+
+        return chunk -> jdbcAggregateTemplate.insertAll(chunk.getItems());
     }
 
 }

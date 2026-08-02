@@ -241,6 +241,9 @@ class CustomerControllerIT {
     }
 
     private Stream<CustomerRequest> getStreamOfCustomerRequests() {
+        
+        
+        
         return Stream.generate(() -> {
             Superhero superhero = faker.superhero();
 
@@ -251,7 +254,7 @@ class CustomerControllerIT {
                     new Email(faker.internet().emailAddress()),
                     Date.from(Instant.ofEpochMilli(696949200000L)),
                     new AddressDto(
-                            AddressDto.AddressType.HOME,
+                            faker.options().option(AddressDto.AddressType.class),
                             address.streetAddressNumber(),
                             address.streetAddress(),
                             address.city(),

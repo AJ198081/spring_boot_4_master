@@ -25,20 +25,21 @@ public interface CustomerMapper {
     @Mapping(target = "active", ignore = true)
     @Mapping(target = "version", ignore = true)
     @Mapping(target = "requestFingerPrint", ignore = true)
-    @Mapping(target = "phone", source = "customerRequest.phoneNumber")
+    @Mapping(target = "phone", source = "phoneNumber")
     @Mapping(target = "kycStatus", ignore = true)
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "externalId", ignore = true)
     @Mapping(target = "auditMetaData", ignore = true)
+    @Mapping(target = "address.type", source = "address.addressType")
    Customer toEntity(CustomerRequest customerRequest);
 
-    @Mapping(target = "createdAt", source = "customer.auditMetaData.createdDate")
+    @Mapping(target = "createdAt", source = "auditMetaData.createdDate")
     CustomerCreatedResponse toCreatedResponse(Customer customer);
 
     @Mapping(target = "active", ignore = true)
     @Mapping(target = "version", ignore = true)
     @Mapping(target = "requestFingerPrint", ignore = true)
-    @Mapping(target = "phone", source = "customerRequest.phoneNumber")
+    @Mapping(target = "phone", source = "phoneNumber")
     @Mapping(target = "kycStatus", ignore = true)
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "externalId", ignore = true)
