@@ -3,8 +3,10 @@ package dev.aj.bank_customer.migration.writers;
 import dev.aj.bank_customer.migration.model.dtos.NormalisedCustomer;
 import dev.aj.bank_customer.migration.model.entities.AddressEntity;
 import dev.aj.bank_customer.migration.model.entities.NormalisedCustomerEntity;
+import dev.aj.bank_customer.migration.model.entities.NormalisedCustomerRecordEntity;
 import dev.aj.bank_customer.migration.repositories.AddressEntityRepository;
 import dev.aj.bank_customer.migration.repositories.NormalisedCustomerEntityRepository;
+import dev.aj.bank_customer.migration.repositories.NormalisedCustomerRecordEntityRepository;
 import jakarta.persistence.EntityManagerFactory;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -45,6 +47,13 @@ public class NormalisedEntityWriter {
     public RepositoryItemWriter<AddressEntity> repositoryItemWriterForAddressEntity(AddressEntityRepository addressEntityRepository) {
         return new RepositoryItemWriterBuilder<AddressEntity>()
                 .repository(addressEntityRepository)
+                .build();
+    }
+
+    @Bean
+    public RepositoryItemWriter<NormalisedCustomerRecordEntity> repositoryItemWriterForNormalisedCustomerRecordEntity(NormalisedCustomerRecordEntityRepository normalisedCustomerRecordEntityRepository) {
+        return new RepositoryItemWriterBuilder<NormalisedCustomerRecordEntity>()
+                .repository(normalisedCustomerRecordEntityRepository)
                 .build();
     }
 
