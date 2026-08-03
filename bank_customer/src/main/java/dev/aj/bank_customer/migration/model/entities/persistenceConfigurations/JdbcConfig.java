@@ -5,57 +5,69 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.core.convert.converter.Converter;
 import org.springframework.data.convert.ReadingConverter;
 import org.springframework.data.convert.WritingConverter;
+import org.springframework.data.jdbc.core.convert.JdbcCustomConversions;
+import org.springframework.data.jdbc.core.mapping.JdbcValue;
 import org.springframework.data.jdbc.repository.config.AbstractJdbcConfiguration;
 
-import java.sql.Timestamp;
+import java.sql.JDBCType;
 import java.time.OffsetDateTime;
-import java.time.ZoneId;
 import java.time.ZonedDateTime;
+import java.time.temporal.TemporalAccessor;
+import java.util.List;
 
 @Configuration
 public class JdbcConfig extends AbstractJdbcConfiguration {
 
-    @WritingConverter
-    public enum ZonedDateTimeToOffsetDateTimeConverter implements Converter<ZonedDateTime, OffsetDateTime> {
-        INSTANCE;
-
-        @Override
-        public OffsetDateTime convert(@NonNull ZonedDateTime source) {
-            return source.toOffsetDateTime();
-        }
+    @Override
+    public @NonNull JdbcCustomConversions jdbcCustomConversions() {
+        return new JdbcCustomConversions(List.of(ZonedDateTimeToTimestampConverter.INSTANCE, TimestampTZToZonedDateTimeConverter.INSTANCE));
     }
 
     @WritingConverter
-    public enum ZonedDateTimeToTimestampConverter implements Converter<ZonedDateTime, Timestamp> {
+    public enum ZonedDateTimeToTimestampConverter implements Converter<ZonedDateTime, JdbcValue> {
         INSTANCE;
 
         @Override
-        public Timestamp convert(@NonNull ZonedDateTime source) {
-            return Timestamp.from(source.toInstant());
-        }
-    }
+        public JdbcValue convert(@NonNull ZonedDateTime source) {
 
-    @WritingConverter
-    public enum OffsetDateTimeWritingConverter implements Converter<OffsetDateTime, OffsetDateTime> {
-        INSTANCE;
-
-        @Override
-        public OffsetDateTime convert(@NonNull OffsetDateTime source) {
-            return source;
+            return JdbcValue.of(source, JDBCType.TIMESTAMP_WITH_TIMEZONE);
         }
     }
 
     @ReadingConverter
-    public enum OffsetDateTimeToZonedDateTimeConverter implements Converter<OffsetDateTime, ZonedDateTime> {
+    public enum TimestampTZToZonedDateTimeConverter implements Converter<JdbcValue, ZonedDateTime> {
         INSTANCE;
-
         @Override
-        public ZonedDateTime convert(@NonNull OffsetDateTime source) {
-            return source.atZoneSameInstant(ZoneId.systemDefault());
+        public ZonedDateTime convert(@NonNull JdbcValue source) {
+
+            assert source.getValue() != null;
+
+            return ZonedDateTime.from((TemporalAccessor) source.getValue());
         }
     }
 
-/*    @Override
+    //    @WritingConverter
+    public enum ZonedDateTimeToOffsetDateTimeConverter implements Converter<ZonedDateTime, OffsetDateTime> {
+        INSTANCE;
+
+    @Override
+        public OffsetDateTime convert(@NonNull ZonedDateTime source) {
+            return source.toOffsetDateTime();
+        }
+
+    }
+    //    @WritingConverter
+    public enum OffsetDateTimeWritingConverter implements Converter<OffsetDateTime, OffsetDateTime> {
+        INSTANCE;
+
+    @Override
+        public OffsetDateTime convert(@NonNull OffsetDateTime source) {
+            return source;
+        }
+
+    }
+
+  /*    @Override
     protected @NonNull List<?> userConverters() {
 
         return Arrays.asList(
