@@ -1,6 +1,7 @@
 package dev.aj.bank_customer.migration.model.entities.persistenceConfigurations;
 
 import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.convert.converter.Converter;
 import org.springframework.data.convert.ReadingConverter;
@@ -10,7 +11,7 @@ import org.springframework.data.jdbc.core.mapping.JdbcValue;
 import org.springframework.data.jdbc.repository.config.AbstractJdbcConfiguration;
 
 import java.sql.JDBCType;
-import java.time.OffsetDateTime;
+import java.sql.Timestamp;
 import java.time.ZonedDateTime;
 import java.time.temporal.TemporalAccessor;
 import java.util.List;
@@ -28,9 +29,13 @@ public class JdbcConfig extends AbstractJdbcConfiguration {
         INSTANCE;
 
         @Override
-        public JdbcValue convert(@NonNull ZonedDateTime source) {
+        public JdbcValue convert(@Nullable ZonedDateTime source) {
 
-            return JdbcValue.of(source, JDBCType.TIMESTAMP_WITH_TIMEZONE);
+            if (source == null) {
+                return null;
+            }
+
+            return JdbcValue.of(new Timestamp(source.toInstant().toEpochMilli()), JDBCType.TIMESTAMP);
         }
     }
 
@@ -40,41 +45,12 @@ public class JdbcConfig extends AbstractJdbcConfiguration {
         @Override
         public ZonedDateTime convert(@NonNull JdbcValue source) {
 
-            assert source.getValue() != null;
+            if (source.getValue() != null) {
+                return ZonedDateTime.from((TemporalAccessor) source.getValue());
+            }
 
-            return ZonedDateTime.from((TemporalAccessor) source.getValue());
+            return null;
+
         }
     }
-
-    //    @WritingConverter
-    public enum ZonedDateTimeToOffsetDateTimeConverter implements Converter<ZonedDateTime, OffsetDateTime> {
-        INSTANCE;
-
-    @Override
-        public OffsetDateTime convert(@NonNull ZonedDateTime source) {
-            return source.toOffsetDateTime();
-        }
-
-    }
-    //    @WritingConverter
-    public enum OffsetDateTimeWritingConverter implements Converter<OffsetDateTime, OffsetDateTime> {
-        INSTANCE;
-
-    @Override
-        public OffsetDateTime convert(@NonNull OffsetDateTime source) {
-            return source;
-        }
-
-    }
-
-  /*    @Override
-    protected @NonNull List<?> userConverters() {
-
-        return Arrays.asList(
-//                ZonedDateTimeToOffsetDateTimeConverter.INSTANCE,
-                ZonedDateTimeToTimestampConverter.INSTANCE,
-                OffsetDateTimeWritingConverter.INSTANCE,
-                OffsetDateTimeToZonedDateTimeConverter.INSTANCE
-        );
-    }*/
 }
