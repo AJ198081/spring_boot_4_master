@@ -22,3 +22,17 @@ services:
       - 'REDIS_DATABASE=bank_redis'
     ports:
       - '${REDIS_PORT}:6379'
+
+# LGTM stack -
+#  Loki (log aggregator),
+#  Tempo (tracing),
+#  Grafana (visualization), and
+#  Mimir (long-term storage for Prometheus metrics)
+  Grafana:
+    image: grafana/otel-lgtm:latest
+    ports:
+      - "3000:3000" # Grafana dashboard
+      - "4317:4317" # OpenTelemetry Collector over gRPC
+      - "4318:4318" # OpenTelemetry Collector over HTTP
+
+
