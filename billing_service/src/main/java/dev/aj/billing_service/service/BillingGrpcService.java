@@ -1,4 +1,4 @@
-package dev.aj.billing_service.service;
+/*package dev.aj.billing_service.service;
 
 import dev.aj.billing.BillingGrpc;
 import dev.aj.billing.Invoice;
@@ -18,4 +18,4 @@ public class BillingGrpcService extends BillingGrpc.BillingImplBase {
 
         super.createInvoice(request, responseObserver);
     }
-}
+}*/
