@@ -13,7 +13,7 @@ import org.springframework.web.client.RestClient;
 @RequiredArgsConstructor
 public class ExternalServicesClients {
 
-    private final LoggingInterceptor loggingInterceptor = new LoggingInterceptor();
+    private final LoggingInterceptor loggingInterceptor;
 
     private final RestClient.Builder restClientBuilder;
 
@@ -54,7 +54,7 @@ public class ExternalServicesClients {
 
     private RestClient createRestClient(String endpointUrl) {
 
-        return restClientBuilder
+        return restClientBuilder.clone()
                 .baseUrl(endpointUrl)
                 .defaultHeaders(httpHeaders -> httpHeaders.addAll(createDefaultHeaders()))
                 .requestInterceptor(loggingInterceptor)
