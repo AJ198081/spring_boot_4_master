@@ -59,6 +59,8 @@ public class CustomerServiceImpl implements dev.aj.bank_customer.services.Custom
 
         UUID externalId = UUID.randomUUID();
 
+        log.info("Creating a new customer with a request: {} and externalId: {}", customerRequest, externalId);
+
         transactionTemplate.executeWithoutResult(status -> {
             applicationEventPublisher.publishEvent(new CustomerCreateEvent(customerRequest, externalId));
             status.isCompleted();
