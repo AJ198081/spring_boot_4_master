@@ -29,6 +29,8 @@ public class CouponServiceImpl implements CouponService {
     @Override
     public Coupon getCoupon(UUID couponCode) {
 
+        log.info("Getting the coupon with code {}", couponCode);
+
         if (Objects.equals(fromString(discountTypeCodes.flat().getFirst()), couponCode)) {
             return new Coupon.FlatDiscount(couponCode,
                     getDiscountAmount(discountTypeCodes.flat().get(1))

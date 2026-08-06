@@ -1,5 +1,6 @@
 package dev.aj.order_service.config;
 
+import lombok.RequiredArgsConstructor;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -9,9 +10,12 @@ import org.springframework.web.client.RestClient;
 
 @Configuration
 @EnableConfigurationProperties(value = ExternalServiceProperties.class)
+@RequiredArgsConstructor
 public class ExternalServicesClients {
 
     private final LoggingInterceptor loggingInterceptor = new LoggingInterceptor();
+
+    private final RestClient.Builder restClientBuilder;
 
     @Bean
     public RestClient billingClient(ExternalServiceProperties services) {
@@ -25,27 +29,32 @@ public class ExternalServicesClients {
 
     @Bean
     public RestClient paymentClient(ExternalServiceProperties services) {
+
         return createRestClient(services.payment());
     }
 
     @Bean
     public RestClient productClient(ExternalServiceProperties services) {
+
         return createRestClient(services.product());
     }
 
     @Bean
     public RestClient shippingClient(ExternalServiceProperties services) {
+
         return createRestClient(services.shipping());
     }
 
     @Bean
     public RestClient couponClient(ExternalServiceProperties services) {
+
         return createRestClient(services.coupon());
     }
 
 
     private RestClient createRestClient(String endpointUrl) {
-        return RestClient.builder()
+
+        return restClientBuilder
                 .baseUrl(endpointUrl)
                 .defaultHeaders(httpHeaders -> httpHeaders.addAll(createDefaultHeaders()))
                 .requestInterceptor(loggingInterceptor)
@@ -53,9 +62,11 @@ public class ExternalServicesClients {
     }
 
     private HttpHeaders createDefaultHeaders() {
+
         HttpHeaders defaultHeaders = new HttpHeaders();
         defaultHeaders.set(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE);
         defaultHeaders.set(HttpHeaders.ACCEPT, MediaType.APPLICATION_JSON_VALUE);
+
         return defaultHeaders;
     }
 }
