@@ -6,6 +6,7 @@ import dev.aj.order_service.model.invoice.Invoice;
 import dev.aj.order_service.model.payment.PaymentRequest;
 import dev.aj.order_service.model.payment.PaymentStatus;
 import dev.aj.order_service.model.payment.RefundRequest;
+import dev.aj.order_service.orchestrator.OrderState;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.jspecify.annotations.NullMarked;
@@ -66,6 +67,15 @@ public class PaymentClientImpl extends AbstractServiceClient implements PaymentC
 
             case Invoice.Unpaid _ -> log.info("Invoice is not paid, no refund needed");
         }
+    }
+
+    @Override
+    public @Nullable OrderState extendPaymentHold(OrderState.FailedToCancel failedToCancel) {
+
+        return this.executeRequest(() -> paymentClient.put()
+                        .uri("/{paymentId}", failedToCancel.order().orderId()))
+                .retrieve()
+                .body(OrderState.class);
     }
 
     @Override

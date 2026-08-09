@@ -4,6 +4,7 @@ import dev.aj.order_service.model.invoice.Invoice;
 import dev.aj.order_service.model.payment.PaymentRequest;
 import dev.aj.order_service.model.payment.PaymentStatus;
 import dev.aj.order_service.model.payment.RefundRequest;
+import dev.aj.order_service.orchestrator.OrderState;
 import org.jspecify.annotations.NullMarked;
 import org.jspecify.annotations.Nullable;
 
@@ -20,4 +21,5 @@ public interface PaymentClient {
 
     void refund(Invoice invoice);
 
+    OrderState extendPaymentHold(OrderState.FailedToCancel failedToCancel);
 }

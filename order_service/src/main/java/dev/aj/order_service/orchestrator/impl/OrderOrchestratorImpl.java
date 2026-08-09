@@ -1,7 +1,6 @@
 package dev.aj.order_service.orchestrator.impl;
 
 import dev.aj.order_service.client.PaymentClient;
-import dev.aj.order_service.mapper.ModelDtoMapper;
 import dev.aj.order_service.model.common.PriceSummary;
 import dev.aj.order_service.model.invoice.Invoice;
 import dev.aj.order_service.model.order.Order;
@@ -15,6 +14,8 @@ import dev.aj.order_service.service.ShippingService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 
 import java.util.Collections;
@@ -25,16 +26,19 @@ import java.util.List;
 @Slf4j
 @RequiredArgsConstructor
 public class OrderOrchestratorImpl implements OrderOrchestrator {
-    private final ModelDtoMapper modelDtoMapper;
 
     private final OrderValidatorService orderValidatorService;
     private final PriceCalculatorService priceCalculatorService;
     private final PaymentService paymentService;
     private final ShippingService shippingService;
     private final PaymentClient paymentClient;
+    private final ApplicationEventPublisher applicationEventPublisher;
 
     @Override
     public OrderState handle(OrderState.Placed placedOrder) {
+
+        applicationEventPublisher.publishEvent(placedOrder);
+
         return this.orderValidatorService.validate(placedOrder);
     }
 
@@ -77,10 +81,11 @@ public class OrderOrchestratorImpl implements OrderOrchestrator {
     }
 
     @Override
-    public OrderState handle(OrderState.Cancelled cancelledOrder) {
+    public @Nullable OrderState handle(OrderState.Cancelled cancelledOrder) {
 
         if (shippingService.canOrderBeCancelled(cancelledOrder.order().orderId())) {
             // call payment service to refund for the order
+            applicationEventPublisher.publishEvent(cancelledOrder);
         }
 
         return null;
@@ -113,4 +118,10 @@ public class OrderOrchestratorImpl implements OrderOrchestrator {
                 List.of(shippedOrder.shipmentResponse().shipment()));
     }
 
+
+    @Override
+    public OrderState handle(OrderState.FailedToCancel failedToCancel) {
+        applicationEventPublisher.publishEvent(failedToCancel);
+        return this.paymentClient.extendPaymentHold(failedToCancel);
+    }
 }

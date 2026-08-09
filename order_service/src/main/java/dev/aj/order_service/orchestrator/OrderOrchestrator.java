@@ -14,6 +14,7 @@ public interface OrderOrchestrator {
             case OrderState.Invoiced invoiced -> this.handle(invoiced);
             case OrderState.Completed completed -> completed;
             case OrderState.Failed failed -> failed;
+            case OrderState.FailedToCancel failedToCancel -> this.handle(failedToCancel);
         };
     }
 
@@ -24,5 +25,6 @@ public interface OrderOrchestrator {
     OrderState handle(OrderState.Shipped shippedOrder);
     OrderState handle(OrderState.Invoiced invoicedOrder);
     OrderState handle(OrderState.Cancelled cancelledOrder);
+    OrderState handle(OrderState.FailedToCancel failedToCancel);
 
 }

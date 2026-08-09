@@ -36,4 +36,6 @@ public sealed interface OrderState {
 
     record Failed(Order order, Invoice invoice) implements OrderState {
     }
+
+    record FailedToCancel(Order order) implements OrderState {}
 }

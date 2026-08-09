@@ -23,6 +23,7 @@ services:
     ports:
       - '${REDIS_PORT}:6379'
 
+# https://grafana.com/docs/opentelemetry/docker-lgtm/
 # LGTM stack -
 #  Loki (log aggregator),
 #  Tempo (tracing),
