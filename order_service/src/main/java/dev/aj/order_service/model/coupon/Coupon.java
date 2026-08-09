@@ -12,6 +12,7 @@ import java.util.UUID;
         property = "type"
 )
 public sealed interface Coupon {
+
     record NoDiscount() implements Coupon {
     }
 
