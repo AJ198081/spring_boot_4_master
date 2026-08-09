@@ -83,8 +83,9 @@ public class PriceCalculatorServiceImpl implements PriceCalculatorService {
     }
 
     private NonNegativeAmount calculateOrderPrice(OrderItem orderItem) {
+
         return orderItem.product().price()
-                .multiply(new NonNegativeAmount(BigDecimal.valueOf(orderItem.quantity())));
+                .multiply(orderItem.quantity());
     }
 
     private NonNegativeAmount priceToBeChargedForProduct(Product product) {

@@ -2,15 +2,11 @@ package dev.aj.order_service.model.common;
 
 import java.math.BigDecimal;
 
-public record NonNegativeAmount(BigDecimal amount, Currency currency) {
+public record NonNegativeAmount(BigDecimal amount) {
     public NonNegativeAmount {
         if (amount.compareTo(BigDecimal.ZERO) < 0) {
             throw new IllegalArgumentException("Amount must be non-negative");
         }
-    }
-
-    public NonNegativeAmount(BigDecimal amount) {
-        this(amount, Currency.AUD);
     }
 
     public NonNegativeAmount add(NonNegativeAmount other) {
@@ -54,5 +50,9 @@ public record NonNegativeAmount(BigDecimal amount, Currency currency) {
 
     public boolean greaterThanOrEqualTo(BigDecimal amountToCompare) {
         return this.amount.compareTo(amountToCompare) >= 0;
+    }
+
+    public NonNegativeAmount multiply(int multiplier) {
+        return new NonNegativeAmount(this.amount.multiply(BigDecimal.valueOf(multiplier)));
     }
 }
