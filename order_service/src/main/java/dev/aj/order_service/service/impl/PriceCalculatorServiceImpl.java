@@ -12,6 +12,8 @@ import dev.aj.order_service.service.PriceCalculatorService;
 import org.jspecify.annotations.NullMarked;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
+
 @NullMarked
 @Service
 public class PriceCalculatorServiceImpl implements PriceCalculatorService {
@@ -21,8 +23,7 @@ public class PriceCalculatorServiceImpl implements PriceCalculatorService {
 
         NonNegativeAmount totalPrice = order.items()
                 .stream()
-                .map(OrderItem::product)
-                .map(Product::price)
+                .map(this::calculateOrderPrice)
                 .reduce(NonNegativeAmount.ZERO(), NonNegativeAmount::add);
 
         NonNegativeAmount totalDiscountedPrice = switch (order.coupon()) {
@@ -60,8 +61,30 @@ public class PriceCalculatorServiceImpl implements PriceCalculatorService {
                 totalPrice,
                 totalDiscountedPrice,
                 totalTaxAmount,
-                totalTaxAmount.add(totalDiscountedPrice)
+                totalDiscountedPrice
+                        .add(totalTaxAmount)
+                        .add(this.calculateShipping(totalDiscountedPrice))
         );
+    }
+
+    private NonNegativeAmount calculateShipping(NonNegativeAmount totalDiscountedPrice) {
+
+        return switch (totalDiscountedPrice) {
+
+            case NonNegativeAmount value when value.lessThan(BigDecimal.valueOf(100.0)) ->
+                    new NonNegativeAmount(BigDecimal.valueOf(5.95));
+
+            case NonNegativeAmount value when value.greaterThanOrEqualTo(BigDecimal.valueOf(100.0))
+                    && value.lessThan(BigDecimal.valueOf(200.0)) -> new NonNegativeAmount(BigDecimal.valueOf(7.95));
+
+            default -> new NonNegativeAmount(BigDecimal.valueOf(10.95));
+        };
+
+    }
+
+    private NonNegativeAmount calculateOrderPrice(OrderItem orderItem) {
+        return orderItem.product().price()
+                .multiply(new NonNegativeAmount(BigDecimal.valueOf(orderItem.quantity())));
     }
 
     private NonNegativeAmount priceToBeChargedForProduct(Product product) {

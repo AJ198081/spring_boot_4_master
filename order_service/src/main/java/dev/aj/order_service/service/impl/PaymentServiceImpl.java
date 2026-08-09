@@ -30,7 +30,7 @@ public class PaymentServiceImpl implements PaymentService {
         PaymentRequest paymentRequest = new PaymentRequest(
                 order.customer().id(),
                 order.orderId(),
-                priceSummary.total());
+                priceSummary.orderPrice());
 
         PaymentStatus processedPaymentStatus = this.paymentClient.process(paymentRequest);
 

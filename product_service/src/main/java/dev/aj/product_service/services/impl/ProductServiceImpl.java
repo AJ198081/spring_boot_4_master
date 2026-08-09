@@ -26,12 +26,17 @@ public class ProductServiceImpl implements ProductService {
 
         log.info("Fetching a product with id {}", productId);
 
-        return PRODUCTS.computeIfAbsent(productId, newProductId -> new ProductStatus.Active(
+        ProductStatus activeProductStatus = PRODUCTS.computeIfAbsent(productId,
+                newProductId -> new ProductStatus.Active(
                 new Product.Single(
                         newProductId,
                         faker.commerce().productName(),
                         new NonNegativeAmount(BigDecimal.valueOf(faker.random().nextDouble(15, 300)))
                 )
         ));
+
+        log.info("Product fetched - {}",  activeProductStatus);
+
+        return activeProductStatus;
     }
 }

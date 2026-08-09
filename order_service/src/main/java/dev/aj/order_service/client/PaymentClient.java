@@ -13,7 +13,9 @@ import java.util.UUID;
 public interface PaymentClient {
 
     PaymentStatus process(PaymentRequest paymentRequest);
+
     @Nullable PaymentStatus getPaymentStatus(UUID paymentId);
+
     void refund(RefundRequest refundRequest);
 
     void refund(Invoice invoice);

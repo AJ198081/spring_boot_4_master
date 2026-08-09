@@ -72,7 +72,7 @@ public class OrderServiceImpl implements OrderService {
                     completed.order().orderId(),
                     OrderResponse.OrderStatus.COMPLETED,
                     invoiceStatus(completed.invoice()),
-                    completed.invoice().priceSummary().total().amount(),
+                    completed.invoice().priceSummary().orderPrice().amount(),
                     shipmentItems(completed.order().items())
             );
             case OrderState.Cancelled cancelled -> new OrderResponse(
@@ -85,7 +85,7 @@ public class OrderServiceImpl implements OrderService {
             case OrderState.Failed failed -> new OrderResponse(
                     failed.order().orderId(),
                     invoiceStatus(failed.invoice()),
-                    failed.invoice().priceSummary().total().amount(),
+                    failed.invoice().priceSummary().orderPrice().amount(),
                    Collections.emptyList());
             default -> throw new IllegalStateException("Unexpected terminal order state: " + orderState);
         };

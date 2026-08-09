@@ -22,7 +22,7 @@ public interface ModelDtoMapper {
         return new OrderResponse(
                 order.orderId(),
                 OrderResponse.InvoiceStatus.Due,
-                invoice.priceSummary().total().amount(),
+                invoice.priceSummary().orderPrice().amount(),
                 order.items().stream()
                         .flatMap(this::mapOrderItemToShipmentItem)
                         .toList());

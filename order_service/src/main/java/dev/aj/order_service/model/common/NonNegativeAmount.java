@@ -43,4 +43,12 @@ public record NonNegativeAmount(BigDecimal amount) {
                         BigDecimal.valueOf(1.0 - percentage.value()))
         );
     }
+
+    public boolean lessThan(BigDecimal amountToCompare) {
+        return this.amount.compareTo(amountToCompare) < 0;
+    }
+
+    public boolean greaterThanOrEqualTo(BigDecimal amountToCompare) {
+        return this.amount.compareTo(amountToCompare) >= 0;
+    }
 }
