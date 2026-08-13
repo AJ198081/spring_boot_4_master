@@ -21,5 +21,5 @@ public interface PaymentClient {
 
     void refund(Invoice invoice);
 
-    OrderState extendPaymentHold(OrderState.FailedToCancel failedToCancel);
+    @Nullable OrderState extendPaymentHold(OrderState.FailedToCancel failedToCancel);
 }
