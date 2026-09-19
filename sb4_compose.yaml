@@ -14,7 +14,7 @@ services:
       - '${POSTGRES_PORT}:5432'
 
   redis:
-    image: 'redis:8.0-alpine'
+    image: 'redis:8.8.2-alpine'
     restart: unless-stopped
     container_name: 'sb4_redis'
     env_file:
@@ -27,15 +27,18 @@ services:
     ports:
       - '${REDIS_PORT}:6379'
 
-  mailhog:
-    image: mailhog/mailhog:latest
-    container_name: 'sb4_mailhog'
+# https://mailpit.axllent.org/docs/install/docker/
+  mailpit:
+    image: 'axllent/mailpit:v1.30.0'
+    container_name: sb4_mailpit
     restart: unless-stopped
     env_file:
       - .env
     ports:
       - "1026:1025"
       - "8026:8025"
+    volumes:
+      - ./data:/data
 
   # https://grafana.com/docs/opentelemetry/docker-lgtm/
   # LGTM stack -
@@ -56,7 +59,7 @@ services:
 
   # https://hub.docker.com/r/apache/kafka
   controller-1:
-    image: apache/kafka:latest
+    image: apache/kafka:4.3.1
     container_name: controller-1
     restart: unless-stopped
     environment:
@@ -69,7 +72,7 @@ services:
       KAFKA_GROUP_INITIAL_REBALANCE_DELAY_MS: 0
 
   controller-2:
-    image: apache/kafka:latest
+    image: apache/kafka:4.3.1
     container_name: controller-2
     restart: unless-stopped
     environment:
@@ -82,7 +85,7 @@ services:
       KAFKA_GROUP_INITIAL_REBALANCE_DELAY_MS: 0
 
   controller-3:
-    image: apache/kafka:latest
+    image: apache/kafka:4.3.1
     container_name: controller-3
     restart: unless-stopped
     environment:
@@ -95,7 +98,7 @@ services:
       KAFKA_GROUP_INITIAL_REBALANCE_DELAY_MS: 0
 
   broker-1:
-    image: apache/kafka:latest
+    image: apache/kafka:4.3.1
     container_name: broker-1
     restart: unless-stopped
     ports:
@@ -116,7 +119,7 @@ services:
       - controller-3
 
   broker-2:
-    image: apache/kafka:latest
+    image: apache/kafka:4.3.1
     container_name: broker-2
     restart: unless-stopped
     ports:
@@ -137,7 +140,7 @@ services:
       - controller-3
 
   broker-3:
-    image: apache/kafka:latest
+    image: apache/kafka:4.3.1
     container_name: broker-3
     restart: unless-stopped
     ports:

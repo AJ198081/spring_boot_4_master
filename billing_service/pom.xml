@@ -13,7 +13,7 @@
     <name>billing_service</name>
     <description>billing_service</description>
     <properties>
-        <spring-grpc.version>1.0.3</spring-grpc.version>
+<!--        <spring-grpc.version>1.0.3</spring-grpc.version>-->
     </properties>
     <dependencyManagement>
         <dependencies>
