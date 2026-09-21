@@ -15,6 +15,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.jspecify.annotations.NonNull;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.support.TransactionTemplate;
@@ -114,7 +115,11 @@ public class CustomerServiceImpl implements dev.aj.bank_customer.services.Custom
     }
 
     @Override
-    @Transactional(readOnly = true, propagation = Propagation.SUPPORTS)
+    @Transactional(
+            readOnly = true,
+            propagation = Propagation.SUPPORTS,
+            isolation = Isolation.READ_COMMITTED
+    )
     public CustomerResponse getCustomer(UUID customerExternalId) {
         return customerMapper.toCustomerResponse(customerRepository.findByExternalId(customerExternalId)
                 .orElseThrow(() -> new IllegalArgumentException("No customer with external Id %s exists.".formatted(customerExternalId))));
