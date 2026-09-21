@@ -34,10 +34,13 @@ public class CustomerEventListeners {
         log.info("Customer created with internal ID: {}, and external ID: {}", newCustomerCreated.getId(), newCustomerCreated.getExternalId());
     }
 
-    @ApplicationModuleListener
-    @Transactional(
-            propagation = Propagation.REQUIRES_NEW
+    @ApplicationModuleListener(
+            condition = "#updateKycStatusEvent.externalId() != null && #updateKycStatusEvent.fromVersion() > 0"
+//            propagation = Propagation.REQUIRES_NEW (default value)
     )
+  /*  @Transactional(
+            propagation = Propagation.REQUIRES_NEW
+    )*/
     public void on(UpdateKycStatusEvent updateKycStatusEvent) {
         Short updatedKycStatus = customerService.updateKycStatus(updateKycStatusEvent.externalId(), updateKycStatusEvent.kycStatus(), updateKycStatusEvent.fromVersion());
         log.info("Customer ID {}, KYC status updated at snapshot: {}", updateKycStatusEvent.externalId(), updatedKycStatus);

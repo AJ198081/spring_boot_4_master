@@ -10,12 +10,13 @@ import dev.aj.bank_customer.model.entities.Customer;
 import dev.aj.bank_customer.model.entities.KycStatus;
 import dev.aj.bank_customer.model.mappers.CustomerMapper;
 import dev.aj.bank_customer.repositories.CustomerRepository;
-import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.jspecify.annotations.NonNull;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.support.TransactionTemplate;
 
 import java.util.Optional;
@@ -32,6 +33,7 @@ public class CustomerServiceImpl implements dev.aj.bank_customer.services.Custom
     private final TransactionTemplate transactionTemplate;
 
     @Override
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
     public CustomerCreatedResponse create(CustomerRequest customerRequest) {
 
         log.debug("Creating a new customer with a request: {}", customerRequest);
@@ -43,6 +45,7 @@ public class CustomerServiceImpl implements dev.aj.bank_customer.services.Custom
     }
 
     @Override
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
     public Customer create(CustomerCreateEvent customerCreateEvent) {
 
         return customerRepository.findByRequestFingerPrint(FingerPrint.generateFor(customerCreateEvent.customerRequest()))
@@ -61,9 +64,14 @@ public class CustomerServiceImpl implements dev.aj.bank_customer.services.Custom
 
         log.info("Creating a new customer with a request: {} and externalId: {}", customerRequest, externalId);
 
-        transactionTemplate.executeWithoutResult(status -> {
+        transactionTemplate.executeWithoutResult(transactionStatus -> {
             applicationEventPublisher.publishEvent(new CustomerCreateEvent(customerRequest, externalId));
-            status.isCompleted();
+
+            if (transactionStatus.isCompleted()) {
+                log.info("Customer created successfully {}", customerRequest);
+            } else {
+                log.error("Customer creation failed for request {}, with externalId {}", customerRequest, externalId);
+            }
         });
 
 
@@ -106,6 +114,7 @@ public class CustomerServiceImpl implements dev.aj.bank_customer.services.Custom
     }
 
     @Override
+    @Transactional(readOnly = true, propagation = Propagation.SUPPORTS)
     public CustomerResponse getCustomer(UUID customerExternalId) {
         return customerMapper.toCustomerResponse(customerRepository.findByExternalId(customerExternalId)
                 .orElseThrow(() -> new IllegalArgumentException("No customer with external Id %s exists.".formatted(customerExternalId))));
