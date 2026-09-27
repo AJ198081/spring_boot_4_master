@@ -6,7 +6,7 @@
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
-        <version>4.1.0</version>
+        <version>4.1.1</version>
         <relativePath/>
     </parent>
 
@@ -38,6 +38,7 @@
         <module>bank_customer</module>
         <module>oauth2_0_rs</module>
         <module>bank_user</module>
+        <module>crypto_java</module>
     </modules>
 
     <properties>
@@ -99,6 +100,7 @@
         <product_service.postgres.name>product_database</product_service.postgres.name>
         <shipping_service.postgres.name>shipping_database</shipping_service.postgres.name>
         <coupon_service.postgres.name>coupon_database</coupon_service.postgres.name>
+        <bouncy_castle.version>1.86</bouncy_castle.version>
     </properties>
 
     <dependencyManagement>
@@ -152,6 +154,13 @@
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-aop</artifactId>
             <version>4.0.0-M2</version>
+            <scope>compile</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.bouncycastle</groupId>
+            <artifactId>bcprov-jdk18on</artifactId>
+            <version>${bouncy_castle.version}</version>
             <scope>compile</scope>
         </dependency>
 
