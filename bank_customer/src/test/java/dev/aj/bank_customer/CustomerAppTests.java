@@ -6,7 +6,7 @@ class CustomerAppTests {
 
     static void main(String[] args) {
         SpringApplication.from(BankCustomerApplication::main)
-                .withAdditionalProfiles("test", "observability")
+                .withAdditionalProfiles("test", "hibernate", "observability")
                 .run(args);
     }
 

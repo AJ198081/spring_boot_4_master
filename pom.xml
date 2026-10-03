@@ -101,6 +101,10 @@
         <shipping_service.postgres.name>shipping_database</shipping_service.postgres.name>
         <coupon_service.postgres.name>coupon_database</coupon_service.postgres.name>
         <bouncy_castle.version>1.86</bouncy_castle.version>
+        <hazelcast-hibernate53.version>5.2.0</hazelcast-hibernate53.version>
+        <hazelcast.spring>5.7.0</hazelcast.spring>
+        <!-- Static fallback so IDE (non-Maven) builds can filter it; directory-maven-plugin overrides it during Maven builds -->
+        <parent.pom.basedir>${project.basedir}</parent.pom.basedir>
     </properties>
 
     <dependencyManagement>

@@ -18,7 +18,11 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.annotations.Cache;
+import org.hibernate.annotations.CacheConcurrencyStrategy;
 import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.annotations.NaturalId;
+import org.hibernate.annotations.NaturalIdCache;
 import org.hibernate.type.SqlTypes;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
@@ -38,6 +42,8 @@ import java.util.UUID;
 @AllArgsConstructor
 @Builder
 @EntityListeners(AuditingEntityListener.class)
+@NaturalIdCache
+@Cache(usage = CacheConcurrencyStrategy.READ_WRITE, region = "customer")
 public class Customer {
 
     @Id
@@ -47,7 +53,8 @@ public class Customer {
     @JdbcTypeCode(SqlTypes.BIGINT)
     private Long id;
 
-    @Column(name = "external_id", nullable = false, columnDefinition = "UUID")
+    @NaturalId
+    @Column(name = "external_id", nullable = false, columnDefinition = "UUID", updatable = false)
     private UUID externalId;
 
     @Version

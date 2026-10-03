@@ -10,6 +10,7 @@ import dev.aj.bank_customer.model.entities.Customer;
 import dev.aj.bank_customer.model.entities.KycStatus;
 import dev.aj.bank_customer.model.mappers.CustomerMapper;
 import dev.aj.bank_customer.repositories.CustomerRepository;
+import jakarta.persistence.EntityManager;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.jspecify.annotations.NonNull;
@@ -32,6 +33,7 @@ public class CustomerServiceImpl implements dev.aj.bank_customer.services.Custom
     private final CustomerMapper customerMapper;
     private final ApplicationEventPublisher applicationEventPublisher;
     private final TransactionTemplate transactionTemplate;
+    private final EntityManager entityManager;
 
     @Override
     @Transactional(propagation = Propagation.REQUIRES_NEW)
@@ -41,6 +43,16 @@ public class CustomerServiceImpl implements dev.aj.bank_customer.services.Custom
 //  What can go wrong? What if someone else with the exact same customer details sends the request? They will now have customer's details.
         Customer customer = customerRepository.findByRequestFingerPrint(FingerPrint.generateFor(customerRequest))
                 .orElse(registerNewCustomer(customerRequest));
+
+        Customer customer1 = entityManager.find(Customer.class, customer.getId());
+        Customer customer2 = entityManager.find(Customer.class, customer.getId());
+//      createQuery - hibernate has no way to tell that Customer ID is the id parameter to the query,
+//      Hibernate just runs the JPA query, and then finds out oh, it's the Customer with ID - xyz, which I have in my persistence context
+        Customer customer3 = entityManager.createQuery("SELECT c FROM Customer c WHERE c.id = :id", Customer.class)
+                .setParameter("id", customer.getId())
+                .getSingleResult();
+
+        assert customer1 == customer2 && customer1 == customer3;
 
         return customerMapper.toCreatedResponse(customer);
     }
@@ -121,8 +133,18 @@ public class CustomerServiceImpl implements dev.aj.bank_customer.services.Custom
             isolation = Isolation.READ_COMMITTED
     )
     public CustomerResponse getCustomer(UUID customerExternalId) {
-        return customerMapper.toCustomerResponse(customerRepository.findByExternalId(customerExternalId)
-                .orElseThrow(() -> new IllegalArgumentException("No customer with external Id %s exists.".formatted(customerExternalId))));
+        Customer foundCustomer = customerRepository.findByExternalId(customerExternalId)
+                .orElseThrow(() -> new IllegalArgumentException("No customer with external Id %s exists.".formatted(customerExternalId)));
+
+        Customer customer1 = entityManager.find(Customer.class, foundCustomer.getId());
+        Customer customer2 = entityManager.find(Customer.class, foundCustomer.getId());
+        Customer customer3 = entityManager.createQuery("select c from Customer c where c.id = :id", Customer.class)
+                .setParameter("id", foundCustomer.getId())
+                .getSingleResult();
+
+        assert customer1 == customer2 && customer1 == customer3;
+
+        return customerMapper.toCustomerResponse(foundCustomer);
     }
 
     private @NonNull Customer registerNewCustomer(CustomerRequest customerRequest) {
