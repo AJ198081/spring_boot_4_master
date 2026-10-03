@@ -18,11 +18,13 @@ public class MainConcurrency {
 
 //        runASingleLongRunningTask();
 
-        ThreadFactory longRunningTaskFactory = Thread.ofVirtual().name("long-running-task-", 1).factory();
+        ThreadFactory longRunningTaskFactory = Thread.ofVirtual()
+                .name("long-running-task-", 1)
+                .factory();
 
-        try (StructuredTaskScope<TaskResponse, List<TaskResponse>> scope = StructuredTaskScope.open(
+        try (StructuredTaskScope<TaskResponse, List<TaskResponse>> main = StructuredTaskScope.open(
 //                StructuredTaskScope.Joiner.awaitAllSuccessfulOrThrow(),
-                StructuredTaskScope.Joiner.<TaskResponse>allSuccessfulOrThrow(),
+                StructuredTaskScope.Joiner.allSuccessfulOrThrow(),
 //                StructuredTaskScope.Joiner.awaitAll(),
                 configuration -> configuration
                         .withThreadFactory(longRunningTaskFactory)
@@ -31,28 +33,15 @@ public class MainConcurrency {
             var expensiveTask = new LongRunningTask("Expensive-task", 10, "100", 4);
             var cheapTask = new LongRunningTask("Cheap-task", 8, "10", 100);
 
-            StructuredTaskScope.Subtask<TaskResponse> expensiveSubTask = scope.fork(expensiveTask);
-            StructuredTaskScope.Subtask<TaskResponse> cheapSubTask = scope.fork(cheapTask);
+            StructuredTaskScope.Subtask<TaskResponse> expensiveSubTask = main.fork(expensiveTask);
+            StructuredTaskScope.Subtask<TaskResponse> cheapSubTask = main.fork(cheapTask);
 
-            List<TaskResponse> completedTasks = scope.join();
+            List<TaskResponse> completedTasks = main.join();
 
             completedTasks.forEach(taskResponse -> log.info(taskResponse.toString()));
 
-            if (expensiveSubTask.state().equals(StructuredTaskScope.Subtask.State.SUCCESS)) {
-                TaskResponse taskResponse = expensiveSubTask.get();
-                log.info(taskResponse.toString());
-            }
-            if (expensiveSubTask.state().equals(StructuredTaskScope.Subtask.State.FAILED)) {
-                log.error("Expensive task failed");
-            }
-
-            if (cheapSubTask.state().equals(StructuredTaskScope.Subtask.State.SUCCESS)) {
-                log.info(cheapSubTask.get().toString());
-            }
-
-            if (cheapSubTask.state().equals(StructuredTaskScope.Subtask.State.FAILED)) {
-                log.error("Cheap task failed");
-            }
+            handleTaskOutput(expensiveSubTask);
+            handleTaskOutput(cheapSubTask);
 
         } catch (InterruptedException e) {
             throw new RuntimeException(e);
@@ -63,6 +52,18 @@ public class MainConcurrency {
         }
     }
 
+    private static void handleTaskOutput(StructuredTaskScope.Subtask<TaskResponse> subtask) {
+
+    // Check the state of the callable response object before calling the getter or exception
+        if (subtask.state().equals(StructuredTaskScope.Subtask.State.SUCCESS)) {
+            log.info(subtask.get().toString());
+        }
+        if (subtask.state().equals(StructuredTaskScope.Subtask.State.FAILED)) {
+            log.error("Task failed with the message {}", subtask.exception().getMessage());
+        }
+    }
+
+    @SuppressWarnings("unused")
     private static void runASingleLongRunningTask() {
         LongRunningTask longRunningTask = new LongRunningTask("Long-running", 10, "Done", 100);
 

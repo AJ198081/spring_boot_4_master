@@ -23,7 +23,6 @@ public class LongRunningTask implements Callable<TaskResponse> {
         TaskResponse taskResponse;
 
         long startTime = System.currentTimeMillis();
-        long endTime;
 
         int numSeconds = 0;
 
@@ -45,8 +44,7 @@ public class LongRunningTask implements Callable<TaskResponse> {
             log.error("Thread Interrupted - {}", e.getMessage());
         } finally {
             logTaskInfo("Completed");
-            endTime = System.currentTimeMillis();
-            taskResponse = new TaskResponse(this.taskName, this.output, endTime - startTime);
+            taskResponse = new TaskResponse(this.taskName, this.output, System.currentTimeMillis() - startTime);
         }
 
         return taskResponse;
