@@ -46,6 +46,7 @@ public class CustomerServiceImpl implements dev.aj.bank_customer.services.Custom
 
         Customer customer1 = entityManager.find(Customer.class, customer.getId());
         Customer customer2 = entityManager.find(Customer.class, customer.getId());
+
 //      createQuery - hibernate has no way to tell that Customer ID is the id parameter to the query,
 //      Hibernate just runs the JPA query, and then finds out oh, it's the Customer with ID - xyz, which I have in my persistence context
         Customer customer3 = entityManager.createQuery("SELECT c FROM Customer c WHERE c.id = :id", Customer.class)
@@ -150,7 +151,7 @@ public class CustomerServiceImpl implements dev.aj.bank_customer.services.Custom
     private @NonNull Customer registerNewCustomer(CustomerRequest customerRequest) {
         Customer newCustomerRequest = buildNewCustomer(customerRequest);
 
-        return customerRepository.save(newCustomerRequest);
+        return customerRepository.saveAndFlush(newCustomerRequest);
     }
 
     private @NonNull Customer buildNewCustomer(CustomerRequest customerRequest) {
