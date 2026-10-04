@@ -9,7 +9,7 @@ import java.util.UUID;
 public record CustomerCreatedResponse(
         UUID externalId,
         KycStatus kycStatus,
-        int version,
+        short version,
         ZonedDateTime createdAt
         ) {
 }

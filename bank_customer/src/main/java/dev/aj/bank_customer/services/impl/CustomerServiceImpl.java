@@ -35,6 +35,7 @@ public class CustomerServiceImpl implements dev.aj.bank_customer.services.Custom
     private final ApplicationEventPublisher applicationEventPublisher;
     private final TransactionTemplate transactionTemplate;
     private final EntityManagerFactory entityManagerFactory;
+    private final EntityManager entityManager;
 
     @Override
     @Transactional(propagation = Propagation.REQUIRES_NEW)
@@ -44,8 +45,6 @@ public class CustomerServiceImpl implements dev.aj.bank_customer.services.Custom
 //  What can go wrong? What if someone else with the exact same customer details sends the request? They will now have customer's details.
         Customer customer = customerRepository.findByRequestFingerPrint(FingerPrint.generateFor(customerRequest))
                 .orElse(registerNewCustomer(customerRequest));
-
-        EntityManager entityManager = entityManagerFactory.createEntityManager();
 
         Customer customer1 = entityManager.find(Customer.class, customer.getId());
         Customer customer2 = entityManager.find(Customer.class, customer.getId());
@@ -162,7 +161,7 @@ public class CustomerServiceImpl implements dev.aj.bank_customer.services.Custom
     private @NonNull Customer registerNewCustomer(CustomerRequest customerRequest) {
         Customer newCustomerRequest = buildNewCustomer(customerRequest);
 
-        return customerRepository.saveAndFlush(newCustomerRequest);
+        return customerRepository.save(newCustomerRequest);
     }
 
     private @NonNull Customer buildNewCustomer(CustomerRequest customerRequest) {

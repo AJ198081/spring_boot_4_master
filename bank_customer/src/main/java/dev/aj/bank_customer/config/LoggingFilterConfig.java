@@ -54,9 +54,10 @@ public class LoggingFilterConfig extends OncePerRequestFilter {
 
         response.setHeader(X_REQUEST_ID, correlationId);
 
+        log.info("{} request received with correlationId: {} to path: {}",
+                MDC.get(METHOD), MDC.get(X_REQUEST_ID), MDC.get(PATH));
+
         try {
-            log.info("{} request received with correlationId: {} to path: {}",
-                    MDC.get(METHOD), MDC.get(X_REQUEST_ID), MDC.get(PATH));
             filterChain.doFilter(request, response);
         } finally {
             stopWatch.stop();
@@ -72,8 +73,6 @@ public class LoggingFilterConfig extends OncePerRequestFilter {
                     MDC.get(X_REQUEST_ID), MDC.get(PATH), MDC.get(STATUS), numberFormat.format(Long.valueOf(MDC.get(TIME_TAKEN))));
 
             Statistics statistics = entityManagerFactory.unwrap(SessionFactory.class).getStatistics();
-
-            log.warn("Statistics: {}", statistics);
 
             statistics.logSummary();
 
