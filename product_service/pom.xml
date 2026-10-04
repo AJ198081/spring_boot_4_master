@@ -47,7 +47,7 @@
         <dependency>
             <groupId>dev.aj</groupId>
             <artifactId>order_service</artifactId>
-            <version>0.0.1-SNAPSHOT</version>
+            <version>${project.version}</version>
         </dependency>
     </dependencies>
 

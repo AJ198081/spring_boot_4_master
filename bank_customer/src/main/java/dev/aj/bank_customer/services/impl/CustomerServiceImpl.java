@@ -11,6 +11,7 @@ import dev.aj.bank_customer.model.entities.KycStatus;
 import dev.aj.bank_customer.model.mappers.CustomerMapper;
 import dev.aj.bank_customer.repositories.CustomerRepository;
 import jakarta.persistence.EntityManager;
+import jakarta.persistence.EntityManagerFactory;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.jspecify.annotations.NonNull;
@@ -33,7 +34,7 @@ public class CustomerServiceImpl implements dev.aj.bank_customer.services.Custom
     private final CustomerMapper customerMapper;
     private final ApplicationEventPublisher applicationEventPublisher;
     private final TransactionTemplate transactionTemplate;
-    private final EntityManager entityManager;
+    private final EntityManagerFactory entityManagerFactory;
 
     @Override
     @Transactional(propagation = Propagation.REQUIRES_NEW)
@@ -43,6 +44,8 @@ public class CustomerServiceImpl implements dev.aj.bank_customer.services.Custom
 //  What can go wrong? What if someone else with the exact same customer details sends the request? They will now have customer's details.
         Customer customer = customerRepository.findByRequestFingerPrint(FingerPrint.generateFor(customerRequest))
                 .orElse(registerNewCustomer(customerRequest));
+
+        EntityManager entityManager = entityManagerFactory.createEntityManager();
 
         Customer customer1 = entityManager.find(Customer.class, customer.getId());
         Customer customer2 = entityManager.find(Customer.class, customer.getId());
@@ -137,13 +140,21 @@ public class CustomerServiceImpl implements dev.aj.bank_customer.services.Custom
         Customer foundCustomer = customerRepository.findByExternalId(customerExternalId)
                 .orElseThrow(() -> new IllegalArgumentException("No customer with external Id %s exists.".formatted(customerExternalId)));
 
-        Customer customer1 = entityManager.find(Customer.class, foundCustomer.getId());
-        Customer customer2 = entityManager.find(Customer.class, foundCustomer.getId());
-        Customer customer3 = entityManager.createQuery("select c from Customer c where c.id = :id", Customer.class)
+        EntityManager entityManager1 = entityManagerFactory.createEntityManager();
+
+        Customer customer1 = entityManager1.find(Customer.class, foundCustomer.getId());
+        Customer customer2 = entityManager1.find(Customer.class, foundCustomer.getId());
+        Customer customer3 = entityManager1.createQuery("select c from Customer c where c.id = :id", Customer.class)
                 .setParameter("id", foundCustomer.getId())
                 .getSingleResult();
 
         assert customer1 == customer2 && customer1 == customer3;
+
+        entityManager1.close();
+
+        EntityManager entityManager2 = entityManagerFactory.createEntityManager();
+
+        entityManager2.find(Customer.class, foundCustomer.getId());
 
         return customerMapper.toCustomerResponse(foundCustomer);
     }

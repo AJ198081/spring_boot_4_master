@@ -19,7 +19,7 @@ public class AuditMetaConfig {
             return () -> {
 //                Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 //                if (authentication != null && authentication.getPrincipal() instanceof SecurityUser user) {
-//                    return Optional.of("%s %s".formatted(user.getUsername(), user.getRoles()));
+//                    return Optional.of("%s - %s".formatted(user.getUsername(), user.getRoles()));
 //                }
                 return Optional.of("AJ");
             };

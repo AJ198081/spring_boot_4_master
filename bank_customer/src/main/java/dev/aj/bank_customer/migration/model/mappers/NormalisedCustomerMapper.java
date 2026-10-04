@@ -29,13 +29,19 @@ public interface NormalisedCustomerMapper {
     @Mapping(target = "addresses", expression = "java(customerAddressToNormalisedAddressRecordEntities(customer))")
     NormalisedCustomerRecordEntity customerToNormalisedCustomerRecordEntity(Customer customer);
 
+    @Mapping(target = "addressEntities", ignore = true)
     NormalisedCustomerEntity customerToNormalisedCustomer(Customer customer);
 
     @Mapping(target = "auditMetaDataRecord", source = "auditMetaData")
     NormalisedAddressRecordEntity customerToNormalisedAddressRecordEntity(Customer customer);
 
+    @Mapping(target = "normalisedCustomerEntity", ignore = true)
+    @Mapping(target = "id", ignore = true)
+    @Mapping(target = "auditMetaData", ignore = true)
+    @Mapping(target = "address", ignore = true)
     AddressEntity addressToAddressEntity(Address address);
 
+    @Mapping(target = "normalisedCustomerEntity", ignore = true)
     @Mapping(target = "id", ignore = true)
 //    @Mapping(target = "normalisedCustomerEntity", expression = "java(setNormalisedCustomerEntity(customerToNormalisedCustomer(customer)))")
     AddressEntity customerToAddressEntity(Customer customer);

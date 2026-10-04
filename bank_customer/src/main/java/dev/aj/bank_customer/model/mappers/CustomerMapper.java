@@ -48,8 +48,10 @@ public interface CustomerMapper {
     void updateCustomer(CustomerRequest customerRequest, @MappingTarget Customer customer);
 
 
+    @Mapping(target = "type", ignore = true)
     Address toAddress(AddressDto addressRequest);
 
+    @Mapping(target = "addressType", ignore = true)
     AddressDto toAddress(Address address);
 
     default String emailToString(Email email) {

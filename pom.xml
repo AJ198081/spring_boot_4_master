@@ -12,7 +12,7 @@
 
     <groupId>dev.aj</groupId>
     <artifactId>spring_boot_4_master</artifactId>
-    <version>0.0.1-SNAPSHOT</version>
+    <version>${project.version}</version>
 
     <packaging>pom</packaging>
 
@@ -20,6 +20,7 @@
     <description>spring_boot_4_master</description>
 
     <modules>
+        <module>commons</module>
         <module>accounts</module>
         <module>billing_service</module>
         <module>customer_service</module>
@@ -34,7 +35,6 @@
         <module>shipping_service</module>
         <module>coupon_service</module>
         <module>stream_gatherers</module>
-        <module>commons</module>
         <module>bank_customer</module>
         <module>oauth2_0_rs</module>
         <module>bank_user</module>
@@ -104,7 +104,8 @@
         <hazelcast-hibernate53.version>5.2.0</hazelcast-hibernate53.version>
         <hazelcast.spring>5.7.0</hazelcast.spring>
         <!-- Static fallback so IDE (non-Maven) builds can filter it; directory-maven-plugin overrides it during Maven builds -->
-        <parent.pom.basedir>${project.basedir}</parent.pom.basedir>
+        <parent.pom.basedir>${project.basedir}/..</parent.pom.basedir>
+        <project.version>0.0.1-SNAPSHOT</project.version>
     </properties>
 
     <dependencyManagement>
@@ -136,6 +137,11 @@
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-cache</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-validation</artifactId>
         </dependency>
 
         <dependency>
@@ -232,6 +238,7 @@
                 <directory>${project.basedir}/src/main/resources</directory>
                 <filtering>true</filtering>
                 <includes>
+                    <include>*.xml</include>
                     <include>*.yaml</include>
                     <include>*.properties</include>
                     <include>.env</include>
@@ -246,7 +253,7 @@
             </resource>
         </resources>
         <plugins>
-            <plugin>
+      <!--      <plugin>
                 <groupId>org.commonjava.maven.plugins</groupId>
                 <artifactId>directory-maven-plugin</artifactId>
                 <version>1.0</version>
@@ -258,12 +265,12 @@
                         </goals>
                         <phase>initialize</phase>
                         <configuration>
-                            <!-- This sets a property named '@parent.pom.basedir@' pointing to the root -->
+                            &lt;!&ndash; This sets a property named '@parent.pom.basedir@' pointing to the root &ndash;&gt;
                             <property>parent.pom.basedir</property>
                         </configuration>
                     </execution>
                 </executions>
-            </plugin>
+            </plugin>-->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
