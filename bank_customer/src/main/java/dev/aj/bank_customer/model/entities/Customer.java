@@ -63,13 +63,13 @@ public class Customer {
 
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "customers_gen")
-    @SequenceGenerator(name = "customers_gen", sequenceName = "customers_seq")
+    @SequenceGenerator(name = "customers_gen", sequenceName = "customers_seq", initialValue = 10000, allocationSize = 20)
     @Column(name = "id", nullable = false)
     @JdbcTypeCode(SqlTypes.BIGINT)
     private Long id;
 
     @NaturalId
-    @Column(name = "external_id", nullable = false, columnDefinition = "UUID", updatable = false)
+    @Column(name = "external_id", unique = true, nullable = false, columnDefinition = "UUID", updatable = false)
     private UUID externalId;
 
     @Version

@@ -20,17 +20,17 @@ import java.math.RoundingMode;
 import java.text.NumberFormat;
 import java.util.UUID;
 
+import static dev.aj.commons.constants.ApplicationConstants.METHOD;
+import static dev.aj.commons.constants.ApplicationConstants.PATH;
+import static dev.aj.commons.constants.ApplicationConstants.STATUS;
+import static dev.aj.commons.constants.ApplicationConstants.TIME_TAKEN;
+import static dev.aj.commons.constants.ApplicationConstants.X_REQUEST_ID;
+
 @NullMarked
 @Slf4j
 @Component
 @RequiredArgsConstructor
 public class LoggingFilterConfig extends OncePerRequestFilter {
-
-    public static final String X_REQUEST_ID = "X-Request-Id";
-    public static final String METHOD = "method";
-    public static final String PATH = "path";
-    public static final String STATUS = "status";
-    public static final String TIME_TAKEN = "timeTaken";
 
     private final EntityManagerFactory entityManagerFactory;
 
@@ -73,6 +73,11 @@ public class LoggingFilterConfig extends OncePerRequestFilter {
                     MDC.get(X_REQUEST_ID), MDC.get(PATH), MDC.get(STATUS), numberFormat.format(Long.valueOf(MDC.get(TIME_TAKEN))));
 
             Statistics statistics = entityManagerFactory.unwrap(SessionFactory.class).getStatistics();
+
+            // Can enable statistics via properties file too
+            statistics.setStatisticsEnabled(true);
+
+            log.info("Second level cache regions: {}", String.join(",", statistics.getSecondLevelCacheRegionNames()));
 
             statistics.logSummary();
 

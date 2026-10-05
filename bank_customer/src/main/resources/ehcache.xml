@@ -10,14 +10,14 @@
         <heap unit="entries">4000</heap>
     </cache-template>
 
-    <cache alias="default-update-timestamps-region">
+    <cache alias="query-results-region" uses-template="default"/>
+
+    <cache alias="update-timestamps-region">
         <expiry>
             <none/>
         </expiry>
         <heap unit="entries">10000</heap>
     </cache>
-
-    <cache alias="default-query-results-region" uses-template="default"/>
 
     <cache alias="customer" uses-template="default"/>
 
@@ -27,5 +27,4 @@
         </expiry>
         <heap unit="entries">1000</heap>
     </cache>
-
 </config>

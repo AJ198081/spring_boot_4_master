@@ -1,6 +1,5 @@
 package dev.aj.bank_customer.services.impl;
 
-import dev.aj.commons.utils.FingerPrint;
 import dev.aj.bank_customer.events.CustomerCreateEvent;
 import dev.aj.bank_customer.events.UpdateKycStatusEvent;
 import dev.aj.bank_customer.model.dtos.CustomerCreatedResponse;
@@ -10,6 +9,7 @@ import dev.aj.bank_customer.model.entities.Customer;
 import dev.aj.bank_customer.model.entities.KycStatus;
 import dev.aj.bank_customer.model.mappers.CustomerMapper;
 import dev.aj.bank_customer.repositories.CustomerRepository;
+import dev.aj.commons.utils.FingerPrint;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
 import lombok.RequiredArgsConstructor;
@@ -22,6 +22,7 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.support.TransactionTemplate;
 
+import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -153,7 +154,13 @@ public class CustomerServiceImpl implements dev.aj.bank_customer.services.Custom
 
         EntityManager entityManager2 = entityManagerFactory.createEntityManager();
 
-        entityManager2.find(Customer.class, foundCustomer.getId());
+        Customer customer4 = entityManager2.find(Customer.class, foundCustomer.getId());
+        Optional<Customer> customer5 = customerRepository.findByExternalId(foundCustomer.getExternalId());
+
+        assert customer5.isPresent();
+        assert Objects.equals(customer4.getId(), customer5.get().getId());
+
+        entityManager2.close();
 
         return customerMapper.toCustomerResponse(foundCustomer);
     }
