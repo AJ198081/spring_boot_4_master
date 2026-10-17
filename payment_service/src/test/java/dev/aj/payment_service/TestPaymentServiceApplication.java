@@ -2,7 +2,7 @@ package dev.aj.payment_service;
 
 import org.springframework.boot.SpringApplication;
 
-class PaymentServiceApplicationTests {
+class TestPaymentServiceApplication {
 
     static void main(String[] args) {
         SpringApplication.from(PaymentServiceApplication::main)

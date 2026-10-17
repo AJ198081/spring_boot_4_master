@@ -48,6 +48,13 @@
             <groupId>dev.aj</groupId>
             <artifactId>order_service</artifactId>
             <version>${project.version}</version>
+            <exclusions>
+                <!-- payment_service uses the JPA event publication registry; order_service's JDBC one would clash -->
+                <exclusion>
+                    <groupId>org.springframework.modulith</groupId>
+                    <artifactId>spring-modulith-starter-jdbc</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
 
     </dependencies>
