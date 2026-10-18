@@ -12,6 +12,6 @@
     <artifactId>crypto_java</artifactId>
 
     <name>crypto_java</name>
-    <description>crypto_java</description>
+    <description>library to work with cryptography functionality in java</description>
 
 </project>
