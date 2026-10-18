@@ -36,10 +36,12 @@ public class CryptoKeyManager {
 
     public void persistRSAKeyPair(String dirName, String keyName) throws NoSuchAlgorithmException {
 
-        Path privateKeyFilePath = keyFilePath(dirName, generateKeyPairNames(keyName).privateKeyName);
-        Path publicKeyFilePath = keyFilePath(dirName, generateKeyPairNames(keyName).publicKeyName);
+        KeyPairNames keyPairNames = generateKeyPairNames(keyName);
 
-        if (isPresent(privateKeyFilePath) && isPresent(publicKeyFilePath)) {
+        Path privateKeyFilePath = resolvePath(dirName, keyPairNames.privateKeyName);
+        Path publicKeyFilePath = resolvePath(dirName, keyPairNames.publicKeyName);
+
+        if (isFileValid(privateKeyFilePath) && isFileValid(publicKeyFilePath)) {
             log.info("RSA key pair already present at {}", privateKeyFilePath.getParent());
             return;
         }
@@ -75,13 +77,27 @@ public class CryptoKeyManager {
 
     public KeyPair readKeyPair(String dirName, String keyName) {
 
+        KeyPairNames keyPairNames = generateKeyPairNames(keyName);
+
         try {
             KeyFactory rsaKeyFactory = KeyFactory.getInstance("RSA", BouncyCastleProvider.PROVIDER_NAME);
 
+
+            // X509EncodedKeySpec is the specification for the Public Key
             PublicKey extractedPublicKey = rsaKeyFactory.generatePublic(
-                    new X509EncodedKeySpec(readPemContent(keyFilePath(dirName, generateKeyPairNames(keyName).publicKeyName), PUBLIC_KEY_PEM_TYPE)));
+                    new X509EncodedKeySpec(
+                            readPemContent(
+                                    resolvePath(dirName, keyPairNames.publicKeyName),
+                                    PUBLIC_KEY_PEM_TYPE)
+                    ));
+
+            // PKCS8EncodedKeySpec is the specification for the Private Key
             PrivateKey extractedPrivateKey = rsaKeyFactory.generatePrivate(
-                    new PKCS8EncodedKeySpec(readPemContent(keyFilePath(dirName, generateKeyPairNames(keyName).privateKeyName), PRIVATE_KEY_PEM_TYPE)));
+                    new PKCS8EncodedKeySpec(
+                            readPemContent(
+                                    resolvePath(dirName, keyPairNames.privateKeyName),
+                                    PRIVATE_KEY_PEM_TYPE)
+                    ));
 
             return new KeyPair(extractedPublicKey, extractedPrivateKey);
         } catch (GeneralSecurityException e) {
@@ -90,13 +106,17 @@ public class CryptoKeyManager {
         }
     }
 
-    private static Path keyFilePath(String dirName, String fileName) {
-        return Path.of(System.getProperty(USER_DIR), dirName).resolve(fileName);
+    private static Path resolvePath(String dirName, String fileName) {
+    //  Path will be resolved relative to the current working directory for the application
+        String currentDirectory = System.getProperty(USER_DIR);
+
+        return Path.of(currentDirectory, dirName)
+                .resolve(fileName);
     }
 
-    private static boolean isPresent(Path path) {
+    private static boolean isFileValid(Path filePath) {
         try {
-            return Files.exists(path) && Files.size(path) > 0;
+            return Files.exists(filePath) && Files.size(filePath) > 0;
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
