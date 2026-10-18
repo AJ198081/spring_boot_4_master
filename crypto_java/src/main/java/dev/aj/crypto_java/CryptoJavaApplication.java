@@ -1,6 +1,7 @@
 package dev.aj.crypto_java;
 
 import dev.aj.crypto_java.config.CryptoKeyManager;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.context.event.ApplicationStartedEvent;
@@ -9,10 +10,12 @@ import org.springframework.context.ApplicationListener;
 
 import java.security.KeyPair;
 import java.security.NoSuchAlgorithmException;
+import java.security.cert.X509Certificate;
 
 import static org.hibernate.validator.internal.util.Contracts.assertNotNull;
 
 @SpringBootApplication
+@Slf4j
 public class CryptoJavaApplication implements ApplicationListener<ApplicationStartedEvent> {
 
 
@@ -38,5 +41,19 @@ public class CryptoJavaApplication implements ApplicationListener<ApplicationSta
         KeyPair keyPair = cryptoKeyManager.readKeyPair(CRYPTO_KEY_DIRECTORY, KEY_NAME);
 
         assertNotNull(keyPair);
+
+        X509Certificate x509Certificate = cryptoKeyManager.generateV3RootCertificate(
+                keyPair,
+                new CryptoKeyManager.DistinguishedName(
+                        "developer-world.com.au",
+                        "aj-dev",
+                        "engineering",
+                        "Sydney",
+                        "NSW",
+                        "AU")
+        );
+
+        assertNotNull(x509Certificate);
+        log.info("Generated root certificate -\n{}", x509Certificate);
     }
 }

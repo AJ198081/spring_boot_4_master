@@ -1,13 +1,25 @@
 package dev.aj.crypto_java.config;
 
 import lombok.extern.slf4j.Slf4j;
+import org.bouncycastle.asn1.x500.X500Name;
+import org.bouncycastle.asn1.x509.BasicConstraints;
+import org.bouncycastle.asn1.x509.Extension;
+import org.bouncycastle.asn1.x509.KeyUsage;
+import org.bouncycastle.cert.CertIOException;
+import org.bouncycastle.cert.X509v3CertificateBuilder;
+import org.bouncycastle.cert.jcajce.JcaX509CertificateConverter;
+import org.bouncycastle.cert.jcajce.JcaX509ExtensionUtils;
+import org.bouncycastle.cert.jcajce.JcaX509v3CertificateBuilder;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
+import org.bouncycastle.operator.OperatorCreationException;
+import org.bouncycastle.operator.jcajce.JcaContentSignerBuilder;
 import org.bouncycastle.util.io.pem.PemObject;
 import org.bouncycastle.util.io.pem.PemReader;
 import org.bouncycastle.util.io.pem.PemWriter;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
+import java.math.BigInteger;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.security.GeneralSecurityException;
@@ -18,8 +30,12 @@ import java.security.NoSuchAlgorithmException;
 import java.security.PrivateKey;
 import java.security.PublicKey;
 import java.security.Security;
+import java.security.cert.CertificateException;
+import java.security.cert.X509Certificate;
 import java.security.spec.PKCS8EncodedKeySpec;
 import java.security.spec.X509EncodedKeySpec;
+import java.util.Calendar;
+import java.util.Date;
 
 @Component
 @Slf4j
@@ -29,6 +45,7 @@ public class CryptoKeyManager {
 
     private static final String PRIVATE_KEY_PEM_TYPE = "PRIVATE KEY";
     private static final String PUBLIC_KEY_PEM_TYPE = "PUBLIC KEY";
+
 
     static {
         Security.addProvider(new BouncyCastleProvider());
@@ -106,8 +123,52 @@ public class CryptoKeyManager {
         }
     }
 
+    public X509Certificate generateV3RootCertificate(KeyPair keyPair, DistinguishedName distinguishedName) {
+
+        Calendar calendar = Calendar.getInstance();
+        Date notBefore = calendar.getTime();
+
+        calendar.add(Calendar.YEAR, 1);
+        Date notAfter = calendar.getTime();
+
+        X500Name x500Name = new X500Name(distinguishedName.toX500Name());
+
+    //  For root CA the issue and the subjects are the same
+        X509v3CertificateBuilder certificateBuilder = new JcaX509v3CertificateBuilder(
+                x500Name,
+                BigInteger.valueOf(System.currentTimeMillis()),
+                notBefore,
+                notAfter,
+                x500Name,
+                keyPair.getPublic()
+        );
+
+
+        try {
+            JcaX509ExtensionUtils jcaX509ExtensionUtils = new JcaX509ExtensionUtils();
+
+            certificateBuilder.addExtension(Extension.basicConstraints, true, new BasicConstraints(true));
+            certificateBuilder.addExtension(Extension.keyUsage, true, new KeyUsage(KeyUsage.keyCertSign));
+            certificateBuilder.addExtension(Extension.subjectKeyIdentifier, false, jcaX509ExtensionUtils.createSubjectKeyIdentifier(keyPair.getPublic()));
+            certificateBuilder.addExtension(Extension.authorityKeyIdentifier, false, jcaX509ExtensionUtils.createAuthorityKeyIdentifier(keyPair.getPublic()));
+
+            JcaContentSignerBuilder certificateSignerBuilder = new JcaContentSignerBuilder("SHA256WithRSA");
+
+            return new JcaX509CertificateConverter()
+                    .getCertificate(certificateBuilder.build(
+                            certificateSignerBuilder.build(keyPair.getPrivate()))
+                    );
+
+        } catch (NoSuchAlgorithmException | CertIOException | OperatorCreationException | CertificateException e) {
+            log.error("Error creating certificate extensions", e);
+            throw new RuntimeException(e);
+        }
+
+
+    }
+
     private static Path resolvePath(String dirName, String fileName) {
-    //  Path will be resolved relative to the current working directory for the application
+        //  Path will be resolved relative to the current working directory for the application
         String currentDirectory = System.getProperty(USER_DIR);
 
         return Path.of(currentDirectory, dirName)
@@ -141,6 +202,17 @@ public class CryptoKeyManager {
     }
 
     record KeyPairNames(String privateKeyName, String publicKeyName) {
+    }
+
+    public record DistinguishedName(String commonName, String organization, String organizationalUnit, String locality,
+                                    String state, String country) {
+
+        public String toX500Name() {
+
+            return """
+                    CN=%s, O=%s, OU=%s, L=%s, ST=%s, C=%s
+                    """.formatted(commonName, organization, organizationalUnit, locality, state, country);
+        }
     }
 
     private static KeyPairNames generateKeyPairNames(String keyName) {
