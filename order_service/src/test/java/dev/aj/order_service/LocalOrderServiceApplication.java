@@ -2,7 +2,7 @@ package dev.aj.order_service;
 
 import org.springframework.boot.SpringApplication;
 
-class TestOrderServiceApplication {
+class LocalOrderServiceApplication {
 
     static void main(String[] args) {
         SpringApplication.from(OrderServiceApplication::main)

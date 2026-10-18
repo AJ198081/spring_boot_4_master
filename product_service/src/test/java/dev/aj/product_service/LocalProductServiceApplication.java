@@ -1,12 +1,11 @@
-package dev.aj.coupon_service;
+package dev.aj.product_service;
 
 import org.springframework.boot.SpringApplication;
 
-class CouponServiceApplicationTests {
+class LocalProductServiceApplication {
 
     static void main(String[] args) {
-
-        SpringApplication.from(CouponServiceApplication::main)
+        SpringApplication.from(ProductServiceApplication::main)
                 .withAdditionalProfiles("test","local")
                 .run(args);
     }

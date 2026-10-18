@@ -2,9 +2,9 @@ package dev.aj.loans;
 
 import org.springframework.boot.SpringApplication;
 
-public class TestLoansApplication {
+public class LocalLoansApplication {
 
-   public static void main(String[] args) {
+   static void main(String[] args) {
        SpringApplication.from(LoansApplication::main)
                .withAdditionalProfiles( "test")
                .run(args);

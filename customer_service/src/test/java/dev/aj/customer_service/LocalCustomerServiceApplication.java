@@ -1,11 +1,11 @@
-package dev.aj.shipping_service;
+package dev.aj.customer_service;
 
 import org.springframework.boot.SpringApplication;
 
-class ShippingServiceApplicationTests {
+class LocalCustomerServiceApplication {
 
     static void main(String[] args) {
-        SpringApplication.from(ShippingServiceApplication::main)
+        SpringApplication.from(CustomerServiceApplication::main)
                 .withAdditionalProfiles("test","local")
                 .run(args);
     }

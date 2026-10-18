@@ -2,7 +2,7 @@ package dev.aj.billing_service;
 
 import org.springframework.boot.SpringApplication;
 
-class BillingServiceApplicationTests {
+class LocalBillingServiceApplication {
 
     static void main(String[] args) {
         SpringApplication.from(BillingServiceApplication::main)

@@ -2,7 +2,7 @@ package dev.aj.bank_customer;
 
 import org.springframework.boot.SpringApplication;
 
-class CustomerAppTests {
+class LocalBankCustomerApplication {
 
     static void main(String[] args) {
         SpringApplication.from(BankCustomerApplication::main)
