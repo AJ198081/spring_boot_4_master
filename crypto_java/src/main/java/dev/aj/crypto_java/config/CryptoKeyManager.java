@@ -1,5 +1,6 @@
 package dev.aj.crypto_java.config;
 
+import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.bouncycastle.asn1.x500.X500Name;
 import org.bouncycastle.asn1.x509.BasicConstraints;
@@ -34,6 +35,7 @@ import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
 import java.security.spec.PKCS8EncodedKeySpec;
 import java.security.spec.X509EncodedKeySpec;
+import java.util.Base64;
 import java.util.Calendar;
 import java.util.Date;
 
@@ -59,7 +61,7 @@ public class CryptoKeyManager {
         Path publicKeyFilePath = resolvePath(dirName, keyPairNames.publicKeyName);
 
         if (isFileValid(privateKeyFilePath) && isFileValid(publicKeyFilePath)) {
-            log.info("RSA key pair already present at {}", privateKeyFilePath.getParent());
+            log.info("RSA key pair '{}' already present at {}", keyName, privateKeyFilePath.getParent());
             return;
         }
 
@@ -133,7 +135,7 @@ public class CryptoKeyManager {
 
         X500Name x500Name = new X500Name(distinguishedName.toX500Name());
 
-    //  For root CA the issue and the subjects are the same
+        //  For root CA the issue and the subjects are the same
         X509v3CertificateBuilder certificateBuilder = new JcaX509v3CertificateBuilder(
                 x500Name,
                 BigInteger.valueOf(System.currentTimeMillis()),
@@ -165,6 +167,13 @@ public class CryptoKeyManager {
         }
 
 
+    }
+
+    @SneakyThrows
+    public String base64EncodeX509Certificate(X509Certificate certificate) {
+        return "-----BEGIN CERTIFICATE-----" +
+                Base64.getEncoder().encodeToString(certificate.getEncoded()) +
+                "-----END CERTIFICATE-----";
     }
 
     private static Path resolvePath(String dirName, String fileName) {
