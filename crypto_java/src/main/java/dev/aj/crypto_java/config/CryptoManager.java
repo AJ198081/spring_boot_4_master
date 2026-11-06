@@ -2,23 +2,33 @@ package dev.aj.crypto_java.config;
 
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
+import org.bouncycastle.asn1.pkcs.PKCSObjectIdentifiers;
 import org.bouncycastle.asn1.x500.X500Name;
 import org.bouncycastle.asn1.x509.BasicConstraints;
 import org.bouncycastle.asn1.x509.Extension;
+import org.bouncycastle.asn1.x509.ExtensionsGenerator;
+import org.bouncycastle.asn1.x509.GeneralName;
+import org.bouncycastle.asn1.x509.GeneralNames;
 import org.bouncycastle.asn1.x509.KeyUsage;
+import org.bouncycastle.asn1.x509.SubjectPublicKeyInfo;
 import org.bouncycastle.cert.CertIOException;
 import org.bouncycastle.cert.X509v3CertificateBuilder;
 import org.bouncycastle.cert.jcajce.JcaX509CertificateConverter;
 import org.bouncycastle.cert.jcajce.JcaX509ExtensionUtils;
 import org.bouncycastle.cert.jcajce.JcaX509v3CertificateBuilder;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
+import org.bouncycastle.openssl.PEMParser;
+import org.bouncycastle.operator.ContentSigner;
 import org.bouncycastle.operator.OperatorCreationException;
 import org.bouncycastle.operator.jcajce.JcaContentSignerBuilder;
+import org.bouncycastle.pkcs.PKCS10CertificationRequest;
+import org.bouncycastle.pkcs.jcajce.JcaPKCS10CertificationRequestBuilder;
 import org.bouncycastle.util.io.pem.PemObject;
 import org.bouncycastle.util.io.pem.PemReader;
 import org.bouncycastle.util.io.pem.PemWriter;
 import org.springframework.stereotype.Component;
 
+import java.io.BufferedReader;
 import java.io.IOException;
 import java.math.BigInteger;
 import java.nio.file.Files;
@@ -38,15 +48,17 @@ import java.security.spec.X509EncodedKeySpec;
 import java.util.Base64;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.Objects;
 
 @Component
 @Slf4j
-public class CryptoKeyManager {
+public class CryptoManager {
 
     public static final String USER_DIR = "user.dir";
 
     private static final String PRIVATE_KEY_PEM_TYPE = "PRIVATE KEY";
     private static final String PUBLIC_KEY_PEM_TYPE = "PUBLIC KEY";
+    private static final String CERTIFICATE_REQUEST = "CERTIFICATE REQUEST";
 
 
     static {
@@ -125,7 +137,7 @@ public class CryptoKeyManager {
         }
     }
 
-    public X509Certificate generateV3RootCertificate(KeyPair keyPair, DistinguishedName distinguishedName) {
+    public X509Certificate generateSelfSignedV3X509Certificate(KeyPair keyPair, DistinguishedName distinguishedName) {
 
         Calendar calendar = Calendar.getInstance();
         Date notBefore = calendar.getTime();
@@ -133,7 +145,7 @@ public class CryptoKeyManager {
         calendar.add(Calendar.YEAR, 1);
         Date notAfter = calendar.getTime();
 
-        X500Name x500Name = new X500Name(distinguishedName.toX500Name());
+        X500Name x500Name = new X500Name(distinguishedName.toX500FormattedString());
 
         //  For root CA the issue and the subjects are the same
         X509v3CertificateBuilder certificateBuilder = new JcaX509v3CertificateBuilder(
@@ -145,7 +157,10 @@ public class CryptoKeyManager {
                 keyPair.getPublic()
         );
 
+        return generateX509Certificate(keyPair, certificateBuilder);
+    }
 
+    private static X509Certificate generateX509Certificate(KeyPair keyPair, X509v3CertificateBuilder certificateBuilder) {
         try {
             JcaX509ExtensionUtils jcaX509ExtensionUtils = new JcaX509ExtensionUtils();
 
@@ -165,8 +180,94 @@ public class CryptoKeyManager {
             log.error("Error creating certificate extensions", e);
             throw new RuntimeException(e);
         }
+    }
+
+    public void generateCertificateSigningRequest(KeyPair subjectKeyPair, DistinguishedName subjectDistinguishedName, Path pathToPersistCSR) {
+
+        JcaPKCS10CertificationRequestBuilder certificationRequestBuilder = new JcaPKCS10CertificationRequestBuilder(subjectDistinguishedName.toX500Name(), subjectKeyPair.getPublic());
+
+        GeneralNames subjectAlternativeNames = new GeneralNames(new GeneralName[]{
+                new GeneralName(GeneralName.dNSName, subjectDistinguishedName.commonName),
+                new GeneralName(GeneralName.dNSName, subjectDistinguishedName.organization.concat(".com"))}
+        );
+
+        ExtensionsGenerator extensionsGenerator = new ExtensionsGenerator();
+
+        try {
+            extensionsGenerator.addExtension(Extension.subjectAlternativeName, false, subjectAlternativeNames);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+
+        certificationRequestBuilder.addAttribute(
+                PKCSObjectIdentifiers.pkcs_9_at_extensionRequest,
+                extensionsGenerator.generate()
+        );
+
+        PKCS10CertificationRequest certificationRequest;
+
+        try {
+            ContentSigner contentSigner = new JcaContentSignerBuilder("SHA256withRSA")
+                    .build(subjectKeyPair.getPrivate());
+
+            certificationRequest = certificationRequestBuilder.build(contentSigner);
+        } catch (OperatorCreationException e) {
+            throw new RuntimeException(e);
+        }
+
+        try {
+            writePem(pathToPersistCSR, CERTIFICATE_REQUEST, certificationRequest.getEncoded());
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public X509Certificate generateSignedCertificate(Path locationOfCSR, X509Certificate issuer, KeyPair issuerKeyPair) {
+
+        PKCS10CertificationRequest certificationRequest = convertToPKCS10(locationOfCSR);
+
+        X500Name subject = Objects.requireNonNull(certificationRequest, "Certification Request can't be null")
+                .getSubject();
+
+        SubjectPublicKeyInfo subjectPublicKeyInfo = certificationRequest.getSubjectPublicKeyInfo();
+
+        return generateCertificate(issuer, issuerKeyPair, subjectPublicKeyInfo, subject);
+    }
+
+    private X509Certificate generateCertificate(X509Certificate issuer, KeyPair issuerKeyPair, SubjectPublicKeyInfo subjectPublicKeyInfo, X500Name subject) {
+
+        Calendar calendar = Calendar.getInstance();
+        Date notBefore = calendar.getTime();
+
+        calendar.add(Calendar.YEAR, 1);
+        Date notAfter = calendar.getTime();
+
+        X509v3CertificateBuilder certificateBuilder = new JcaX509v3CertificateBuilder(
+                new X500Name(issuer.getSubjectX500Principal().getName()),
+                BigInteger.valueOf(System.currentTimeMillis()),
+                notBefore,
+                notAfter,
+                subject,
+                subjectPublicKeyInfo
+        );
 
 
+       return generateX509Certificate(issuerKeyPair, certificateBuilder);
+    }
+
+    private PKCS10CertificationRequest convertToPKCS10(Path locationOfCSR) {
+
+        try (BufferedReader bufferedReader = Files.newBufferedReader(locationOfCSR)) {
+            PEMParser pemParser = new PEMParser(bufferedReader);
+            Object parsedObject = pemParser.readObject();
+            if (parsedObject instanceof PKCS10CertificationRequest certificationRequest) {
+                return certificationRequest;
+            }
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+
+        return null;
     }
 
     @SneakyThrows
@@ -193,6 +294,11 @@ public class CryptoKeyManager {
     }
 
     private static void writePem(Path path, String type, byte[] content) throws IOException {
+
+        if (!isFileValid(path)) {
+            Files.createDirectories(path.getParent());
+        }
+
         try (PemWriter pemWriter = new PemWriter(Files.newBufferedWriter(path))) {
             pemWriter.writeObject(new PemObject(type, content));
         }
@@ -216,11 +322,14 @@ public class CryptoKeyManager {
     public record DistinguishedName(String commonName, String organization, String organizationalUnit, String locality,
                                     String state, String country) {
 
-        public String toX500Name() {
-
+        public String toX500FormattedString() {
             return """
                     CN=%s, O=%s, OU=%s, L=%s, ST=%s, C=%s
                     """.formatted(commonName, organization, organizationalUnit, locality, state, country);
+        }
+
+        public X500Name toX500Name() {
+            return new X500Name(toX500FormattedString());
         }
     }
 

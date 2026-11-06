@@ -14,7 +14,7 @@ public class CryptoKeyManagerTest {
 
     private static final String KEY_PAIR_DIRECTORY = "crypto_command_line/key_pairs";
     private static final String CERTIFICATE_KEY_NAME = "certificate_key";
-    private final CryptoKeyManager cryptoKeyManager = new CryptoKeyManager();
+    private final CryptoManager cryptoKeyManager = new CryptoManager();
 
     @Test
     public void testGenerateKeyPair() throws NoSuchAlgorithmException {
@@ -27,7 +27,7 @@ public class CryptoKeyManagerTest {
 
         assertNotNull(keyPair);
 
-        CryptoKeyManager.DistinguishedName distinguishedName = new CryptoKeyManager.DistinguishedName(
+        CryptoManager.DistinguishedName distinguishedName = new CryptoManager.DistinguishedName(
                 "Financial Industry",
                 "www.dev.aj",
                 "Engineering",
@@ -36,7 +36,7 @@ public class CryptoKeyManagerTest {
                 "AU"
         );
 
-        X509Certificate x509Certificate = cryptoKeyManager.generateV3RootCertificate(
+        X509Certificate x509Certificate = cryptoKeyManager.generateSelfSignedV3X509Certificate(
                 keyPair,
                 distinguishedName
         );
