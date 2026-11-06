@@ -56,10 +56,9 @@ public class CryptoManager {
 
     public static final String USER_DIR = "user.dir";
 
-    private static final String PRIVATE_KEY_PEM_TYPE = "PRIVATE KEY";
-    private static final String PUBLIC_KEY_PEM_TYPE = "PUBLIC KEY";
+    private static final String PRIVATE_KEY = "PRIVATE KEY";
+    private static final String PUBLIC_KEY = "PUBLIC KEY";
     private static final String CERTIFICATE_REQUEST = "CERTIFICATE REQUEST";
-
 
     static {
         Security.addProvider(new BouncyCastleProvider());
@@ -99,8 +98,8 @@ public class CryptoManager {
         try {
             Files.createDirectories(privateKeyFilePath.getParent());
             // getEncoded() is PKCS#8 for private keys and X.509 SubjectPublicKeyInfo for public keys
-            writePem(privateKeyFilePath, PRIVATE_KEY_PEM_TYPE, asymmetricKeyPair.getPrivate().getEncoded());
-            writePem(publicKeyFilePath, PUBLIC_KEY_PEM_TYPE, asymmetricKeyPair.getPublic().getEncoded());
+            writePem(privateKeyFilePath, PRIVATE_KEY, asymmetricKeyPair.getPrivate().getEncoded());
+            writePem(publicKeyFilePath, PUBLIC_KEY, asymmetricKeyPair.getPublic().getEncoded());
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -119,7 +118,7 @@ public class CryptoManager {
                     new X509EncodedKeySpec(
                             readPemContent(
                                     resolvePath(dirName, keyPairNames.publicKeyName),
-                                    PUBLIC_KEY_PEM_TYPE)
+                                    PUBLIC_KEY)
                     ));
 
             // PKCS8EncodedKeySpec is the specification for the Private Key
@@ -127,7 +126,7 @@ public class CryptoManager {
                     new PKCS8EncodedKeySpec(
                             readPemContent(
                                     resolvePath(dirName, keyPairNames.privateKeyName),
-                                    PRIVATE_KEY_PEM_TYPE)
+                                    PRIVATE_KEY)
                     ));
 
             return new KeyPair(extractedPublicKey, extractedPrivateKey);

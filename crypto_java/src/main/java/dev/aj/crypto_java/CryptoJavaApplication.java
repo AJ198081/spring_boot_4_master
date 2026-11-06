@@ -59,7 +59,7 @@ public class CryptoJavaApplication implements ApplicationListener<ApplicationSta
         );
 
         assertNotNull(rootCertificate);
-        log.info("Generated root certificate -\n{}", rootCertificate);
+        log.info("Generated root certificate -\n{}", cryptoKeyManager.base64EncodeX509Certificate(rootCertificate));
 
         try {
             cryptoKeyManager.persistRSAKeyPair(CRYPTO_KEY_DIRECTORY, SUBJECT_KEY_NAME);
@@ -81,11 +81,11 @@ public class CryptoJavaApplication implements ApplicationListener<ApplicationSta
                         "AU"),
                 pathToPersistCSR);
 
-        log.info("Generated CertificateSignRequest, and persisted to [{}]", pathToPersistCSR);
+        log.debug("Generated CertificateSignRequest, and persisted to [{}]", pathToPersistCSR);
 
         X509Certificate signedCertificate = cryptoKeyManager.generateSignedCertificate(pathToPersistCSR, rootCertificate, issuerKeyPair);
         assertNotNull(signedCertificate);
 
-        log.info("Generated signed certificate for the subject - \n{}", signedCertificate);
+        log.info("Generated signed certificate for the subject - \n{}", cryptoKeyManager.base64EncodeX509Certificate(signedCertificate));
     }
 }
