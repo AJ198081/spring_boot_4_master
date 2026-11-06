@@ -15,6 +15,7 @@ import java.util.UUID;
 public record NormalisedCustomerRecordEntity(
         @Id
         Long id,
+
         UUID externalId,
         short version,
         String firstName,
