@@ -37,6 +37,7 @@ public class CryptoJavaApplication implements ApplicationListener<ApplicationSta
         ApplicationContext applicationContext = event.getApplicationContext();
         CryptoManager cryptoKeyManager = applicationContext.getBean(CryptoManager.class);
 
+//        Generate a new KeyPair for the Issuer
         try {
             cryptoKeyManager.persistRSAKeyPair(CRYPTO_KEY_DIRECTORY, ISSUER_KEY_NAME);
         } catch (NoSuchAlgorithmException e) {
@@ -47,6 +48,7 @@ public class CryptoJavaApplication implements ApplicationListener<ApplicationSta
 
         assertNotNull(issuerKeyPair);
 
+//        Generate a self-signed root CA certificate
         X509Certificate rootCertificate = cryptoKeyManager.generateSelfSignedV3X509Certificate(
                 issuerKeyPair,
                 new CryptoManager.DistinguishedName(
@@ -59,8 +61,12 @@ public class CryptoJavaApplication implements ApplicationListener<ApplicationSta
         );
 
         assertNotNull(rootCertificate);
+
+//        Can use https://certlogik.com/ to validate the certificates
+
         log.info("Generated root certificate -\n{}", cryptoKeyManager.base64EncodeX509Certificate(rootCertificate));
 
+//        Now, generate a keypair for the 'subject'
         try {
             cryptoKeyManager.persistRSAKeyPair(CRYPTO_KEY_DIRECTORY, SUBJECT_KEY_NAME);
         } catch (NoSuchAlgorithmException e) {
@@ -69,6 +75,7 @@ public class CryptoJavaApplication implements ApplicationListener<ApplicationSta
 
         KeyPair subjectKeyPair = cryptoKeyManager.readKeyPair(CRYPTO_KEY_DIRECTORY, SUBJECT_KEY_NAME);
 
+//        Generate and persist Certificate Signing Request using the subject's kaypair
         Path pathToPersistCSR = Path.of(CERTIFICATE_SIGNING_REQUEST_DIRECTORY, CERTIFICATE_SIGNING_REQUEST_FILE_NAME);
         cryptoKeyManager.generateCertificateSigningRequest(
                 subjectKeyPair,
@@ -83,9 +90,11 @@ public class CryptoJavaApplication implements ApplicationListener<ApplicationSta
 
         log.debug("Generated CertificateSignRequest, and persisted to [{}]", pathToPersistCSR);
 
+//       Use Root CA certificate and sign the CSR
         X509Certificate signedCertificate = cryptoKeyManager.generateSignedCertificate(pathToPersistCSR, rootCertificate, issuerKeyPair);
         assertNotNull(signedCertificate);
 
+//       Can use https://certlogik.com/ to validate the certificates
         log.info("Generated signed certificate for the subject - \n{}", cryptoKeyManager.base64EncodeX509Certificate(signedCertificate));
     }
 }
