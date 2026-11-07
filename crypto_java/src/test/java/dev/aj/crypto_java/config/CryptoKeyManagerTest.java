@@ -21,7 +21,7 @@ public class CryptoKeyManagerTest {
 
         log.info("Ensuring RSA key pair...");
 
-        cryptoKeyManager.persistRSAKeyPair(KEY_PAIR_DIRECTORY, CERTIFICATE_KEY_NAME);
+        cryptoKeyManager.assureRSAKeyPair(KEY_PAIR_DIRECTORY, CERTIFICATE_KEY_NAME);
 
         KeyPair keyPair = cryptoKeyManager.readKeyPair(KEY_PAIR_DIRECTORY, CERTIFICATE_KEY_NAME);
 

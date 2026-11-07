@@ -5,12 +5,15 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.context.event.ApplicationStartedEvent;
-import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationListener;
 
 import java.nio.file.Path;
+import java.security.InvalidKeyException;
 import java.security.KeyPair;
 import java.security.NoSuchAlgorithmException;
+import java.security.NoSuchProviderException;
+import java.security.SignatureException;
+import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
 
 import static org.hibernate.validator.internal.util.Contracts.assertNotNull;
@@ -34,12 +37,12 @@ public class CryptoJavaApplication implements ApplicationListener<ApplicationSta
 
     @Override
     public void onApplicationEvent(ApplicationStartedEvent event) {
-        ApplicationContext applicationContext = event.getApplicationContext();
-        CryptoManager cryptoKeyManager = applicationContext.getBean(CryptoManager.class);
+        CryptoManager cryptoKeyManager = event.getApplicationContext()
+                .getBean(CryptoManager.class);
 
-//        Generate a new KeyPair for the Issuer
+//        Generate a new KeyPair for the Issuer (think root CA)
         try {
-            cryptoKeyManager.persistRSAKeyPair(CRYPTO_KEY_DIRECTORY, ISSUER_KEY_NAME);
+            cryptoKeyManager.assureRSAKeyPair(CRYPTO_KEY_DIRECTORY, ISSUER_KEY_NAME);
         } catch (NoSuchAlgorithmException e) {
             throw new RuntimeException(e);
         }
@@ -63,19 +66,18 @@ public class CryptoJavaApplication implements ApplicationListener<ApplicationSta
         assertNotNull(rootCertificate);
 
 //        Can use https://certlogik.com/ to validate the certificates
-
         log.info("Generated root certificate -\n{}", cryptoKeyManager.base64EncodeX509Certificate(rootCertificate));
 
-//        Now, generate a keypair for the 'subject'
+//        Now, generate a keypair for the 'subject', or the intermediate CA
         try {
-            cryptoKeyManager.persistRSAKeyPair(CRYPTO_KEY_DIRECTORY, SUBJECT_KEY_NAME);
+            cryptoKeyManager.assureRSAKeyPair(CRYPTO_KEY_DIRECTORY, SUBJECT_KEY_NAME);
         } catch (NoSuchAlgorithmException e) {
             throw new RuntimeException(e);
         }
 
         KeyPair subjectKeyPair = cryptoKeyManager.readKeyPair(CRYPTO_KEY_DIRECTORY, SUBJECT_KEY_NAME);
 
-//        Generate and persist Certificate Signing Request using the subject's kaypair
+//        Generate and persist 'Certificate Sign Request' by, and using the subject's keypair
         Path pathToPersistCSR = Path.of(CERTIFICATE_SIGNING_REQUEST_DIRECTORY, CERTIFICATE_SIGNING_REQUEST_FILE_NAME);
         cryptoKeyManager.generateCertificateSigningRequest(
                 subjectKeyPair,
@@ -90,11 +92,38 @@ public class CryptoJavaApplication implements ApplicationListener<ApplicationSta
 
         log.debug("Generated CertificateSignRequest, and persisted to [{}]", pathToPersistCSR);
 
-//       Use Root CA certificate and sign the CSR
+//      Now, as the Root CA sign the CSR
         X509Certificate signedCertificate = cryptoKeyManager.generateSignedCertificate(pathToPersistCSR, rootCertificate, issuerKeyPair);
         assertNotNull(signedCertificate);
 
-//       Can use https://certlogik.com/ to validate the certificates
+//      Can use https://certlogik.com/ to validate the certificates
         log.info("Generated signed certificate for the subject - \n{}", cryptoKeyManager.base64EncodeX509Certificate(signedCertificate));
+
+        try {
+            signedCertificate.verify(rootCertificate.getPublicKey());
+        } catch (CertificateException
+                 | NoSuchAlgorithmException
+                 | InvalidKeyException
+                 | NoSuchProviderException
+                 | SignatureException e) {
+            log.error("Tried but failed to verify the signed certificate with Root CA's Public Key, review the following exception to find out the why");
+            throw new RuntimeException(e);
+        }
+
+        log.info("Verified signed certificate for the subject with Root CA's Public Key");
+
+        try {
+            signedCertificate.verify(subjectKeyPair.getPublic());
+        } catch (CertificateException
+                 | NoSuchAlgorithmException
+                 | InvalidKeyException
+                 | NoSuchProviderException
+                 | SignatureException e) {
+            if (e instanceof SignatureException) {
+                log.error("Tried but as expected failed to verify the signed certificate with Subject's Public Key, because it was signed using Root CA's private key");
+            } else {
+                throw new RuntimeException(e);
+            }
+        }
     }
 }

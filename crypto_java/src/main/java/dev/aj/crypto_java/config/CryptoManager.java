@@ -26,6 +26,8 @@ import org.bouncycastle.pkcs.jcajce.JcaPKCS10CertificationRequestBuilder;
 import org.bouncycastle.util.io.pem.PemObject;
 import org.bouncycastle.util.io.pem.PemReader;
 import org.bouncycastle.util.io.pem.PemWriter;
+import org.springframework.beans.factory.config.ConfigurableBeanFactory;
+import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
 import java.io.BufferedReader;
@@ -51,6 +53,7 @@ import java.util.Date;
 import java.util.Objects;
 
 @Component
+@Scope(value = ConfigurableBeanFactory.SCOPE_PROTOTYPE)
 @Slf4j
 public class CryptoManager {
 
@@ -64,7 +67,7 @@ public class CryptoManager {
         Security.addProvider(new BouncyCastleProvider());
     }
 
-    public void persistRSAKeyPair(String dirName, String keyName) throws NoSuchAlgorithmException {
+    public void assureRSAKeyPair(String dirName, String keyName) throws NoSuchAlgorithmException {
 
         KeyPairNames keyPairNames = generateKeyPairNames(keyName);
 
@@ -77,7 +80,6 @@ public class CryptoManager {
         }
 
 //     Assumption is if you are here, either private or public key are missing, delete and create new
-
         try {
             Files.deleteIfExists(privateKeyFilePath);
             Files.deleteIfExists(publicKeyFilePath);
@@ -251,7 +253,7 @@ public class CryptoManager {
         );
 
 
-       return generateX509Certificate(issuerKeyPair, certificateBuilder);
+        return generateX509Certificate(issuerKeyPair, certificateBuilder);
     }
 
     private PKCS10CertificationRequest convertToPKCS10(Path locationOfCSR) {
