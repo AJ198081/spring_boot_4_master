@@ -63,6 +63,7 @@ public class CryptoManager {
     private static final String PRIVATE_KEY = "PRIVATE KEY";
     private static final String PUBLIC_KEY = "PUBLIC KEY";
     private static final String CERTIFICATE_REQUEST = "CERTIFICATE REQUEST";
+    public static final String SIGNATURE_ALGORITHM = "SHA256WithRSA";
 
     static {
         Security.addProvider(new BouncyCastleProvider());
@@ -171,12 +172,11 @@ public class CryptoManager {
             certificateBuilder.addExtension(Extension.subjectKeyIdentifier, false, jcaX509ExtensionUtils.createSubjectKeyIdentifier(keyPair.getPublic()));
             certificateBuilder.addExtension(Extension.authorityKeyIdentifier, false, jcaX509ExtensionUtils.createAuthorityKeyIdentifier(keyPair.getPublic()));
 
-            JcaContentSignerBuilder certificateSignerBuilder = new JcaContentSignerBuilder("SHA256WithRSA");
+            JcaContentSignerBuilder certificateSignerBuilder = new JcaContentSignerBuilder(SIGNATURE_ALGORITHM);
 
             return new JcaX509CertificateConverter()
-                    .getCertificate(certificateBuilder.build(
-                            certificateSignerBuilder.build(keyPair.getPrivate()))
-                    );
+                    .getCertificate(certificateBuilder
+                            .build(certificateSignerBuilder.build(keyPair.getPrivate())));
 
         } catch (NoSuchAlgorithmException | CertIOException | OperatorCreationException | CertificateException e) {
             log.error("Error creating certificate extensions", e);
@@ -211,7 +211,7 @@ public class CryptoManager {
 
         try {
 //          The CSR itself is signed purely to assure to the CA that the requester holds the private key for this request
-            ContentSigner contentSigner = new JcaContentSignerBuilder("SHA256withRSA")
+            ContentSigner contentSigner = new JcaContentSignerBuilder(SIGNATURE_ALGORITHM)
                     .build(subjectKeyPair.getPrivate());
 
             certificationRequest = certificationRequestBuilder.build(contentSigner);
@@ -247,7 +247,7 @@ public class CryptoManager {
         Date notAfter = calendar.getTime();
 
         X509v3CertificateBuilder certificateBuilder = new JcaX509v3CertificateBuilder(
-                new X500Name(issuer.getSubjectX500Principal().getName()),
+                X500Name.getInstance(issuer.getSubjectX500Principal().getEncoded()),
                 BigInteger.valueOf(System.currentTimeMillis()),
                 notBefore,
                 notAfter,
