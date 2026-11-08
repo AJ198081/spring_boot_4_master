@@ -186,6 +186,7 @@ public class CryptoManager {
 
     public void generateCertificateSigningRequest(KeyPair subjectKeyPair, DistinguishedName subjectDistinguishedName, Path pathToPersistCSR) {
 
+//        Note - everything in the CSR is in plain text, nothing is encrypted, contains the public key of the requester and attributes it wants to be certified
         JcaPKCS10CertificationRequestBuilder certificationRequestBuilder = new JcaPKCS10CertificationRequestBuilder(subjectDistinguishedName.toX500Name(), subjectKeyPair.getPublic());
 
         GeneralNames subjectAlternativeNames = new GeneralNames(new GeneralName[]{
@@ -209,6 +210,7 @@ public class CryptoManager {
         PKCS10CertificationRequest certificationRequest;
 
         try {
+//          The CSR itself is signed purely to assure to the CA that the requester holds the private key for this request
             ContentSigner contentSigner = new JcaContentSignerBuilder("SHA256withRSA")
                     .build(subjectKeyPair.getPrivate());
 
@@ -252,7 +254,6 @@ public class CryptoManager {
                 subject,
                 subjectPublicKeyInfo
         );
-
 
         return generateX509Certificate(issuerKeyPair, certificateBuilder);
     }
