@@ -24,11 +24,10 @@ public class CryptoJavaApplication implements ApplicationListener<ApplicationSta
 
 
     private static final String CRYPTO_KEY_DIRECTORY = "crypto_command_line/key_pairs";
-    private static final String CERTIFICATE_SIGNING_REQUEST_DIRECTORY = "crypto_command_line/csr";
     private static final String ISSUER_KEY_NAME = "rsa-root";
     private static final String SUBJECT_KEY_NAME = "rsa_subject";
-
-    public static final String CERTIFICATE_SIGNING_REQUEST_FILE_NAME = "csr_for_developer";
+    private static final String CERTIFICATE_SIGNING_REQUEST_DIRECTORY = "crypto_command_line/csr";
+    private static final String CERTIFICATE_SIGNING_REQUEST_FILE_NAME = "csr_for_developer";
 
     static void main(String[] args) {
         SpringApplication.run(CryptoJavaApplication.class, args);
@@ -78,7 +77,7 @@ public class CryptoJavaApplication implements ApplicationListener<ApplicationSta
         KeyPair subjectKeyPair = cryptoKeyManager.readKeyPair(CRYPTO_KEY_DIRECTORY, SUBJECT_KEY_NAME);
 
 //        Generate and persist 'Certificate Sign Request' by, and using the subject's keypair
-        Path pathToPersistCSR = Path.of(CERTIFICATE_SIGNING_REQUEST_DIRECTORY, CERTIFICATE_SIGNING_REQUEST_FILE_NAME);
+        Path pathToPersistCSR = CryptoManager.resolvePath(CERTIFICATE_SIGNING_REQUEST_DIRECTORY, CERTIFICATE_SIGNING_REQUEST_FILE_NAME);
         cryptoKeyManager.generateCertificateSigningRequest(
                 subjectKeyPair,
                 new CryptoManager.DistinguishedName(

@@ -278,7 +278,7 @@ public class CryptoManager {
                 "-----END CERTIFICATE-----";
     }
 
-    private static Path resolvePath(String dirName, String fileName) {
+    public static Path resolvePath(String dirName, String fileName) {
         //  Path will be resolved relative to the current working directory for the application
         String currentDirectory = System.getProperty(USER_DIR);
 
