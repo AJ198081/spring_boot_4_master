@@ -51,6 +51,7 @@ import java.util.Base64;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Objects;
+import java.util.Optional;
 
 @Component
 @Scope(value = ConfigurableBeanFactory.SCOPE_PROTOTYPE)
@@ -284,6 +285,17 @@ public class CryptoManager {
 
         return Path.of(currentDirectory, dirName)
                 .resolve(fileName);
+    }
+
+    public static Optional<String> extractFileExtension(Path path) {
+
+        String fileName = path.getFileName().toString();
+
+        if (fileName.lastIndexOf(".") > 0) {
+            return Optional.of(fileName.substring(fileName.lastIndexOf(".") + 1));
+        }
+
+        return Optional.empty();
     }
 
     private static boolean isFileValid(Path filePath) {

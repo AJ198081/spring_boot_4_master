@@ -16,6 +16,7 @@ import java.security.SignatureException;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
 
+import static dev.aj.crypto_java.config.CryptoManager.extractFileExtension;
 import static org.hibernate.validator.internal.util.Contracts.assertNotNull;
 
 @SpringBootApplication
@@ -78,6 +79,11 @@ public class CryptoJavaApplication implements ApplicationListener<ApplicationSta
 
 //        Generate and persist 'Certificate Sign Request' by, and using the subject's keypair
         Path pathToPersistCSR = CryptoManager.resolvePath(CERTIFICATE_SIGNING_REQUEST_DIRECTORY, CERTIFICATE_SIGNING_REQUEST_FILE_NAME);
+
+        if (extractFileExtension(pathToPersistCSR).isEmpty()) {
+            pathToPersistCSR = Path.of(pathToPersistCSR + ".csr");
+        }
+
         cryptoKeyManager.generateCertificateSigningRequest(
                 subjectKeyPair,
                 new CryptoManager.DistinguishedName(
@@ -89,11 +95,13 @@ public class CryptoJavaApplication implements ApplicationListener<ApplicationSta
                         "AU"),
                 pathToPersistCSR);
 
-        log.debug("Generated CertificateSignRequest, and persisted to [{}]", pathToPersistCSR);
+        log.info("Generated CertificateSignRequest, and persisted to [{}]", pathToPersistCSR);
 
 //      Now, as the Root CA sign the CSR
         X509Certificate signedCertificate = cryptoKeyManager.generateSignedCertificate(pathToPersistCSR, rootCertificate, issuerKeyPair);
         assertNotNull(signedCertificate);
+
+
 
 //      Can use https://certlogik.com/ to validate the certificates
         log.info("Generated signed certificate for the subject - \n{}", cryptoKeyManager.base64EncodeX509Certificate(signedCertificate));
